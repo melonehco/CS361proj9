@@ -15,7 +15,7 @@
       <sourceFolder url="file://$MODULE_DIR$/src/proj9AbulhabFengMaoSavillo/resources" type="java-resource" />
     </content>
     <orderEntry type="sourceFolder" forTests="false" />
-    <orderEntry type="inheritedJdk" />
+    <orderEntry type="jdk" jdkName="10" jdkType="JavaSDK" />
     <orderEntry type="module-library">
       <library>
         <CLASSES>

@@ -15,6 +15,7 @@ import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import org.fxmisc.richtext.CodeArea;
 import org.fxmisc.richtext.Selection;
+import proj9AbulhabFengMaoSavillo.JavaTabPane;
 
 
 /**
@@ -31,10 +32,10 @@ import org.fxmisc.richtext.Selection;
  */
 public class EditMenuController {
     /**
-     * TabPane defined in Main.fxml
+     * javaTabPane defined in Main.fxml
      */
     @FXML
-    private TabPane tabPane;
+    private JavaTabPane javaTabPane;
     private FindReplaceController findReplaceController;
 
 
@@ -51,11 +52,11 @@ public class EditMenuController {
     /**
      * Sets the tab pane.
      *
-     * @param tabPane TabPane defined in Main.fxml
+     * @param javaTabPane TabPane defined in Main.fxml
      */
-    public void setTabPane(TabPane tabPane)
+    public void setTabPane(JavaTabPane javaTabPane)
     {
-        this.tabPane = tabPane;
+        this.javaTabPane = javaTabPane;
     }
 
     /**
@@ -66,7 +67,7 @@ public class EditMenuController {
     public void handleEditMenuAction(ActionEvent event)
     {
         // get the code area embedded in the selected tab window
-        CodeArea activeCodeArea = TabPaneContentGetters.getCurrentCodeArea(this.tabPane);
+        CodeArea activeCodeArea = TabPaneContentGetters.getCurrentCodeArea(this.javaTabPane);
         if (activeCodeArea == null) // edit menu will be disabled anyway
             return;
 
@@ -111,9 +112,9 @@ public class EditMenuController {
      */
     public void handleFindReplace()
     {
-        if (TabPaneContentGetters.getCurrentCodeArea(this.tabPane) != null)
+        if (TabPaneContentGetters.getCurrentCodeArea(this.javaTabPane) != null)
         {
-            findReplaceController.setTabPane(tabPane);
+            findReplaceController.setTabPane(javaTabPane);
             findReplaceController.createFindReplaceDialog();
         }
     }

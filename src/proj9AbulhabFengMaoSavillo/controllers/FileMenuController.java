@@ -47,7 +47,7 @@ public class FileMenuController
     /**
      * TabPane defined in Main.fxml
      */
-    private TabPane tabPane;
+    private TabPane javaTabPane;
     /**
      * Controller for the directory
      */
@@ -102,7 +102,7 @@ public class FileMenuController
      */
     public void setTabPane(TabPane tabPane)
     {
-        this.tabPane = tabPane;
+        this.javaTabPane = tabPane;
     }
 
     /**
@@ -183,7 +183,7 @@ public class FileMenuController
     private void removeTab(Tab tab)
     {
         this.tabFileMap.remove(tab);
-        this.tabPane.getTabs().remove(tab);
+        this.javaTabPane.getTabs().remove(tab);
     }
 
     /**
@@ -234,7 +234,7 @@ public class FileMenuController
     {
 
         // if the file has not been saved or has been changed
-        if (this.tabNeedsSaving(TabPaneContentGetters.getCurrentTab(this.tabPane), true))
+        if (this.tabNeedsSaving(TabPaneContentGetters.getCurrentTab(this.javaTabPane), true))
         {
             int buttonClicked = createConfirmationDialog("Save Changes?",
                                                          "Do you want to save the changes before compiling?",
@@ -318,6 +318,7 @@ public class FileMenuController
      */
     private void createTab(String contentString, String filename, File file)
     {
+        //this.javaTabPane.handleNewTab();
         JavaCodeArea newJavaCodeArea = new JavaCodeArea();
         newJavaCodeArea.appendText(contentString); //set to given contents
 
@@ -345,8 +346,8 @@ public class FileMenuController
 
         //order is important
         this.tabFileMap.put(newTab, file);
-        this.tabPane.getTabs().add(newTab);
-        this.tabPane.getSelectionModel().select(newTab);
+        this.javaTabPane.getTabs().add(newTab);
+        this.javaTabPane.getSelectionModel().select(newTab);
     }
 
     /**
@@ -380,7 +381,7 @@ public class FileMenuController
     public void handleOpenAction()
     {
         FileChooser fileChooser = new FileChooser();
-        File openedFile = fileChooser.showOpenDialog(this.tabPane.getScene().getWindow());
+        File openedFile = fileChooser.showOpenDialog(this.javaTabPane.getScene().getWindow());
 
         if (openedFile != null)
         {
@@ -407,7 +408,7 @@ public class FileMenuController
             {
                 if (entry.getValue().equals(file))
                 {
-                    this.tabPane.getSelectionModel().select(entry.getKey());
+                    this.javaTabPane.getSelectionModel().select(entry.getKey());
                     return;
                 }
             }
@@ -469,7 +470,7 @@ public class FileMenuController
         // if the tab content was not loaded from a file nor ever saved to a file
         // save the content of the active styled code area to the selected file path
 
-        if (TabPaneContentGetters.getCurrentFile(this.tabPane, this.tabFileMap) == null)
+        if (TabPaneContentGetters.getCurrentFile(this.javaTabPane, this.tabFileMap) == null)
         {
             return this.handleSaveAsAction();
         }
@@ -477,12 +478,12 @@ public class FileMenuController
         // then the styled code area is saved to that file
         else
         {
-            if (!this.setFileContent(TabPaneContentGetters.getCurrentCodeArea(this.tabPane).getText(),
-                                     TabPaneContentGetters.getCurrentFile(this.tabPane, this.tabFileMap)))
+            if (!this.setFileContent(TabPaneContentGetters.getCurrentCodeArea(this.javaTabPane).getText(),
+                                     TabPaneContentGetters.getCurrentFile(this.javaTabPane, this.tabFileMap)))
             {
                 return false;
             }
-            TabPaneContentGetters.getCurrentTab(this.tabPane).setStyle("-fx-text-base-color: black");
+            TabPaneContentGetters.getCurrentTab(this.javaTabPane).setStyle("-fx-text-base-color: black");
             return true;
         }
     }
@@ -502,14 +503,14 @@ public class FileMenuController
     public boolean handleSaveAsAction()
     {
         FileChooser fileChooser = new FileChooser();
-        File saveFile = fileChooser.showSaveDialog(this.tabPane.getScene().getWindow());
+        File saveFile = fileChooser.showSaveDialog(this.javaTabPane.getScene().getWindow());
 
         if (saveFile != null)
         {
             // get the selected tab from the tab pane
 
-            Tab selectedTab = TabPaneContentGetters.getCurrentTab(this.tabPane);
-            JavaCodeArea activeJavaCodeArea = TabPaneContentGetters.getCurrentCodeArea(this.tabPane);
+            Tab selectedTab = TabPaneContentGetters.getCurrentTab(this.javaTabPane);
+            JavaCodeArea activeJavaCodeArea = TabPaneContentGetters.getCurrentCodeArea(this.javaTabPane);
 
             if (!this.setFileContent(activeJavaCodeArea.getText(), saveFile))
             {
@@ -541,7 +542,7 @@ public class FileMenuController
      */
     public void handleCloseAction(Event event)
     {
-        Tab selectedTab = TabPaneContentGetters.getCurrentTab(this.tabPane);
+        Tab selectedTab = TabPaneContentGetters.getCurrentTab(this.javaTabPane);
 
         // selectedTab is null if this method is evoked by closing a tab
         // in this case the selectedTab tab should be the tab that evokes this method
@@ -574,7 +575,7 @@ public class FileMenuController
         ArrayList<Tab> tabList = new ArrayList<>(this.tabFileMap.keySet());
         for (Tab currentTab : tabList)
         {
-            this.tabPane.getSelectionModel().select(currentTab);
+            this.javaTabPane.getSelectionModel().select(currentTab);
             if (!this.closeTab(currentTab))
             {
                 event.consume();
@@ -617,6 +618,6 @@ public class FileMenuController
      */
     public ReadOnlyBooleanProperty tablessProperty()
     {
-        return new SimpleListProperty<>(this.tabPane.getTabs()).emptyProperty();
+        return new SimpleListProperty<>(this.javaTabPane.getTabs()).emptyProperty();
     }
 }

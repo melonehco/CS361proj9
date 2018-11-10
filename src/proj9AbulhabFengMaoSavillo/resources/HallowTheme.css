@@ -36,7 +36,7 @@
     -fx-background-radius: 100;
 }
 
-#tabPane {
+#javaTabPane {
     -pref-height: 200px;
     -pref-width: 200px;
 }
