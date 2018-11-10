@@ -18,7 +18,7 @@ import javafx.scene.control.*;
 import javafx.stage.FileChooser;
 import javafx.stage.Window;
 import org.fxmisc.flowless.VirtualizedScrollPane;
-import proj9AbulhabFengMaoSavillo.antlr.JavaCodeArea;
+import proj9AbulhabFengMaoSavillo.JavaCodeArea;
 
 import java.io.File;
 import java.io.FileWriter;
