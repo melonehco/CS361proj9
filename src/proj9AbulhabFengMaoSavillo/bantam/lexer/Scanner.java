@@ -10,19 +10,19 @@ public class Scanner
     private ErrorHandler errorHandler;
 
 
-    public ScannerCode(ErrorHandler handler) {
+    public void ScannerCode(ErrorHandler handler) {
         errorHandler = handler;
-        currentChar = ' ';
+        //currentChar = ' ';
         sourceFile = null;
     }
 
-    public Scanner(String filename, ErrorHandler handler) {
+    public void Scanner(String filename, ErrorHandler handler) {
         errorHandler = handler;
-        currentChar = ' ';
+        //currentChar = ' ';
         sourceFile = new SourceFile(filename);
     }
 
-    public ScannerCode(Reader reader, ErrorHandler handler) {
+    public void ScannerCode(Reader reader, ErrorHandler handler) {
         errorHandler = handler;
         sourceFile = new SourceFile(reader);
     }

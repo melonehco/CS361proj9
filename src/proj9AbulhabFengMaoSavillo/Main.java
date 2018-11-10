@@ -54,7 +54,7 @@ public class Main extends Application
     public void start(Stage stage) throws Exception
     {
         FXMLLoader loader = new FXMLLoader(getClass().getResource(
-                "/proj7AbulhabFengMaoSavillo/Main.fxml"));
+                "/proj9AbulhabFengMaoSavillo/resources/Main.fxml"));
         Parent root = loader.load();
         Main.parentRoot = root;
         Controller controller = loader.getController();
@@ -62,10 +62,10 @@ public class Main extends Application
         // initialize a scene and add features specified in the css file to the scene
         Scene scene = new Scene(root, 640 + 160, 480 + 120);
         scene.getStylesheets().add(getClass().getResource(
-                "/proj7AbulhabFengMaoSavillo/Main.css").toExternalForm());
+                "/proj9AbulhabFengMaoSavillo/resources/Main.css").toExternalForm());
 
         // configure the stage
-        stage.setTitle("AbulhabFengMaoSavillo's Project 7");
+        stage.setTitle("AbulhabFengMaoSavillo's Project 9");
         stage.sizeToScene();
         stage.setScene(scene);
         stage.setOnCloseRequest(controller::handleExitAction);
