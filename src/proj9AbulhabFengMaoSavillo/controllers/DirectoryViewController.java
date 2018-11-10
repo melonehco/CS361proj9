@@ -6,7 +6,7 @@
  * This file contains the DirectoryViewController from another group's project
  */
 
-package proj9AbulhabFengMaoSavillo;
+package proj9AbulhabFengMaoSavillo.controllers;
 
 import javafx.event.EventHandler;
 import javafx.scene.control.Tab;

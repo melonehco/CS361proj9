@@ -7,7 +7,7 @@
  * This file contains the Preferences Menu controller class, handling actions evoked by the Preferences Menu,
  * namely, changing the color theme of the IDE
  */
-package proj9AbulhabFengMaoSavillo;
+package proj9AbulhabFengMaoSavillo.controllers;
 
 import javafx.fxml.FXML;
 import javafx.geometry.Pos;
@@ -30,6 +30,7 @@ import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
+import proj9AbulhabFengMaoSavillo.Main;
 
 /**
  * Preferences Menu controller handles actions evoked by the Main window.
@@ -119,7 +120,7 @@ public class PreferencesMenuController {
     	this.keywordColorCSSNames = new HashMap<String, String>();
     	for ( String colorName: this.keywordColorChoices )
     	{
-    		String colorCSSPath = "KeywordColorCSS/Keyword" + colorName + ".css";
+            String colorCSSPath = "/proj9AbulhabFengMaoSavillo/resources/KeywordColorCSS/Keyword" + colorName + ".css";
     		String colorCSS = getClass().getResource(colorCSSPath).toExternalForm();
     		this.keywordColorCSSNames.put(colorName, colorCSS);
     	}
@@ -136,7 +137,7 @@ public class PreferencesMenuController {
     	this.parenthesisColorCSSNames = new HashMap<String, String>();
     	for ( String colorName: this.parenthesisColorChoices )
     	{
-    		String colorCSSPath = "ParenColorCSS/Paren" + colorName + ".css";
+            String colorCSSPath = "/proj9AbulhabFengMaoSavillo/resources/ParenColorCSS/Paren" + colorName + ".css";
     		String colorCSS = getClass().getResource(colorCSSPath).toExternalForm();
     		this.parenthesisColorCSSNames.put(colorName, colorCSS);
     	}
@@ -153,7 +154,7 @@ public class PreferencesMenuController {
     	this.strColorCSSNames = new HashMap<String, String>();
     	for ( String colorName: this.strColorChoices )
     	{
-    		String colorCSSPath = "StrColorCSS/StrColor" + colorName + ".css";
+            String colorCSSPath = "/proj9AbulhabFengMaoSavillo/resources/StrColorCSS/StrColor" + colorName + ".css";
     		String colorCSS = getClass().getResource(colorCSSPath).toExternalForm();
     		this.strColorCSSNames.put(colorName, colorCSS);
     	}
@@ -170,7 +171,7 @@ public class PreferencesMenuController {
     	this.intColorCSSNames = new HashMap<String, String>();
     	for ( String colorName: this.intColorChoices )
     	{
-    		String colorCSSPath = "IntColorCSS/Int" + colorName + ".css";
+            String colorCSSPath = "/proj9AbulhabFengMaoSavillo/resources/IntColorCSS/Int" + colorName + ".css";
     		String colorCSS = getClass().getResource(colorCSSPath).toExternalForm();
     		this.intColorCSSNames.put(colorName, colorCSS);
     	}

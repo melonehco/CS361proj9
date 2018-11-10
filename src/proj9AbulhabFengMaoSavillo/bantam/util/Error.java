@@ -4,7 +4,7 @@
  * Date: Fall 2018
  */
 
-package bantam.util;
+package proj9AbulhabFengMaoSavillo.bantam.util;
 
 /**
  * Class for representing errors

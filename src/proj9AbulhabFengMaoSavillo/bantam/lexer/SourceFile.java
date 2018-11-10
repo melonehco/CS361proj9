@@ -14,11 +14,14 @@
  * Modified by Dale Skrien, Fall 2018
  */
 
-package bantam.lexer;
+package proj9AbulhabFengMaoSavillo.bantam.lexer;
 
-import bantam.util.CompilationException;
+import proj9AbulhabFengMaoSavillo.bantam.util.CompilationException;
 
-import java.io.*;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
+import java.io.Reader;
 
 /**
  * A class for extracting the characters, one at a time, from a text file or an
