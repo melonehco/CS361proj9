@@ -1,4 +1,4 @@
-package proj9AbulhabFengMaoSavillo;// Generated from /Volumes/Transcend/Github/CS361proj6/lib/Java8.g4 by ANTLR 4.7.1
+package proj9AbulhabFengMaoSavillo.antlr;// Generated from /Volumes/Transcend/Github/CS361proj6/lib/Java8.g4 by ANTLR 4.7.1
 
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.tree.ErrorNode;

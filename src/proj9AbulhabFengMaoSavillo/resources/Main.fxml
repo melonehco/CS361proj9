@@ -25,7 +25,7 @@
 <?import javafx.scene.control.RadioMenuItem?>
 
 <VBox fx:id="VBox" stylesheets="@Main.css" xmlns="http://javafx.com/javafx/8.0.172-ea"
-      xmlns:fx="http://javafx.com/fxml/1" fx:controller="proj7AbulhabFengMaoSavillo.Controller">
+      xmlns:fx="http://javafx.com/fxml/1" fx:controller="proj9AbulhabFengMaoSavillo.Controller">
     <MenuBar VBox.vgrow="NEVER">
         <Menu fx:id="fileMenu" text="File">
             <MenuItem fx:id="aboutMenuItem" onAction="#handleAboutAction" text="About..."/>

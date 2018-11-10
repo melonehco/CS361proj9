@@ -7,7 +7,7 @@
  * to handle syntax highlighting for Java.
  */
 
-package proj9AbulhabFengMaoSavillo;
+package proj9AbulhabFengMaoSavillo.antlr;
 
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
