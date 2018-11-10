@@ -6,10 +6,8 @@
  * This file contains the Main controller class, handling actions evoked by the Main window.
  */
 
-package proj9AbulhabFengMaoSavillo;
+package proj9AbulhabFengMaoSavillo.controllers;
 
-import javafx.beans.property.*;
-import javafx.event.*;
 import javafx.beans.property.ReadOnlyBooleanProperty;
 import javafx.event.ActionEvent;
 import javafx.event.Event;

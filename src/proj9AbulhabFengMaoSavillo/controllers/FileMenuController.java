@@ -6,7 +6,7 @@
  * This file contains the FileMenuController class, handling File menu related actions.
  */
 
-package proj9AbulhabFengMaoSavillo;
+package proj9AbulhabFengMaoSavillo.controllers;
 
 import javafx.application.Platform;
 import javafx.beans.property.ReadOnlyBooleanProperty;

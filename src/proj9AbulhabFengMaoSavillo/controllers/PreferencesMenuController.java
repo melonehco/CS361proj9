@@ -7,7 +7,7 @@
  * This file contains the Preferences Menu controller class, handling actions evoked by the Preferences Menu,
  * namely, changing the color theme of the IDE
  */
-package proj9AbulhabFengMaoSavillo;
+package proj9AbulhabFengMaoSavillo.controllers;
 
 import javafx.fxml.FXML;
 import javafx.geometry.Pos;
@@ -30,6 +30,7 @@ import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
+import proj9AbulhabFengMaoSavillo.Main;
 
 /**
  * Preferences Menu controller handles actions evoked by the Main window.

@@ -6,7 +6,7 @@
  * This file contains the ToolBarController class, handling Toolbar related actions.
  */
 
-package proj9AbulhabFengMaoSavillo;
+package proj9AbulhabFengMaoSavillo.controllers;
 
 import javafx.application.Platform;
 import org.fxmisc.richtext.StyleClassedTextArea;

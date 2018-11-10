@@ -1,4 +1,4 @@
-package proj9AbulhabFengMaoSavillo;
+package proj9AbulhabFengMaoSavillo.controllers;
 
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;

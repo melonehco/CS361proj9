@@ -5,7 +5,7 @@ Names: Melody Mao, Zena Abulhab, Yi Feng, and Evan Savillo
 Date: 10/27/2018
 */
 
-package proj9AbulhabFengMaoSavillo;
+package proj9AbulhabFengMaoSavillo.controllers;
 
 import javafx.scene.control.TabPane;
 import javafx.scene.control.TreeItem;

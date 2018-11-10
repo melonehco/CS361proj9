@@ -1,6 +1,6 @@
-package bantam.lexer;
+package proj9AbulhabFengMaoSavillo.bantam.lexer;
 
-import bantam.util.ErrorHandler;
+import proj9AbulhabFengMaoSavillo.bantam.util.ErrorHandler;
 
 import java.io.Reader;
 

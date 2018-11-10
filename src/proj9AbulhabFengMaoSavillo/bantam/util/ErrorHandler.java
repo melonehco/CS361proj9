@@ -26,7 +26,7 @@
    Modified by Dale Skrien, Fall 2018
 */
 
-package bantam.util;
+package proj9AbulhabFengMaoSavillo.bantam.util;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -39,14 +39,14 @@ public class ErrorHandler {
     /**
      * The list of errors
      */
-    private List<Error> errorList = new ArrayList<>();
+    private List<java.lang.Error> errorList = new ArrayList<>();
 
     /**
      * Register an error - auxiliarly method used by the other (public) register methods
      *
      * @param error the error object
      */
-    private void register(Error error) {
+    private void register(java.lang.Error error) {
         // insert a new error into the error list
         // but keep at most 100 errors.
         if (errorList.size() < 100) {
@@ -62,9 +62,9 @@ public class ErrorHandler {
      * @param lineNum      the starting line number in the source file where the error occurred
      * @param errorMessage the error message
      */
-    public void register(Error.Kind kind, String filename, int lineNum, String errorMessage) {
+    public void register(java.lang.Error.Kind kind, String filename, int lineNum, String errorMessage) {
         // create error and register it
-        register((new Error(kind, filename, lineNum, errorMessage)));
+        register((new java.lang.Error(kind, filename, lineNum, errorMessage)));
     }
 
     /**
@@ -73,11 +73,11 @@ public class ErrorHandler {
      * @param kind         the type (lex, parse, semantic) of error
      * @param errorMessage the error message
      */
-    public void register(Error.Kind kind, String errorMessage) {
+    public void register(java.lang.Error.Kind kind, String errorMessage) {
         // create error and register it
         // note: filename, line number, line, and charNum not specified
         // so using null, 0, null, and 0, respectively
-        register((new Error(kind, null, -1, errorMessage)));
+        register((new java.lang.Error(kind, null, -1, errorMessage)));
     }
 
     /**
@@ -92,7 +92,7 @@ public class ErrorHandler {
      *
      * @param e error object to insert
      */
-    private void insert(Error e) {
+    private void insert(java.lang.Error e) {
         // the algorithm below will insert errors in order by filename first and
         // then line number.  filenames are kept in the order that they are seen
         // (i.e., an error is registered with that filename).  line numbers are
@@ -127,7 +127,7 @@ public class ErrorHandler {
     /**
      * @return an unmodifiable copy of the list of registered errors
      */
-    public List<Error> getErrorList() {
+    public List<java.lang.Error> getErrorList() {
         return Collections.unmodifiableList(errorList);
     }
 

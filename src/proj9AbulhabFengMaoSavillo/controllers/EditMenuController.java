@@ -7,7 +7,7 @@
  * This file contains the EditMenuController class, handling Edit menu related actions.
  */
 
-package proj9AbulhabFengMaoSavillo;
+package proj9AbulhabFengMaoSavillo.controllers;
 
 
 import javafx.event.ActionEvent;
