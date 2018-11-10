@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <module type="JAVA_MODULE" version="4">
   <component name="EclipseModuleManager">
-    <libelement value="file:///Users/hopehu/Desktop/work/cs361/proj6/include/antlr-4.7.1-complete.jar" />
-    <libelement value="file:///Users/hopehu/Desktop/work/cs361/proj6/include/richtextfx-fat-0.9.1.jar" />
+    <libelement value="file://$MODULE_DIR$/../../../hopehu/Desktop/work/cs361/proj6/include/antlr-4.7.1-complete.jar" />
+    <libelement value="file://$MODULE_DIR$/../../../hopehu/Desktop/work/cs361/proj6/include/richtextfx-fat-0.9.1.jar" />
     <src_description expected_position="0">
       <src_folder value="file://$MODULE_DIR$/src" expected_position="0" />
     </src_description>
@@ -15,7 +15,7 @@
       <sourceFolder url="file://$MODULE_DIR$/src/proj9AbulhabFengMaoSavillo/resources" type="java-resource" />
     </content>
     <orderEntry type="sourceFolder" forTests="false" />
-    <orderEntry type="jdk" jdkName="10" jdkType="JavaSDK" />
+    <orderEntry type="inheritedJdk" />
     <orderEntry type="module-library">
       <library>
         <CLASSES>
