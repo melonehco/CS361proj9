@@ -18,6 +18,7 @@ import javafx.scene.control.*;
 import javafx.stage.FileChooser;
 import javafx.stage.Window;
 import org.fxmisc.flowless.VirtualizedScrollPane;
+import proj9AbulhabFengMaoSavillo.antlr.JavaCodeArea;
 
 import java.io.File;
 import java.io.FileWriter;
@@ -363,6 +364,7 @@ public class FileMenuController
                               MenuItem newItem = new MenuItem();
                               newItem.setText(menuItem.getText());
                               newItem.setOnAction(menuItem.getOnAction());
+                              newItem.setId(menuItem.getId());
                               clone.add(newItem);
                           });
 

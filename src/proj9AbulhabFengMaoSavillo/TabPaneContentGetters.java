@@ -3,6 +3,7 @@ package proj9AbulhabFengMaoSavillo;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
 import org.fxmisc.flowless.VirtualizedScrollPane;
+import proj9AbulhabFengMaoSavillo.antlr.JavaCodeArea;
 
 import java.io.File;
 import java.util.Map;
