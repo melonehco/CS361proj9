@@ -15,6 +15,8 @@ import javafx.geometry.Insets;
 import javafx.scene.control.*;
 import javafx.scene.layout.GridPane;
 import org.fxmisc.richtext.CodeArea;
+
+import java.util.ArrayList;
 import java.util.List;
 
 
@@ -31,6 +33,13 @@ public class FindReplaceController{
     //The replace and replace all buttons in the find and replace dialog
     private ButtonType replace;
     private ButtonType replaceAll;
+
+
+    public FindReplaceController(){
+        this.occurrenceIndices = new ArrayList<Integer>();
+        this.curOccurrenceIndex = 0;
+    }
+
 
     public void setTabPane(TabPane tabPane){
         this.tabPane = tabPane;
