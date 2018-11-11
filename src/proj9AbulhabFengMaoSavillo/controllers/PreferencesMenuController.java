@@ -110,9 +110,9 @@ public class PreferencesMenuController {
     	this.colorNamesToColors.put("Red", Color.FIREBRICK);
     	this.colorNamesToColors.put("Grey", Color.GREY);
     	this.colorNamesToColors.put("SkyBlue", Color.SKYBLUE);
-    	
+
     	//--------------------- colors for keywords --------------------
-    	
+
     	this.keywordColorChoices = FXCollections.observableArrayList(
                 "Black","Blue","Teal","Pink","Orange", "Red");
 
@@ -124,13 +124,13 @@ public class PreferencesMenuController {
     		String colorCSS = getClass().getResource(colorCSSPath).toExternalForm();
     		this.keywordColorCSSNames.put(colorName, colorCSS);
     	}
-    	
+
     	//add in default color by itself (because it doesn't have a CSS file)
     	this.keywordColorChoices.add(0, "Purple");
-    	
-    	//------------------ colors for parentheses etc ----------------
-    	
-    	this.parenthesisColorChoices = FXCollections.observableArrayList(
+
+        //------------------ colors for parentheses etc ----------------
+
+        this.parenthesisColorChoices = FXCollections.observableArrayList(
                 "Black","Blue","Grey","Pink","Orange", "Red");
 
     	//put CSS strings into map with associated colors
@@ -141,16 +141,16 @@ public class PreferencesMenuController {
     		String colorCSS = getClass().getResource(colorCSSPath).toExternalForm();
     		this.parenthesisColorCSSNames.put(colorName, colorCSS);
     	}
-    	
-    	//add in default color by itself (because it doesn't have a CSS file)
+
+        //add in default color by itself (because it doesn't have a CSS file)
     	this.parenthesisColorChoices.add(0, "Teal");
-    	
-    	//---------------------- colors for strings ---------------------
-    	
-    	this.strColorChoices = FXCollections.observableArrayList(
+
+        //---------------------- colors for strings ---------------------
+
+        this.strColorChoices = FXCollections.observableArrayList(
                 "Black","Teal","SkyBlue","Pink","Orange", "Red");
-    	
-    	//put CSS strings into map with associated colors
+
+        //put CSS strings into map with associated colors
     	this.strColorCSSNames = new HashMap<String, String>();
     	for ( String colorName: this.strColorChoices )
     	{
@@ -158,16 +158,16 @@ public class PreferencesMenuController {
     		String colorCSS = getClass().getResource(colorCSSPath).toExternalForm();
     		this.strColorCSSNames.put(colorName, colorCSS);
     	}
-    	
-    	//add in default color by itself (because it doesn't have a CSS file)
+
+        //add in default color by itself (because it doesn't have a CSS file)
     	this.strColorChoices.add(0, "Blue");
-    	
-    	//----------------------- colors for ints -----------------------
-    	
-    	this.intColorChoices = FXCollections.observableArrayList(
+
+        //----------------------- colors for ints -----------------------
+
+        this.intColorChoices = FXCollections.observableArrayList(
                 "Black","Blue","SkyBlue","Pink","Orange", "Teal");
-    	
-    	//put CSS strings into map with associated colors
+
+        //put CSS strings into map with associated colors
     	this.intColorCSSNames = new HashMap<String, String>();
     	for ( String colorName: this.intColorChoices )
     	{
@@ -175,12 +175,11 @@ public class PreferencesMenuController {
     		String colorCSS = getClass().getResource(colorCSSPath).toExternalForm();
     		this.intColorCSSNames.put(colorName, colorCSS);
     	}
-    	
-    	//add in default color by itself (because it doesn't have a CSS file)
+
+        //add in default color by itself (because it doesn't have a CSS file)
     	this.intColorChoices.add(0, "Red");
-        
-        
-        
+
+
     }
 
     /**
@@ -195,10 +194,10 @@ public class PreferencesMenuController {
                 handleNormalMode();
                 break;
             case "darkThemeMenuItem":
-                loadAlternateTheme("proj9AbulhabFengMaoSavillo/resources/DarkTheme.css");
+                loadAlternateTheme("/proj9AbulhabFengMaoSavillo/resources/DarkTheme.css");
                 break;
             case "halloweenThemeMenuItem":
-                loadAlternateTheme("proj9AbulhabFengMaoSavillo/resources/HallowTheme.css");
+                loadAlternateTheme("/proj9AbulhabFengMaoSavillo/resources/HallowTheme.css");
                 break;
             default:
         }

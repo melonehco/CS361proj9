@@ -6,7 +6,7 @@ import java.io.Reader;
 
 public class Scanner
 {
-    private SourceFile sourceFile;
+/*    private SourceFile sourceFile;
     private ErrorHandler errorHandler;
 
 
@@ -30,6 +30,6 @@ public class Scanner
     public Token scan()
     {
        return null;  // REMOVE THIS LINE AND REPLACE IT WITH YOUR CODE
-    }
+    }*/
 
 }
