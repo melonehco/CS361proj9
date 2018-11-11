@@ -195,10 +195,10 @@ public class PreferencesMenuController {
                 handleNormalMode();
                 break;
             case "darkThemeMenuItem":
-                loadAlternateTheme("proj7AbulhabFengMaoSavillo/DarkTheme.css");
+                loadAlternateTheme("proj9AbulhabFengMaoSavillo/resources/DarkTheme.css");
                 break;
             case "halloweenThemeMenuItem":
-                loadAlternateTheme("proj7AbulhabFengMaoSavillo/HallowTheme.css");
+                loadAlternateTheme("proj9AbulhabFengMaoSavillo/resources/HallowTheme.css");
                 break;
             default:
         }
