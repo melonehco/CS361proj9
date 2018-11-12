@@ -419,12 +419,12 @@ public class PreferencesMenuController {
     	try
     	{
     		//update src copy
-    		BufferedWriter writer = new BufferedWriter( new FileWriter( "src/" + preferenceWritingPath ) );
+    		BufferedWriter writer = new BufferedWriter( new FileWriter( "src/" + preferenceWritingPath, true ) );
         	writer.write(newStyle);
         	writer.close();
         	
         	//update bin copy
-        	writer = new BufferedWriter( new FileWriter( "bin/" + preferenceWritingPath ) );
+        	writer = new BufferedWriter( new FileWriter( "bin/" + preferenceWritingPath, true ) );
         	writer.write(newStyle);
         	writer.close();
     	}
