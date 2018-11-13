@@ -19,6 +19,7 @@ import javafx.stage.FileChooser;
 import javafx.stage.Window;
 import org.fxmisc.flowless.VirtualizedScrollPane;
 import proj9AbulhabFengMaoSavillo.JavaCodeArea;
+import proj9AbulhabFengMaoSavillo.TabPaneContentGetters;
 
 import java.io.File;
 import java.io.FileWriter;

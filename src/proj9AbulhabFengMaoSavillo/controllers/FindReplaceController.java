@@ -15,6 +15,7 @@ import javafx.geometry.Insets;
 import javafx.scene.control.*;
 import javafx.scene.layout.GridPane;
 import org.fxmisc.richtext.CodeArea;
+import proj9AbulhabFengMaoSavillo.TabPaneContentGetters;
 
 import java.util.ArrayList;
 import java.util.List;

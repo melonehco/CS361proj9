@@ -16,6 +16,7 @@ import javafx.scene.control.*;
 import org.fxmisc.richtext.CodeArea;
 import org.fxmisc.richtext.Selection;
 import proj9AbulhabFengMaoSavillo.JavaTabPane;
+import proj9AbulhabFengMaoSavillo.TabPaneContentGetters;
 
 
 /**

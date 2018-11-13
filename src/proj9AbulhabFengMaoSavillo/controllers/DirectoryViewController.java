@@ -14,6 +14,7 @@ import javafx.scene.control.TabPane;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
 import javafx.scene.input.MouseEvent;
+import proj9AbulhabFengMaoSavillo.TabPaneContentGetters;
 
 import java.io.File;
 import java.util.HashMap;
