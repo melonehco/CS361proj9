@@ -72,14 +72,26 @@ public class Scanner
     {
         StringBuilder spelling = new StringBuilder();
 
+        //complete the token
+        while (isCollectingChars()) //scan the characters
+        {
+            spelling.append(this.currentChar);
+        }
+
+        //determine kind
+        t
+
+        return new Token(kind, spelling.toString(), this.sourceFile.getCurrentLineNumber());
+    }
+
+    private boolean isCollectingChars()
+    {
         State stateSnapshot = this.state; // save state now to be given to previousState at the end
 
         this.currentChar = this.sourceFile.getNextChar();
         switch (this.state)
         {
-            // Either we encounter a brace and increment our internal counters,
-            // or we encounter a significant token and move to a another state
-            // where any braces encountered will be trivial (comment or string)
+            // Non-trivial Cases
             case DEFAULT:
                 switch (this.currentChar)
                 {
@@ -92,6 +104,10 @@ public class Scanner
                     case '\"':
                         this.state = State.DOUBLE_QUOTE;
                         break;
+                    default: // Meat of the Program
+                    {
+
+                    }
                 }
                 break;
 
@@ -117,7 +133,7 @@ public class Scanner
                 // System-dependent line return signals the end of a line-comment
                 if (this.currentChar == System.lineSeparator().charAt(0))
                     this.state = State.DEFAULT;
-                break;
+                return false;
 
             case MULTILINE_COMMENT:
                 switch (this.currentChar)
@@ -136,7 +152,7 @@ public class Scanner
                 {
                     case '/':
                         this.state = State.DEFAULT;
-                        break;
+                        return false;
                     default:
                         this.state = State.MULTILINE_COMMENT;
                         break;
@@ -148,7 +164,7 @@ public class Scanner
                 {
                     case '\'':
                         this.state = State.DEFAULT;
-                        break;
+                        return false;
                     case '\\':
                         this.state = State.IGNORE_NEXT;
                         break;
@@ -160,7 +176,7 @@ public class Scanner
                 {
                     case '\"':
                         this.state = State.DEFAULT;
-                        break;
+                        return false;
                     case '\\':
                         this.state = State.IGNORE_NEXT;
                         break;
@@ -174,8 +190,6 @@ public class Scanner
         }
 
         this.previousState = stateSnapshot;
-
-        return new Token(kind, spelling.toString(), position);
     }
 
     public static void main(String[] args)
