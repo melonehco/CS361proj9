@@ -2,7 +2,7 @@
  * File: PreferencesMenuController.java
  * F18 CS361 Project 7
  * Names: Melody Mao, Zena Abulhab, Yi Feng, Evan Savillo
- * Implemented using code from AhnDeGrawHangSlagerproj6
+ * Implemented using code from proj6AhnDeGrawHangSlager and proj6JiangQuanMarcello
  * Date: 10/31/2018
  * This file contains the Preferences Menu controller class, handling actions evoked by the Preferences Menu,
  * namely, changing the color theme of the IDE
@@ -13,9 +13,13 @@ import javafx.fxml.FXML;
 import javafx.geometry.Pos;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.control.Alert;
 import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.MenuItem;
 
+import java.io.BufferedWriter;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.HashMap;
 
 import javafx.beans.value.ChangeListener;
@@ -67,13 +71,11 @@ public class PreferencesMenuController {
     private ObservableList<String> intColorChoices;
     
     /**
-     * Maps the string for a color name to the filename for the associated CSS
-     * for the particular styling class
+     * Stores the path to the CSS file that is modified by preference selections
      */
-    private HashMap<String, String> keywordColorCSSNames;
-    private HashMap<String, String> parenthesisColorCSSNames;
-    private HashMap<String, String> strColorCSSNames;
-    private HashMap<String, String> intColorCSSNames;
+    private String preferenceFilePath; //path for reloading CSS
+    private String preferenceURLString;
+    private String preferenceWritingPath; //path for writing to CSS file (needs src or bin in front of it)
     
     
     /**
@@ -83,6 +85,9 @@ public class PreferencesMenuController {
     public PreferencesMenuController(MenuItem initialSelectedMenuItem){
         initialSelectedMenuItem.setDisable(true);
         this.lastPressedMenuItem = initialSelectedMenuItem;
+        this.preferenceFilePath = "../resources/ColorPreferences.css";
+        this.preferenceURLString = getClass().getResource(this.preferenceFilePath).toExternalForm();
+        this.preferenceWritingPath = "proj9AbulhabFengMaoSavillo/resources/ColorPreferences.css";
         this.setupColorChoices();
     }
 
@@ -103,82 +108,27 @@ public class PreferencesMenuController {
     	this.colorNamesToColors = new HashMap<String, Color>();
     	this.colorNamesToColors.put("Purple", Color.PURPLE);
     	this.colorNamesToColors.put("Black", Color.BLACK);
-    	this.colorNamesToColors.put("Blue", Color.ROYALBLUE);
+    	this.colorNamesToColors.put("RoyalBlue", Color.ROYALBLUE);
     	this.colorNamesToColors.put("Teal", Color.TEAL);
-    	this.colorNamesToColors.put("Pink", Color.ORCHID);
+    	this.colorNamesToColors.put("Orchid", Color.ORCHID);
     	this.colorNamesToColors.put("Orange", Color.ORANGE);
-    	this.colorNamesToColors.put("Red", Color.FIREBRICK);
+    	this.colorNamesToColors.put("Firebrick", Color.FIREBRICK);
     	this.colorNamesToColors.put("Grey", Color.GREY);
     	this.colorNamesToColors.put("SkyBlue", Color.SKYBLUE);
 
-    	//--------------------- colors for keywords --------------------
+    	//set up colors that can be chosen for each preference style class
 
     	this.keywordColorChoices = FXCollections.observableArrayList(
-                "Black","Blue","Teal","Pink","Orange", "Red");
-
-    	//put CSS strings into map with associated colors
-    	this.keywordColorCSSNames = new HashMap<String, String>();
-    	for ( String colorName: this.keywordColorChoices )
-    	{
-            String colorCSSPath = "/proj9AbulhabFengMaoSavillo/resources/KeywordColorCSS/Keyword" + colorName + ".css";
-    		String colorCSS = getClass().getResource(colorCSSPath).toExternalForm();
-    		this.keywordColorCSSNames.put(colorName, colorCSS);
-    	}
-
-    	//add in default color by itself (because it doesn't have a CSS file)
-    	this.keywordColorChoices.add(0, "Purple");
-
-        //------------------ colors for parentheses etc ----------------
+    			"Purple", "Black","RoyalBlue","Teal","Orchid","Orange", "Firebrick");
 
         this.parenthesisColorChoices = FXCollections.observableArrayList(
-                "Black","Blue","Grey","Pink","Orange", "Red");
-
-    	//put CSS strings into map with associated colors
-    	this.parenthesisColorCSSNames = new HashMap<String, String>();
-    	for ( String colorName: this.parenthesisColorChoices )
-    	{
-            String colorCSSPath = "/proj9AbulhabFengMaoSavillo/resources/ParenColorCSS/Paren" + colorName + ".css";
-    		String colorCSS = getClass().getResource(colorCSSPath).toExternalForm();
-    		this.parenthesisColorCSSNames.put(colorName, colorCSS);
-    	}
-
-        //add in default color by itself (because it doesn't have a CSS file)
-    	this.parenthesisColorChoices.add(0, "Teal");
-
-        //---------------------- colors for strings ---------------------
+                "Teal", "Black","RoyalBlue","Grey","Orchid","Orange", "Firebrick");
 
         this.strColorChoices = FXCollections.observableArrayList(
-                "Black","Teal","SkyBlue","Pink","Orange", "Red");
-
-        //put CSS strings into map with associated colors
-    	this.strColorCSSNames = new HashMap<String, String>();
-    	for ( String colorName: this.strColorChoices )
-    	{
-            String colorCSSPath = "/proj9AbulhabFengMaoSavillo/resources/StrColorCSS/StrColor" + colorName + ".css";
-    		String colorCSS = getClass().getResource(colorCSSPath).toExternalForm();
-    		this.strColorCSSNames.put(colorName, colorCSS);
-    	}
-
-        //add in default color by itself (because it doesn't have a CSS file)
-    	this.strColorChoices.add(0, "Blue");
-
-        //----------------------- colors for ints -----------------------
+        		"RoyalBlue", "Black","Teal","SkyBlue","Orchid","Orange", "Firebrick");
 
         this.intColorChoices = FXCollections.observableArrayList(
-                "Black","Blue","SkyBlue","Pink","Orange", "Teal");
-
-        //put CSS strings into map with associated colors
-    	this.intColorCSSNames = new HashMap<String, String>();
-    	for ( String colorName: this.intColorChoices )
-    	{
-            String colorCSSPath = "/proj9AbulhabFengMaoSavillo/resources/IntColorCSS/Int" + colorName + ".css";
-    		String colorCSS = getClass().getResource(colorCSSPath).toExternalForm();
-    		this.intColorCSSNames.put(colorName, colorCSS);
-    	}
-
-        //add in default color by itself (because it doesn't have a CSS file)
-    	this.intColorChoices.add(0, "Red");
-
+                "Firebrick", "Black","RoyalBlue","SkyBlue","Orchid","Orange", "Teal");
 
     }
 
@@ -232,8 +182,6 @@ public class PreferencesMenuController {
         Stage keywordColorWin = new Stage();
         keywordColorWin.setTitle("Keyword Color");
 
-        Parent root = Main.getParentRoot();
-
         VBox keywordColorRoot = new VBox();
         keywordColorRoot.setAlignment(Pos.CENTER);
         keywordColorRoot.setSpacing(10);
@@ -257,13 +205,7 @@ public class PreferencesMenuController {
             	rect.setFill(newColor);
             	message.setFill(newColor);
             	
-            	//remove previous styling
-            	root.getStylesheets().removeAll(keywordColorCSSNames.values());
-            	
-            	//add new styling for non-default colors
-            	if (!selectedColor.equals("Purple")){
-            		root.getStylesheets().add(keywordColorCSSNames.get(selectedColor));
-                }
+            	updateKeywordPreference(selectedColor);
             }
         });
 
@@ -271,7 +213,21 @@ public class PreferencesMenuController {
         Scene keywordColorScene = new Scene(keywordColorRoot, 200,200);
         keywordColorWin.setScene(keywordColorScene);
         keywordColorWin.show();
-
+    }
+    
+    /**
+     * Updates the keyword class's preference CSS to the given color
+     * @param color new keyword color
+     */
+    private void updateKeywordPreference(String color)
+    {
+    	//build string for new style
+    	String newCSS = "\n\n.keyword {" +
+						"\n\t-fx-fill: " + color.toLowerCase() + ";" +
+						"\n\t-fx-font-weight: bold;" +
+						"\n}";
+    	//update CSS file
+    	this.updatePreferenceCSS(newCSS);
     }
 
     /**
@@ -280,8 +236,6 @@ public class PreferencesMenuController {
     public void handleParenColorAction(){
         Stage parenColorWin = new Stage();
         parenColorWin.setTitle("Parentheses/Brackets Color");
-
-        Parent root = Main.getParentRoot();
 
         VBox parenColorRoot = new VBox();
         parenColorRoot.setAlignment(Pos.CENTER);
@@ -306,13 +260,8 @@ public class PreferencesMenuController {
             	rect.setFill(newColor);
             	message.setFill(newColor);
             	
-            	//remove previous styling
-            	root.getStylesheets().removeAll(parenthesisColorCSSNames.values());
-            	
-            	//add new styling for non-default colors
-            	if (!selectedColor.equals("Teal")){
-            		root.getStylesheets().add(parenthesisColorCSSNames.get(selectedColor));
-                }
+            	//write new style into CSS file storing preferences
+            	updateParenthesisPreference(selectedColor);
             }
         });
 
@@ -321,7 +270,30 @@ public class PreferencesMenuController {
         parenColorWin.setScene(keywordColorScene);
         parenColorWin.show();
     }
-
+    
+    /**
+     * Helper method: Updates the parenthesis class's preference CSS to the given color
+     * @param color new parenthesis/bracket/brace color
+     */
+    private void updateParenthesisPreference(String color)
+    {
+    	//build string for new style
+    	String cssColor = color.toLowerCase();
+    	String newCSS = "\n\n.paren {" +
+						"\n\t-fx-fill: " + cssColor + ";" +
+						"\n\t-fx-font-weight: bold;" +
+						"\n}" +
+						"\n\n.bracket {" +
+						"\n\t-fx-fill: " + cssColor + ";" +
+						"\n\t-fx-font-weight: bold;" +
+						"\n}" +
+						"\n\n.brace {" +
+						"\n\t-fx-fill: " + cssColor + ";" +
+						"\n\t-fx-font-weight: bold;" +
+						"\n}";
+    	//update CSS file
+    	this.updatePreferenceCSS(newCSS);
+    }
 
     /**
      * Handles String Color menu item action.
@@ -330,20 +302,18 @@ public class PreferencesMenuController {
         Stage strColorWin = new Stage();
         strColorWin.setTitle("String Color");
 
-        Parent root = Main.getParentRoot();
-
         VBox strColorRoot = new VBox();
         strColorRoot.setAlignment(Pos.CENTER);
         strColorRoot.setSpacing(10);
 
-        final Rectangle rect = new Rectangle(75,75, Color.BLUE);
+        final Rectangle rect = new Rectangle(75,75, Color.ROYALBLUE);
 
         ChoiceBox<String> strColorCB = new ChoiceBox<String>(this.strColorChoices);
-        strColorCB.setValue("Blue");
+        strColorCB.setValue("RoyalBlue");
 
         Text message = new Text("String Color");
         message.setFont(Font.font("Arial", FontWeight.BOLD, 14));
-        message.setFill(Color.BLUE);
+        message.setFill(Color.ROYALBLUE);
 
         strColorCB.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<String>() {
             @Override
@@ -355,13 +325,7 @@ public class PreferencesMenuController {
             	rect.setFill(newColor);
             	message.setFill(newColor);
             	
-            	//remove previous styling
-            	root.getStylesheets().removeAll(strColorCSSNames.values());
-            	
-            	//add new styling for non-default colors
-            	if (!selectedColor.equals("Blue")){
-            		root.getStylesheets().add(strColorCSSNames.get(selectedColor));
-                }
+            	updateStringPreference(selectedColor);
             }
         });
 
@@ -370,7 +334,21 @@ public class PreferencesMenuController {
         strColorWin.setScene(keywordColorScene);
         strColorWin.show();
     }
-
+    
+    /**
+     * Helper method: Updates the string class's preference CSS to the given color
+     * @param color new string color
+     */
+    private void updateStringPreference(String color)
+    {
+    	//build string for new style
+    	String cssColor = color.toLowerCase();
+    	String newCSS = "\n\n.string {" +
+						"\n\t-fx-fill: " + cssColor + ";" +
+						"\n}";
+    	//update CSS file
+    	this.updatePreferenceCSS(newCSS);
+    }
 
     /**
      * Handles int Color menu item action.
@@ -379,8 +357,6 @@ public class PreferencesMenuController {
         Stage intColorWin = new Stage();
         intColorWin.setTitle("int Color");
 
-        Parent root = Main.getParentRoot();
-
         VBox intColorRoot = new VBox();
         intColorRoot.setAlignment(Pos.CENTER);
         intColorRoot.setSpacing(10);
@@ -388,7 +364,7 @@ public class PreferencesMenuController {
         final Rectangle rect = new Rectangle(75,75, Color.FIREBRICK);
 
         ChoiceBox<String> intColorCB = new ChoiceBox<String>(this.intColorChoices);
-        intColorCB.setValue("Red");
+        intColorCB.setValue("Firebrick");
 
         Text message = new Text("Integer(int) Color");
         message.setFont(Font.font("Arial", FontWeight.BOLD, 14));
@@ -404,13 +380,7 @@ public class PreferencesMenuController {
             	rect.setFill(newColor);
             	message.setFill(newColor);
             	
-            	//remove previous styling
-            	root.getStylesheets().removeAll(intColorCSSNames.values());
-            	
-            	//add new styling for non-default colors
-            	if (!selectedColor.equals("Red")){
-            		root.getStylesheets().add(intColorCSSNames.get(selectedColor));
-                }
+            	updateIntPreference(selectedColor);
             }
         });
 
@@ -418,5 +388,70 @@ public class PreferencesMenuController {
         Scene keywordColorScene = new Scene(intColorRoot, 230,200);
         intColorWin.setScene(keywordColorScene);
         intColorWin.show();
+    }
+    
+    /**
+     * Helper method: Updates the string class's preference CSS to the given color
+     * @param color new string color
+     */
+    private void updateIntPreference(String color)
+    {
+    	//build string for new style
+    	String cssColor = color.toLowerCase();
+    	String newCSS = "\n\n.integer {" +
+						"\n\t-fx-fill: " + cssColor + ";" +
+						"\n}";
+    	//update CSS file
+    	this.updatePreferenceCSS(newCSS);
+    }
+    
+    /**
+     * Helper method: writes the given new CSS style into the preferences CSS file
+     * and reloads the application stylesheets
+     * Does not check for valid CSS
+     * @param newStyle new CSS style as a String
+     */
+    private void updatePreferenceCSS(String newStyle)
+    {
+    	Parent root = Main.getParentRoot();
+        
+        //write new style into CSS file
+    	try
+    	{
+    		//update src copy
+    		BufferedWriter writer = new BufferedWriter( new FileWriter( "src/" + preferenceWritingPath, true ) );
+        	writer.write(newStyle);
+        	writer.close();
+        	
+        	//update bin copy
+        	writer = new BufferedWriter( new FileWriter( "bin/" + preferenceWritingPath, true ) );
+        	writer.write(newStyle);
+        	writer.close();
+    	}
+    	catch (IOException e)
+    	{
+    		createErrorDialog("Updating Preferences", "Preference file could not be accessed");
+    		return;
+    	}
+    	
+    	//reload styling
+    	root.getStylesheets().remove(preferenceURLString);
+    	preferenceURLString = getClass().getResource(preferenceFilePath).toExternalForm();
+    	root.getStylesheets().add(preferenceURLString);
+    }
+
+    /**
+     * Creates a error dialog displaying message of any error encountered.
+     *
+     * @param errorTitle  String of the error title
+     * @param errorString String of error message
+     */
+    public void createErrorDialog(String errorTitle, String errorString)
+    {
+        Alert alert = new Alert(Alert.AlertType.WARNING);
+        alert.setTitle(errorTitle + " Error");
+        alert.setHeaderText("Error for " + errorTitle);
+        alert.setContentText(errorString);
+        alert.showAndWait();
     }
 }

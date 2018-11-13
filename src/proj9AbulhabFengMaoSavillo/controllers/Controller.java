@@ -8,6 +8,7 @@
 
 package proj9AbulhabFengMaoSavillo.controllers;
 
+import proj9AbulhabFengMaoSavillo.JavaTabPane;
 import javafx.beans.property.ReadOnlyBooleanProperty;
 import javafx.event.ActionEvent;
 import javafx.event.Event;
@@ -78,7 +79,7 @@ public class Controller
      * TabPane defined in Main.fxml
      */
     @FXML
-    private TabPane tabPane;
+    private JavaTabPane javaTabPane;
     /**
      * the console pane defined in Main.fxml
      */
@@ -196,7 +197,7 @@ public class Controller
 
         // Detects presses to tab (overriding the system default that deletes the selection) and calls tabOrUntab
         {
-            this.tabPane.addEventFilter(KeyEvent.KEY_PRESSED, event ->
+            this.javaTabPane.addEventFilter(KeyEvent.KEY_PRESSED, event ->
             {
                 // if tab or shift+tab pressed
                 if (event.getCode() == KeyCode.TAB)
@@ -226,7 +227,7 @@ public class Controller
             }));
 
             // Updates the file structure view whenever a key is typed
-            this.tabPane.addEventFilter(KeyEvent.KEY_RELEASED, event ->
+            this.javaTabPane.addEventFilter(KeyEvent.KEY_RELEASED, event ->
             {
                 this.updateStructureView();
 
@@ -234,7 +235,7 @@ public class Controller
 
             // Updates the file structure view whenever the tab selection changes
             // e.g., open tab, remove tab, select another tab
-            this.tabPane.getSelectionModel().selectedItemProperty().addListener((observable, oldTab, newTab) ->
+            this.javaTabPane.getSelectionModel().selectedItemProperty().addListener((observable, oldTab, newTab) ->
                                                                                 {
                                                                                     this.updateStructureView();
                                                                                 });
@@ -248,7 +249,7 @@ public class Controller
      */
     private void tabOrUntab(KeyEvent event)
     {
-        JavaCodeArea currentCodeArea = TabPaneContentGetters.getCurrentCodeArea(this.tabPane);
+        JavaCodeArea currentCodeArea = TabPaneContentGetters.getCurrentCodeArea(this.javaTabPane);
         if (currentCodeArea != null)
         {
             if (event.isShiftDown())
@@ -267,8 +268,8 @@ public class Controller
      */
     private void updateStructureView()
     {
-        JavaCodeArea currentCodeArea = TabPaneContentGetters.getCurrentCodeArea(this.tabPane);
-        File currentFile = TabPaneContentGetters.getCurrentFile(this.tabPane, this.tabFileMap);
+        JavaCodeArea currentCodeArea = TabPaneContentGetters.getCurrentCodeArea(this.javaTabPane);
+        File currentFile = TabPaneContentGetters.getCurrentFile(this.javaTabPane, this.tabFileMap);
 
         // if the code area is open
         if (currentCodeArea != null)
@@ -333,7 +334,7 @@ public class Controller
     private void setupFileMenuController()
     {
         this.fileMenuController.setTabFileMap(this.tabFileMap);
-        this.fileMenuController.setTabPane(this.tabPane);
+        this.fileMenuController.setTabPane(this.javaTabPane);
         this.fileMenuController.setCheckBox(this.checkBox);
         this.fileMenuController.setDirectoryViewController(this.directoryViewController);
         this.fileMenuController.setEditMenu(this.editMenu);
@@ -344,7 +345,7 @@ public class Controller
      */
     private void setupEditMenuController()
     {
-        this.editMenuController.setTabPane(this.tabPane);
+        this.editMenuController.setTabPane(this.javaTabPane);
     }
 
     /**
@@ -372,7 +373,7 @@ public class Controller
     private void setupDirectoryController()
     {
         this.directoryViewController.setFileMenuController(this.fileMenuController);
-        this.directoryViewController.setTabPane(this.tabPane);
+        this.directoryViewController.setTabPane(this.javaTabPane);
         this.directoryViewController.setTabFileMap(this.tabFileMap);
         this.directoryViewController.setTreeView(this.directoryTreeView);
     }
@@ -386,7 +387,7 @@ public class Controller
     private void handleCompileButtonAction(Event event)
     {
         this.toolbarController.handleCompileButtonAction(event,
-                                                         TabPaneContentGetters.getCurrentFile(this.tabPane,
+                                                         TabPaneContentGetters.getCurrentFile(this.javaTabPane,
                                                                                               this.tabFileMap));
     }
 
@@ -399,7 +400,7 @@ public class Controller
     private void handleCompileRunButtonAction(Event event)
     {
         this.toolbarController.handleCompileRunButtonAction(event,
-                                                            TabPaneContentGetters.getCurrentFile(this.tabPane,
+                                                            TabPaneContentGetters.getCurrentFile(this.javaTabPane,
                                                                                                  this.tabFileMap));
     }
 
@@ -534,7 +535,7 @@ public class Controller
     @FXML
     private void handleTreeItemClicked()
     {
-        this.structureViewController.handleTreeItemClicked(this.tabPane);
+        this.structureViewController.handleTreeItemClicked(this.javaTabPane);
     }
 
     /**
