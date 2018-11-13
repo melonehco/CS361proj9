@@ -16,7 +16,6 @@ import javafx.scene.control.*;
 import org.fxmisc.richtext.CodeArea;
 import org.fxmisc.richtext.Selection;
 import proj9AbulhabFengMaoSavillo.JavaTabPane;
-import proj9AbulhabFengMaoSavillo.TabPaneContentGetters;
 
 
 /**
@@ -68,7 +67,7 @@ public class EditMenuController {
     public void handleEditMenuAction(ActionEvent event)
     {
         // get the code area embedded in the selected tab window
-        CodeArea activeCodeArea = TabPaneContentGetters.getCurrentCodeArea(this.javaTabPane);
+        CodeArea activeCodeArea = this.javaTabPane.getCurrentCodeArea();
         if (activeCodeArea == null) // edit menu will be disabled anyway
             return;
 
@@ -113,7 +112,7 @@ public class EditMenuController {
      */
     public void handleFindReplace()
     {
-        if (TabPaneContentGetters.getCurrentCodeArea(this.javaTabPane) != null)
+        if (this.javaTabPane.getCurrentCodeArea() != null)
         {
             findReplaceController.setTabPane(javaTabPane);
             findReplaceController.createFindReplaceDialog();

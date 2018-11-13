@@ -19,7 +19,7 @@ import javafx.stage.FileChooser;
 import javafx.stage.Window;
 import org.fxmisc.flowless.VirtualizedScrollPane;
 import proj9AbulhabFengMaoSavillo.JavaCodeArea;
-import proj9AbulhabFengMaoSavillo.TabPaneContentGetters;
+import proj9AbulhabFengMaoSavillo.JavaTabPane;
 
 import java.io.File;
 import java.io.FileWriter;
@@ -48,7 +48,7 @@ public class FileMenuController
     /**
      * TabPane defined in Main.fxml
      */
-    private TabPane javaTabPane;
+    private JavaTabPane javaTabPane;
     /**
      * Controller for the directory
      */
@@ -101,7 +101,7 @@ public class FileMenuController
      *
      * @param tabPane TabPane
      */
-    public void setTabPane(TabPane tabPane)
+    public void setTabPane(JavaTabPane tabPane)
     {
         this.javaTabPane = tabPane;
     }
@@ -235,7 +235,7 @@ public class FileMenuController
     {
 
         // if the file has not been saved or has been changed
-        if (this.tabNeedsSaving(TabPaneContentGetters.getCurrentTab(this.javaTabPane), true))
+        if (this.tabNeedsSaving(this.javaTabPane.getCurrentTab(), true))
         {
             int buttonClicked = createConfirmationDialog("Save Changes?",
                                                          "Do you want to save the changes before compiling?",
@@ -306,72 +306,72 @@ public class FileMenuController
      */
     public void handleNewAction()
     {
-        this.createTab("", "untitled", null);
+        this.javaTabPane.createTab("", "untitled", null);
     }
 
-    /**
-     * Helper method to create a new tab.
-     *
-     * @param contentString the contentString being added into the styled code area; empty string if
-     *                      creating an empty window
-     * @param filename      the name of the file opened; "untitled" if creating an empty window
-     * @param file          File opened; null if creating an empty window
-     */
-    private void createTab(String contentString, String filename, File file)
-    {
-        //this.javaTabPane.handleNewTab();
-        JavaCodeArea newJavaCodeArea = new JavaCodeArea();
-        newJavaCodeArea.appendText(contentString); //set to given contents
-
-        // Generate the context menu on right-clicking the code area
-        ContextMenu contextMenu = new ContextMenu();
-        contextMenu.getItems().addAll(duplicateMenuItems(this.editMenu.getItems()));
-        newJavaCodeArea.setOnMousePressed(event ->
-                                          {
-                                              if (event.isSecondaryButtonDown())
-                                              {
-                                                  contextMenu.show(newJavaCodeArea,
-                                                                   event.getScreenX(),
-                                                                   event.getScreenY());
-                                              }
-                                              else if (event.isPrimaryButtonDown() && contextMenu.isShowing())
-                                              {
-                                                  contextMenu.hide();
-                                              }
-                                          });
-
-        Tab newTab = new Tab();
-        newTab.setText(filename);
-        newTab.setContent(new VirtualizedScrollPane<>(newJavaCodeArea));
-        newTab.setOnCloseRequest(this::handleCloseAction); //clicking the 'x'
-
-        //order is important
-        this.tabFileMap.put(newTab, file);
-        this.javaTabPane.getTabs().add(newTab);
-        this.javaTabPane.getSelectionModel().select(newTab);
-    }
-
-    /**
-     * Static helper method to duplicate the contents of a menu
-     *
-     * @param menuItems List of Menu items to be duplicated
-     * @return a clone of menu.getItems()
-     */
-    private static ObservableList<MenuItem> duplicateMenuItems(ObservableList<MenuItem> menuItems)
-    {
-        ArrayList<MenuItem> clone = new ArrayList<>();
-
-        menuItems.forEach(menuItem ->
-                          {
-                              MenuItem newItem = new MenuItem();
-                              newItem.setText(menuItem.getText());
-                              newItem.setOnAction(menuItem.getOnAction());
-                              newItem.setId(menuItem.getId());
-                              clone.add(newItem);
-                          });
-
-        return FXCollections.observableList(clone);
-    }
+//    /**
+//     * Helper method to create a new tab.
+//     *
+//     * @param contentString the contentString being added into the styled code area; empty string if
+//     *                      creating an empty window
+//     * @param filename      the name of the file opened; "untitled" if creating an empty window
+//     * @param file          File opened; null if creating an empty window
+//     */
+//    private void createTab(String contentString, String filename, File file)
+//    {
+//        //this.javaTabPane.handleNewTab();
+//        JavaCodeArea newJavaCodeArea = new JavaCodeArea();
+//        newJavaCodeArea.appendText(contentString); //set to given contents
+//
+//        // Generate the context menu on right-clicking the code area
+//        ContextMenu contextMenu = new ContextMenu();
+//        contextMenu.getItems().addAll(duplicateMenuItems(this.editMenu.getItems()));
+//        newJavaCodeArea.setOnMousePressed(event ->
+//                                          {
+//                                              if (event.isSecondaryButtonDown())
+//                                              {
+//                                                  contextMenu.show(newJavaCodeArea,
+//                                                                   event.getScreenX(),
+//                                                                   event.getScreenY());
+//                                              }
+//                                              else if (event.isPrimaryButtonDown() && contextMenu.isShowing())
+//                                              {
+//                                                  contextMenu.hide();
+//                                              }
+//                                          });
+//
+//        Tab newTab = new Tab();
+//        newTab.setText(filename);
+//        newTab.setContent(new VirtualizedScrollPane<>(newJavaCodeArea));
+//        newTab.setOnCloseRequest(this::handleCloseAction); //clicking the 'x'
+//
+//        //order is important
+//        this.tabFileMap.put(newTab, file);
+//        this.javaTabPane.getTabs().add(newTab);
+//        this.javaTabPane.getSelectionModel().select(newTab);
+//    }
+//
+//    /**
+//     * Static helper method to duplicate the contents of a menu
+//     *
+//     * @param menuItems List of Menu items to be duplicated
+//     * @return a clone of menu.getItems()
+//     */
+//    private static ObservableList<MenuItem> duplicateMenuItems(ObservableList<MenuItem> menuItems)
+//    {
+//        ArrayList<MenuItem> clone = new ArrayList<>();
+//
+//        menuItems.forEach(menuItem ->
+//                          {
+//                              MenuItem newItem = new MenuItem();
+//                              newItem.setText(menuItem.getText());
+//                              newItem.setOnAction(menuItem.getOnAction());
+//                              newItem.setId(menuItem.getId());
+//                              clone.add(newItem);
+//                          });
+//
+//        return FXCollections.observableList(clone);
+//    }
 
     /**
      * Handles the open button action.
@@ -419,7 +419,7 @@ public class FileMenuController
         if (contentString == null)
             return;
 
-        this.createTab(contentString, file.getName(), file);
+        this.javaTabPane.createTab(contentString, file.getName(), file);
     }
 
     /**
@@ -471,7 +471,7 @@ public class FileMenuController
         // if the tab content was not loaded from a file nor ever saved to a file
         // save the content of the active styled code area to the selected file path
 
-        if (TabPaneContentGetters.getCurrentFile(this.javaTabPane, this.tabFileMap) == null)
+        if (this.javaTabPane.getCurrentFile() == null)
         {
             return this.handleSaveAsAction();
         }
@@ -479,12 +479,12 @@ public class FileMenuController
         // then the styled code area is saved to that file
         else
         {
-            if (!this.setFileContent(TabPaneContentGetters.getCurrentCodeArea(this.javaTabPane).getText(),
-                                     TabPaneContentGetters.getCurrentFile(this.javaTabPane, this.tabFileMap)))
+            if (!this.setFileContent(this.javaTabPane.getCurrentCodeArea().getText(),
+                    this.javaTabPane.getCurrentFile()))
             {
                 return false;
             }
-            TabPaneContentGetters.getCurrentTab(this.javaTabPane).setStyle("-fx-text-base-color: black");
+            this.javaTabPane.getCurrentTab().setStyle("-fx-text-base-color: black");
             return true;
         }
     }
@@ -510,8 +510,8 @@ public class FileMenuController
         {
             // get the selected tab from the tab pane
 
-            Tab selectedTab = TabPaneContentGetters.getCurrentTab(this.javaTabPane);
-            JavaCodeArea activeJavaCodeArea = TabPaneContentGetters.getCurrentCodeArea(this.javaTabPane);
+            Tab selectedTab = this.javaTabPane.getCurrentTab();
+            JavaCodeArea activeJavaCodeArea = this.javaTabPane.getCurrentCodeArea();
 
             if (!this.setFileContent(activeJavaCodeArea.getText(), saveFile))
             {
@@ -543,7 +543,7 @@ public class FileMenuController
      */
     public void handleCloseAction(Event event)
     {
-        Tab selectedTab = TabPaneContentGetters.getCurrentTab(this.javaTabPane);
+        Tab selectedTab = this.javaTabPane.getCurrentTab();
 
         // selectedTab is null if this method is evoked by closing a tab
         // in this case the selectedTab tab should be the tab that evokes this method

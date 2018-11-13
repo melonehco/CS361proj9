@@ -14,7 +14,7 @@ import javafx.scene.control.TabPane;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
 import javafx.scene.input.MouseEvent;
-import proj9AbulhabFengMaoSavillo.TabPaneContentGetters;
+import proj9AbulhabFengMaoSavillo.JavaTabPane;
 
 import java.io.File;
 import java.util.HashMap;
@@ -47,7 +47,7 @@ public class DirectoryViewController
     /**
      * TabPane defined in Main.fxml
      */
-    private TabPane tabPane;
+    private JavaTabPane javaTabPane;
     /**
      * FileMenuController defined in main controller
      */
@@ -101,12 +101,12 @@ public class DirectoryViewController
      *
      * @param tabPane TabPane
      */
-    public void setTabPane(TabPane tabPane)
+    public void setTabPane(JavaTabPane tabPane)
     {
-        this.tabPane = tabPane;
+        this.javaTabPane = tabPane;
 
         // add listener to tab selection to switch directories based on open file
-        this.tabPane.getSelectionModel().selectedItemProperty().addListener(
+        this.javaTabPane.getSelectionModel().selectedItemProperty().addListener(
                 (observable, oldTab, newTab) -> this.createDirectoryTree());
     }
 
@@ -155,7 +155,7 @@ public class DirectoryViewController
     public void createDirectoryTree()
     {
         // capture current file
-        File file = TabPaneContentGetters.getCurrentFile(this.tabPane, this.tabFileMap);
+        File file = this.javaTabPane.getCurrentFile();
         // create the directory tree
         if (file != null)
         {
