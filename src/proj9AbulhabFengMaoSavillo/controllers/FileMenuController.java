@@ -518,7 +518,7 @@ public class FileMenuController
                 return false;
             }
             // set the title of the tab to the name of the saved file
-            selectedTab.setText(saveFile.getName());
+//            selectedTab.setText(saveFile.getName());
             selectedTab.setStyle("-fx-text-base-color: black");
 
             // map the tab and the associated file
