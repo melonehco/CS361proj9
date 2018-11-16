@@ -9,6 +9,10 @@
 
 package proj9AbulhabFengMaoSavillo;
 
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
+import javafx.scene.control.ContextMenu;
+import javafx.scene.control.MenuItem;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import org.fxmisc.richtext.CodeArea;
@@ -19,6 +23,7 @@ import org.reactfx.Subscription;
 import org.reactfx.util.FxTimer;
 
 import java.time.Duration;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.regex.Matcher;
@@ -91,6 +96,9 @@ public class JavaCodeArea extends CodeArea
         this.highlightText();
         //Enables line numbering
         this.setParagraphGraphicFactory(LineNumberFactory.get(this));
+
+        //add right click menu
+        this.addRightClickMenu();
 
         //enables auto-closing parentheses, brackets, and curly braces
         this.addEventHandler(KeyEvent.KEY_PRESSED,
@@ -197,5 +205,46 @@ public class JavaCodeArea extends CodeArea
 
                 // run the following code block when previous stream emits an event
                 .subscribe(ignore -> this.highlightText());
+    }
+
+    private void addRightClickMenu(){
+//        ContextMenu contextMenu = new ContextMenu();
+//        contextMenu.getItems().addAll(duplicateMenuItems(this.editMenu.getItems()));
+//        this.setOnMousePressed(event ->
+//        {
+//            if (event.isSecondaryButtonDown())
+//            {
+//                contextMenu.show(this,
+//                        event.getScreenX(),
+//                        event.getScreenY());
+//            }
+//            else if (event.isPrimaryButtonDown() && contextMenu.isShowing())
+//            {
+//                contextMenu.hide();
+//            }
+//        });
+    }
+
+
+    /**
+     * Static helper method to duplicate the contents of a menu
+     *
+     * @param menuItems List of Menu items to be duplicated
+     * @return a clone of menu.getItems()
+     */
+    private static ObservableList<MenuItem> duplicateMenuItems(ObservableList<MenuItem> menuItems)
+    {
+        ArrayList<MenuItem> clone = new ArrayList<>();
+
+        menuItems.forEach(menuItem ->
+        {
+            MenuItem newItem = new MenuItem();
+            newItem.setText(menuItem.getText());
+            newItem.setOnAction(menuItem.getOnAction());
+            newItem.setId(menuItem.getId());
+            clone.add(newItem);
+        });
+
+        return FXCollections.observableList(clone);
     }
 }

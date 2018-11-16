@@ -20,7 +20,6 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.VBox;
 import org.fxmisc.richtext.StyleClassedTextArea;
 import proj9AbulhabFengMaoSavillo.JavaCodeArea;
-import proj9AbulhabFengMaoSavillo.TabPaneContentGetters;
 
 import java.io.File;
 import java.util.HashMap;
@@ -140,10 +139,7 @@ public class Controller
      */
     @FXML
     private SplitPane horizontalSplitPane;
-    /**
-     * a HashMap mapping the tabs and the associated files
-     */
-    private Map<Tab, File> tabFileMap = new HashMap<>();
+
 
 
     private ToolBarController.CompileWorker compileWorker;
@@ -250,7 +246,7 @@ public class Controller
      */
     private void tabOrUntab(KeyEvent event)
     {
-        JavaCodeArea currentCodeArea = TabPaneContentGetters.getCurrentCodeArea(this.javaTabPane);
+        JavaCodeArea currentCodeArea = this.javaTabPane.getCurrentCodeArea();
         if (currentCodeArea != null)
         {
             if (event.isShiftDown())
@@ -269,8 +265,8 @@ public class Controller
      */
     private void updateStructureView()
     {
-        JavaCodeArea currentCodeArea = TabPaneContentGetters.getCurrentCodeArea(this.javaTabPane);
-        File currentFile = TabPaneContentGetters.getCurrentFile(this.javaTabPane, this.tabFileMap);
+        JavaCodeArea currentCodeArea = this.javaTabPane.getCurrentCodeArea();
+        File currentFile = this.javaTabPane.getCurrentFile();
 
         // if the code area is open
         if (currentCodeArea != null)
@@ -334,7 +330,6 @@ public class Controller
      */
     private void setupFileMenuController()
     {
-        this.fileMenuController.setTabFileMap(this.tabFileMap);
         this.fileMenuController.setTabPane(this.javaTabPane);
         this.fileMenuController.setCheckBox(this.checkBox);
         this.fileMenuController.setDirectoryViewController(this.directoryViewController);
@@ -375,7 +370,6 @@ public class Controller
     {
         this.directoryViewController.setFileMenuController(this.fileMenuController);
         this.directoryViewController.setTabPane(this.javaTabPane);
-        this.directoryViewController.setTabFileMap(this.tabFileMap);
         this.directoryViewController.setTreeView(this.directoryTreeView);
     }
 
@@ -388,8 +382,7 @@ public class Controller
     private void handleCompileButtonAction(Event event)
     {
         this.toolbarController.handleCompileButtonAction(event,
-                                                         TabPaneContentGetters.getCurrentFile(this.javaTabPane,
-                                                                                              this.tabFileMap));
+                this.javaTabPane.getCurrentFile());
     }
 
     /**
@@ -401,8 +394,7 @@ public class Controller
     private void handleCompileRunButtonAction(Event event)
     {
         this.toolbarController.handleCompileRunButtonAction(event,
-                                                            TabPaneContentGetters.getCurrentFile(this.javaTabPane,
-                                                                                                 this.tabFileMap));
+                this.javaTabPane.getCurrentFile());
     }
 
     /**
@@ -547,4 +539,5 @@ public class Controller
     {
         this.editMenuController.handleFindReplace();
     }
+
 }
