@@ -208,21 +208,21 @@ public class JavaCodeArea extends CodeArea
     }
 
     private void addRightClickMenu(){
-        ContextMenu contextMenu = new ContextMenu();
-        contextMenu.getItems().addAll(duplicateMenuItems(this.editMenu.getItems()));
-        this.setOnMousePressed(event ->
-        {
-            if (event.isSecondaryButtonDown())
-            {
-                contextMenu.show(this,
-                        event.getScreenX(),
-                        event.getScreenY());
-            }
-            else if (event.isPrimaryButtonDown() && contextMenu.isShowing())
-            {
-                contextMenu.hide();
-            }
-        });
+//        ContextMenu contextMenu = new ContextMenu();
+//        contextMenu.getItems().addAll(duplicateMenuItems(this.editMenu.getItems()));
+//        this.setOnMousePressed(event ->
+//        {
+//            if (event.isSecondaryButtonDown())
+//            {
+//                contextMenu.show(this,
+//                        event.getScreenX(),
+//                        event.getScreenY());
+//            }
+//            else if (event.isPrimaryButtonDown() && contextMenu.isShowing())
+//            {
+//                contextMenu.hide();
+//            }
+//        });
     }
 
 

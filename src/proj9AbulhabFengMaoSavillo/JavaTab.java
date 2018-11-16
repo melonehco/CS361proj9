@@ -3,6 +3,7 @@ package proj9AbulhabFengMaoSavillo;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Tab;
 import org.fxmisc.flowless.VirtualizedScrollPane;
+import proj9AbulhabFengMaoSavillo.controllers.FileMenuController;
 
 import java.io.File;
 import java.nio.file.Files;
@@ -15,19 +16,36 @@ public class JavaTab extends Tab{
 
     private JavaCodeArea javaCodeArea;
     private File file;
+    private FileMenuController fileMenuController;
 
 
-    public JavaTab(){
-        this.javaCodeArea = new JavaCodeArea();
+    public JavaTab(JavaCodeArea codeArea, File file){
+        this.javaCodeArea = codeArea;
         this.setContent(new VirtualizedScrollPane<>(this.javaCodeArea));
+        this.fileMenuController = new FileMenuController();
+        this.setOnCloseRequest(fileMenuController::handleCloseAction);
+        this.file = file;
         this.setTabName();
     }
 
     /**
-     * Handles closing this tab through the [x] button
+     *
+     * @return file
      */
-    public void handleClose(){
+    public File getFile() {
+        return file;
+    }
 
+    /**
+     *
+     * @return javaCodeArea
+     */
+    public JavaCodeArea getJavaCodeArea() {
+        return javaCodeArea;
+    }
+
+    public void setFile(File file){
+        this.file = file;
     }
 
     /**
@@ -112,7 +130,7 @@ public class JavaTab extends Tab{
      */
     private void setTabName()
     {
-        if (file.getName() == null)
+        if (file == null)
         {
             this.setText("Untitled");
         }

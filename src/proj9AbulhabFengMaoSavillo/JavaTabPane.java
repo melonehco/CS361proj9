@@ -15,18 +15,7 @@ import java.util.Map;
 public class JavaTabPane extends TabPane {
 
 
-    /**
-     * a HashMap mapping the tabs and the associated files
-     */
-    private Map<Tab, File> tabFileMap;
 
-
-    /**
-     * get the tabFileMap
-     */
-    public Map<Tab, File> getTabFileMap() {
-        return tabFileMap;
-    }
 
     /**
      * Helper method to create a new tab.
@@ -43,13 +32,9 @@ public class JavaTabPane extends TabPane {
         newJavaCodeArea.appendText(contentString); //set to given contents
 
 
-        Tab newTab = new Tab();
-        newTab.setText(filename);
-        newTab.setContent(new VirtualizedScrollPane<>(newJavaCodeArea));
-        newTab.setOnCloseRequest(this::handleCloseAction); //clicking the 'x'
+        Tab newTab = new JavaTab(newJavaCodeArea,file);
 
         //order is important
-        this.tabFileMap.put(newTab, file);
         this.getTabs().add(newTab);
         this.getSelectionModel().select(newTab);
     }
@@ -60,9 +45,9 @@ public class JavaTabPane extends TabPane {
      * Returns the current tab
      * @return the current tab if there is one, return null otherwise.
      */
-    public Tab getCurrentTab()
+    public JavaTab getCurrentTab()
     {
-        return this.getSelectionModel().getSelectedItem();
+        return (JavaTab)this.getSelectionModel().getSelectedItem();
 
     }
 
@@ -74,10 +59,10 @@ public class JavaTabPane extends TabPane {
      */
     public JavaCodeArea getCurrentCodeArea()
     {
-        Tab selectedTab = getCurrentTab();
+        JavaTab selectedTab = getCurrentTab();
         if (selectedTab != null)
         {
-            return (JavaCodeArea) ((VirtualizedScrollPane) selectedTab.getContent()).getContent();
+            return selectedTab.getJavaCodeArea();
         }
         else
             return null;
@@ -90,13 +75,14 @@ public class JavaTabPane extends TabPane {
      */
     public File getCurrentFile()
     {
-        Tab selectedTab = getCurrentTab(this);
+        JavaTab selectedTab = getCurrentTab();
         if (selectedTab != null)
         {
-            return this.tabFileMap.get(selectedTab);
+            return selectedTab.getFile();
         }
         else return null;
     }
+
 
 
 }

@@ -139,10 +139,7 @@ public class Controller
      */
     @FXML
     private SplitPane horizontalSplitPane;
-    /**
-     * a HashMap mapping the tabs and the associated files
-     */
-    private Map<Tab, File> tabFileMap = this.javaTabPane.getTabFileMap();
+
 
 
     private ToolBarController.CompileWorker compileWorker;
@@ -333,7 +330,6 @@ public class Controller
      */
     private void setupFileMenuController()
     {
-        this.fileMenuController.setTabFileMap(this.tabFileMap);
         this.fileMenuController.setTabPane(this.javaTabPane);
         this.fileMenuController.setCheckBox(this.checkBox);
         this.fileMenuController.setDirectoryViewController(this.directoryViewController);
@@ -374,7 +370,6 @@ public class Controller
     {
         this.directoryViewController.setFileMenuController(this.fileMenuController);
         this.directoryViewController.setTabPane(this.javaTabPane);
-        this.directoryViewController.setTabFileMap(this.tabFileMap);
         this.directoryViewController.setTreeView(this.directoryTreeView);
     }
 
@@ -544,4 +539,5 @@ public class Controller
     {
         this.editMenuController.handleFindReplace();
     }
+
 }

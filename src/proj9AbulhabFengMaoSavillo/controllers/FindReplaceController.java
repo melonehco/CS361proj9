@@ -15,7 +15,7 @@ import javafx.geometry.Insets;
 import javafx.scene.control.*;
 import javafx.scene.layout.GridPane;
 import org.fxmisc.richtext.CodeArea;
-import proj9AbulhabFengMaoSavillo.TabPaneContentGetters;
+import proj9AbulhabFengMaoSavillo.JavaTabPane;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -23,7 +23,7 @@ import java.util.List;
 
 public class FindReplaceController{
 
-    private TabPane tabPane;
+    private JavaTabPane tabPane;
     private List<Integer> occurrenceIndices;
     // The target string to be found in handleFind
     private String targetText;
@@ -42,7 +42,7 @@ public class FindReplaceController{
     }
 
 
-    public void setTabPane(TabPane tabPane){
+    public void setTabPane(JavaTabPane tabPane){
         this.tabPane = tabPane;
     }
 
@@ -114,7 +114,7 @@ public class FindReplaceController{
      */
     private void handleFind(String findText)
     {
-        CodeArea codeArea = TabPaneContentGetters.getCurrentCodeArea(this.tabPane);
+        CodeArea codeArea = this.tabPane.getCurrentCodeArea();
         String codeAreaText = codeArea.getText();
 
         //Check if this is the first time to find the given text
@@ -185,7 +185,7 @@ public class FindReplaceController{
         {
             return;
         }
-        CodeArea codeArea = TabPaneContentGetters.getCurrentCodeArea(this.tabPane);
+        CodeArea codeArea = this.tabPane.getCurrentCodeArea();
         String codeAreaText = codeArea.getText();
 
         String newContent;
@@ -255,7 +255,7 @@ public class FindReplaceController{
         {
             return;
         }
-        CodeArea codeArea = TabPaneContentGetters.getCurrentCodeArea(this.tabPane);
+        CodeArea codeArea = this.tabPane.getCurrentCodeArea();
         String codeAreaText = codeArea.getText();
 
         //Replace all the found text with new replace text
