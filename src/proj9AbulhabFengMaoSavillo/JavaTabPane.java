@@ -15,7 +15,7 @@ import java.util.Map;
 public class JavaTabPane extends TabPane {
 
 
-
+    private ArrayList<Tab> tabList = new ArrayList<>();
 
     /**
      * Helper method to create a new tab.
@@ -37,6 +37,8 @@ public class JavaTabPane extends TabPane {
         //order is important
         this.getTabs().add(newTab);
         this.getSelectionModel().select(newTab);
+
+        this.tabList.add(newTab);
     }
 
 
@@ -83,6 +85,7 @@ public class JavaTabPane extends TabPane {
         else return null;
     }
 
-
-
+    public ArrayList<Tab> getTabList() {
+        return tabList;
+    }
 }

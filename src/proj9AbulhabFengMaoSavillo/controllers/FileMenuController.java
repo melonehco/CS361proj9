@@ -11,6 +11,7 @@ package proj9AbulhabFengMaoSavillo.controllers;
 import javafx.application.Platform;
 import javafx.beans.property.ReadOnlyBooleanProperty;
 import javafx.beans.property.SimpleListProperty;
+import javafx.collections.ObservableList;
 import javafx.event.Event;
 import javafx.scene.control.*;
 import javafx.stage.FileChooser;
@@ -25,9 +26,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
 
 /**
@@ -140,6 +139,7 @@ public class FileMenuController
      */
     public boolean tabNeedsSaving(JavaTab tab, boolean ifSaveEmptyFile)
     {
+        System.out.println("entered tabNeedSaving");
         JavaCodeArea activeJavaCodeArea = tab.getJavaCodeArea();
         // check whether the embedded text has been saved or not
         if (tab.getFile() == null)
@@ -560,14 +560,16 @@ public class FileMenuController
      */
     public void handleExitAction(Event event)
     {
-        for (Tab currentTab : this.javaTabPane.getTabs())
-        {
-            this.javaTabPane.getSelectionModel().select(currentTab);
-            if (!this.closeTab((JavaTab) currentTab))
+        ArrayList<Tab> list = this.javaTabPane.getTabList();
+        Iterator<Tab> iter = list.iterator();
+        while(iter.hasNext()){
+            JavaTab tab = (JavaTab) iter.next();
+            if (!this.closeTab(tab))
             {
                 event.consume();
                 return;
             }
+
         }
         Platform.exit();
     }
