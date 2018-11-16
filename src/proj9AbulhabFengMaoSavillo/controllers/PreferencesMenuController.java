@@ -61,14 +61,6 @@ public class PreferencesMenuController {
      * Maps string names for colors to the Colors assigned to them in our CSS
      */
     private HashMap<String, Color> colorNamesToColors;
-
-    /**
-     * ObservableLists used to create the options in the color-chooser windows
-     */
-    private ObservableList<String> keywordColorChoices;
-    private ObservableList<String> parenthesisColorChoices;
-    private ObservableList<String> strColorChoices;
-    private ObservableList<String> intColorChoices;
     
     /**
      * Stores the path to the CSS file that is modified by preference selections
@@ -115,21 +107,6 @@ public class PreferencesMenuController {
     	this.colorNamesToColors.put("Firebrick", Color.FIREBRICK);
     	this.colorNamesToColors.put("Grey", Color.GREY);
     	this.colorNamesToColors.put("SkyBlue", Color.SKYBLUE);
-
-    	//set up colors that can be chosen for each preference style class
-
-    	this.keywordColorChoices = FXCollections.observableArrayList(
-    			"Purple", "Black","RoyalBlue","Teal","Orchid","Orange", "Firebrick");
-
-        this.parenthesisColorChoices = FXCollections.observableArrayList(
-                "Teal", "Black","RoyalBlue","Grey","Orchid","Orange", "Firebrick");
-
-        this.strColorChoices = FXCollections.observableArrayList(
-        		"RoyalBlue", "Black","Teal","SkyBlue","Orchid","Orange", "Firebrick");
-
-        this.intColorChoices = FXCollections.observableArrayList(
-                "Firebrick", "Black","RoyalBlue","SkyBlue","Orchid","Orange", "Teal");
-
     }
 
     /**
@@ -188,7 +165,8 @@ public class PreferencesMenuController {
 
         final Rectangle rect = new Rectangle(75,75, Color.PURPLE);
 
-        ChoiceBox<String> keywordColorCB = new ChoiceBox<String>(this.keywordColorChoices);
+        ChoiceBox<String> keywordColorCB = new ChoiceBox<String>(FXCollections.observableArrayList(
+    			"Purple", "Black","RoyalBlue","Teal","Orchid","Orange", "Firebrick"));
         keywordColorCB.setValue("Purple");
 
         Text message = new Text("Keyword Color");
@@ -243,7 +221,8 @@ public class PreferencesMenuController {
 
         final Rectangle rect = new Rectangle(75,75, Color.TEAL);
 
-        ChoiceBox<String> parenColorCB = new ChoiceBox<String>(this.parenthesisColorChoices);
+        ChoiceBox<String> parenColorCB = new ChoiceBox<String>(FXCollections.observableArrayList(
+                "Teal", "Black","RoyalBlue","Grey","Orchid","Orange", "Firebrick"));
         parenColorCB.setValue("Teal");
 
         Text message = new Text("Parentheses/Brackets Color");
@@ -308,7 +287,8 @@ public class PreferencesMenuController {
 
         final Rectangle rect = new Rectangle(75,75, Color.ROYALBLUE);
 
-        ChoiceBox<String> strColorCB = new ChoiceBox<String>(this.strColorChoices);
+        ChoiceBox<String> strColorCB = new ChoiceBox<String>(FXCollections.observableArrayList(
+        		"RoyalBlue", "Black","Teal","SkyBlue","Orchid","Orange", "Firebrick"));
         strColorCB.setValue("RoyalBlue");
 
         Text message = new Text("String Color");
@@ -363,7 +343,8 @@ public class PreferencesMenuController {
 
         final Rectangle rect = new Rectangle(75,75, Color.FIREBRICK);
 
-        ChoiceBox<String> intColorCB = new ChoiceBox<String>(this.intColorChoices);
+        ChoiceBox<String> intColorCB = new ChoiceBox<String>(FXCollections.observableArrayList(
+                "Firebrick", "Black","RoyalBlue","SkyBlue","Orchid","Orange", "Teal"));
         intColorCB.setValue("Firebrick");
 
         Text message = new Text("Integer(int) Color");
