@@ -70,126 +70,177 @@ public class Scanner
      */
     public Token scan()
     {
-        StringBuilder spelling = new StringBuilder();
+    	//initialize token kind
+    	Token.Kind kind = null;
+    	
+    	//eat whitespace**
+    	this.currentChar = this.sourceFile.getNextChar();
+    	
+        //check for single-char tokens that can be identified at once
+    	boolean isSingleCharIDToken = true;
+    	switch(this.currentChar)
+    	{
+	    	//punctuation
+    		case '.':
+    			kind = Token.Kind.DOT;
+	    		break;
+	    	case ':':
+    			kind = Token.Kind.COLON;
+	    		break;
+	    	case ';':
+    			kind = Token.Kind.SEMICOLON;
+	    		break;
+	    	case ',':
+    			kind = Token.Kind.COMMA;
+	    		break;
+	    	//brackets
+	    	case '(':
+    			kind = Token.Kind.LPAREN;
+	    		break;
+	    	case ')':
+    			kind = Token.Kind.RPAREN;
+	    		break;
+	    	case '[':
+    			kind = Token.Kind.LBRACKET;
+	    		break;
+	    	case ']':
+    			kind = Token.Kind.RBRACKET;
+	    		break;
+	    	case '{':
+    			kind = Token.Kind.LCURLY;
+	    		break;
+	    	case '}':
+    			kind = Token.Kind.RCURLY;
+	    		break;
+	    	//end of file
+	    	case SourceFile.eof:
+    			kind = Token.Kind.EOF;
+	    		break;
+	    	//multiply
+	    	case '*':
+	    		kind = Token.Kind.MULDIV;
+	    		break;
+    		//otherwise, is not single-char token that can be identified at once
+	    	default:
+    			isSingleCharIDToken = false;
+    	}
+    	
+    	if (isSingleCharIDToken)
+    	{
+    		//make new token before updating current char
+    		Token token = new Token(kind, Character.toString(this.currentChar), this.sourceFile.getCurrentLineNumber());
+    		
+    		//move currentChar forward to next char
+    		//to match behavior of other cases, where current token
+    		//can be ended by reading in first char of next token
+        	this.currentChar = this.sourceFile.getNextChar();
+        	
+    		return token;
+    	}
+    	
+    	//check for longer tokens that can be identified by first char
+    	switch(this.currentChar)
+    	{
+	    	case '&':
+	    		
+	    		break;
+	    	case '|':
+	    		
+	    		break;
+	    	case '\"':
+	    		
+	    		break;
+    	}
+    	
+    	//digit, /, <, >, =, letters
+    	// / -> line comment, multiline comment, or divide
+    	// < -> compare, but is either < or <=
+    	// > -> similar to prev
+    	// = -> = (assign) or == (compare)
+    	//digit -> int constant
+    	//letter -> identifier; token handles distinction between letter things
+    	
+    	/*
+         
+         questions
+         SHOULD FINDING END OF TOKEN AND DETERMINING KIND OF TOKEN BE SEPARATE?
+         can Bantam have arbitrary amounts of whitespace? yes
+         a bunch of tokens have ends that can be found by reading in first char of next token,
+         i.e. single-char token w/o spacing in between
+         so then should all tokens leave the current char on the next char? then don't call getNextChar first
+         only call if whitespace
+         should make use of code in token that handles keywords and booleans?
+         what are legal identifier starts? can we use isJavaIdentifierStart?
+         
+         //things identified by start
+          * (all single-char)
+          * str -> method that loops to end of str, 
+          * 	raises error if mult lines/too long,
+          * 	checks for invalid escape chars
+          * line comment -> loop to eol
+          * multiline comment -> loop to *\/
+          * int -> method that loops to whitespace/single-char
+          * binary logic -> same method as int
+          * 
+          * compare, assign, other operators -> same method as int
+          * otherwise booleans, identifiers, keywords -> same method as int
+         
+         //what tokens end on
+         *  no need to check next char
+         *EOF, 
+         *DOT, COLON, SEMICOLON, COMMA, 
+         *LPAREN, RPAREN, LBRACKET, RBRACKET, LCURLY, RCURLY,
+         *MULDIV, 
+         *BINARYLOGIC (&& and ||), <- could be badly formed though
+         *
+         * double quote
+         *STRCONST, 
+         *
+         * end line or closing *\/
+         *COMMENT, 
+         *
+         * whitespace, single-char token
+         *INTCONST, BOOLEAN, IDENTIFIER,
+         BREAK, CAST, CLASS, VAR, ELSE, EXTENDS, FOR, IF, INSTANCEOF, NEW,
+         RETURN, WHILE
+         *
+         * whitespace, identifier start, single-char token
+         *PLUSMINUS, UNARYINCR, UNARYDECR, UNARYNOT,
+         *
+         *
+         *
 
-        //complete the token
-        while (isCollectingChars()) //scan the characters
-        {
-            spelling.append(this.currentChar);
-        }
+         // operators...
+         COMPARE, ASSIGN,
 
-        //determine kind
-        t
+         // special tokens...
+         ERROR, 
+    	 */
+    	
+    	StringBuilder spelling = new StringBuilder();
 
         return new Token(kind, spelling.toString(), this.sourceFile.getCurrentLineNumber());
     }
-
-    private boolean isCollectingChars()
+    
+    private String completeStringToken()
     {
-        State stateSnapshot = this.state; // save state now to be given to previousState at the end
-
-        this.currentChar = this.sourceFile.getNextChar();
-        switch (this.state)
-        {
-            // Non-trivial Cases
-            case DEFAULT:
-                switch (this.currentChar)
-                {
-                    case '/':
-                        this.state = State.TENTATIVE_COMMENT_START;
-                        break;
-                    case '\'':
-                        this.state = State.SINGLE_QUOTE;
-                        break;
-                    case '\"':
-                        this.state = State.DOUBLE_QUOTE;
-                        break;
-                    default: // Meat of the Program
-                    {
-
-                    }
-                }
-                break;
-
-            // If a forward slash was encountered in the state DEFAULT,
-            // check to see if the next character is such that we have entered a comment
-            // (else we're back in a DEFAULT context)
-            case TENTATIVE_COMMENT_START:
-                switch (this.currentChar)
-                {
-                    case '/':
-                        this.state = State.LINE_COMMENT;
-                        break;
-                    case '*':
-                        this.state = State.MULTILINE_COMMENT;
-                        break;
-                    default:
-                        this.state = State.DEFAULT;
-                        break;
-                }
-                break;
-
-            case LINE_COMMENT:
-                // System-dependent line return signals the end of a line-comment
-                if (this.currentChar == System.lineSeparator().charAt(0))
-                    this.state = State.DEFAULT;
-                return false;
-
-            case MULTILINE_COMMENT:
-                switch (this.currentChar)
-                {
-                    case '*':
-                        this.state = State.TENTATIVE_MULTILINE_COMMENT_END;
-                        break;
-                }
-                break;
-
-            // If an asterisk was encountered in a multiline comment,
-            // check to see if the next character is such that the comment has ended,
-            // (else we're back in a multiline comment context)
-            case TENTATIVE_MULTILINE_COMMENT_END:
-                switch (this.currentChar)
-                {
-                    case '/':
-                        this.state = State.DEFAULT;
-                        return false;
-                    default:
-                        this.state = State.MULTILINE_COMMENT;
-                        break;
-                }
-                break;
-
-            case SINGLE_QUOTE:
-                switch (this.currentChar)
-                {
-                    case '\'':
-                        this.state = State.DEFAULT;
-                        return false;
-                    case '\\':
-                        this.state = State.IGNORE_NEXT;
-                        break;
-                }
-                break;
-
-            case DOUBLE_QUOTE:
-                switch (this.currentChar)
-                {
-                    case '\"':
-                        this.state = State.DEFAULT;
-                        return false;
-                    case '\\':
-                        this.state = State.IGNORE_NEXT;
-                        break;
-                }
-                break;
-
-            // If a backslash occurred last character, ignore this one and return to previous state
-            case IGNORE_NEXT:
-                this.state = this.previousState;
-                break;
-        }
-
-        this.previousState = stateSnapshot;
+    	StringBuilder spellingBuilder = new StringBuilder();
+    	
+    	//collect chars until closing double quote
+    	while (this.currentChar != '\"')
+    	{
+    		spellingBuilder.append(Character.toString(this.currentChar));
+        	this.currentChar = this.sourceFile.getNextChar();
+        	
+        	//check for newline
+        	//check for invalid escape chars
+        	//check if too long
+    	}
+    	
+    	//append closing quote
+    	spellingBuilder.append(Character.toString(this.currentChar));
+    	
+    	return spellingBuilder.toString();
     }
 
     public static void main(String[] args)
