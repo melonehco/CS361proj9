@@ -60,7 +60,9 @@ public class Scanner
             this.currentChar = this.buffer.poll();
         else
             do { this.currentChar = this.sourceFile.getNextChar(); }
-            while (this.currentChar != ' ' || this.currentChar != System.lineSeparator().charAt(0));
+            while (this.currentChar != ' ' ||
+                    this.currentChar != System.lineSeparator().charAt(0));
+        // || this.currentChar != '\t'
 
         //check for single-char tokens that can be identified at once
         boolean isSingleCharIDToken = true;
