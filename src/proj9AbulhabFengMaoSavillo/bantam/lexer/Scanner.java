@@ -157,23 +157,24 @@ public class Scanner
 
 
         //otherwise, handle other token types
-    	//integer constant
-    	if (Character.isDigit(this.currentChar))
-    	{
-    		kind = Token.Kind.INTCONST;
-    		//TODO: loop to either non-digit char (to handle badly formed
-    		//	tokens) or to whitespace/single-char token
-    	}
-    	//identifier/boolean/keyword
-    	else if (Character.isLetter(this.currentChar))
-    	{
-    		kind = Token.Kind.IDENTIFIER;
-    		//TODO: loop to whitespace/single-char token
-    	}
+        //integer constant
+        if (Character.isDigit(this.currentChar))
+        {
+            kind = Token.Kind.INTCONST;
+            String tokenString = this.completeIntconstToken();
+            spelling.append(tokenString);
+        }
+        //identifier/boolean/keyword
+        else if (Character.isLetter(this.currentChar))
+        {
+            kind = Token.Kind.IDENTIFIER;
+            String tokenString = this.completeIdentifierToken();
+            spelling.append(tokenString);
+        }
     	
     	//TODO: I don't actually know how to organize this part
     	//but I'll just write it
-    	StringBuilder spelling = new StringBuilder();
+        //TODO check StringBuilder spelling = new StringBuilder();
         switch(this.currentChar)
         {
             case '+': //token can be + or ++
