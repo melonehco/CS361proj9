@@ -9,17 +9,18 @@ import java.util.ArrayList;
 
 public class Scanner
 {
-    private SourceFile sourceFile;
+	private SourceFile sourceFile;
     private ErrorHandler errorHandler;
+
     private char currentChar;
     private ArrayDeque<Character> buffer; // for when another token is found too early.
 
+    //Code?
     public Scanner(ErrorHandler handler)
     {
         this.errorHandler = handler;
         this.currentChar = ' ';
         this.sourceFile = null;
-        this.buffer = new ArrayDeque<>();
     }
 
     public Scanner(String filename, ErrorHandler handler)
@@ -27,20 +28,14 @@ public class Scanner
         this.errorHandler = handler;
         this.currentChar = ' ';
         this.sourceFile = new SourceFile(filename);
-        this.buffer = new ArrayDeque<>();
     }
 
+    //Code?
     public Scanner(Reader reader, ErrorHandler handler)
     {
         this.errorHandler = handler;
         this.currentChar = ' ';
         this.sourceFile = new SourceFile(reader);
-        this.buffer = new ArrayDeque<>();
-    }
-
-    public static void main(String[] args)
-    {
-        ArrayList<Token> tokenStream = new ArrayList<>();
     }
 
     /**
@@ -188,66 +183,83 @@ public class Scanner
         switch (this.currentChar)
         {
             case '+': //token can be + or ++
-                spelling.append(this.currentChar);
                 this.currentChar = this.sourceFile.getNextChar();
                 if (this.currentChar == '+') //check whether has second +
                 {
                     spelling.append(this.currentChar);
-                    this.currentChar = this.sourceFile.getNextChar();
                     kind = Token.Kind.UNARYINCR;
                 }
                 else
+                {
                     kind = Token.Kind.PLUSMINUS;
+                    //has read in start of next token, so store in buffer
+                    this.buffer.add(this.currentChar);
+                }
                 break;
             case '-': //token can be - or --
-                spelling.append(this.currentChar);
                 this.currentChar = this.sourceFile.getNextChar();
                 if (this.currentChar == '-') //check whether has second -
                 {
                     spelling.append(this.currentChar);
-                    this.currentChar = this.sourceFile.getNextChar();
                     kind = Token.Kind.UNARYDECR;
                 }
                 else
+                {
                     kind = Token.Kind.PLUSMINUS;
+                    //has read in start of next token, so store in buffer
+                    this.buffer.add(this.currentChar);
+                }
                 break;
             case '<': //token can be < or <=
                 kind = Token.Kind.COMPARE;
-                spelling.append(this.currentChar);
+                
+                //check whether has =
                 this.currentChar = this.sourceFile.getNextChar();
-                if (this.currentChar == '=') //check whether has =
+                if (this.currentChar == '=')
                 {
                     spelling.append(this.currentChar);
-                    this.currentChar = this.sourceFile.getNextChar();
+                }
+                else
+                {
+                    //has read in start of next token, so store in buffer
+                    this.buffer.add(this.currentChar);
                 }
 
                 break;
             case '>': //token can be > or >=
                 kind = Token.Kind.COMPARE;
-                spelling.append(this.currentChar);
+                
+                //check whether has =
                 this.currentChar = this.sourceFile.getNextChar();
-                if (this.currentChar == '=') //check whether has =
+                if (this.currentChar == '=')
                 {
                     spelling.append(this.currentChar);
-                    this.currentChar = this.sourceFile.getNextChar();
+                }
+                else
+                {
+                    //has read in start of next token, so store in buffer
+                    this.buffer.add(this.currentChar);
                 }
                 break;
             case '=': //token can be = or ==
-                spelling.append(this.currentChar);
-                this.currentChar = this.sourceFile.getNextChar();
-                if (this.currentChar == '=') //check whether has =
+            	//check whether has =
+            	this.currentChar = this.sourceFile.getNextChar();
+                if (this.currentChar == '=')
                 {
                     spelling.append(this.currentChar);
-                    this.currentChar = this.sourceFile.getNextChar();
                     kind = Token.Kind.COMPARE;
                 }
                 else //otherwise, is just assignment operator
+                {
                     kind = Token.Kind.ASSIGN;
+                    //has read in start of next token, so store in buffer
+                    this.buffer.add(this.currentChar);
+                }
                 break;
             case '/': //token can be / or a comment
-                spelling.append(this.currentChar);
+            	//check whether next char starts a comment
                 this.currentChar = this.sourceFile.getNextChar();
-                if (this.currentChar == '*') //multiline comment
+                if (this.currentChar == '*') //block comment
                 {
                     kind = Token.Kind.COMMENT;
                     String tokenString = this.completeBlockCommentToken();
@@ -259,8 +271,12 @@ public class Scanner
                     String tokenString = this.completeLineCommentToken();
                     spelling.append(tokenString);
                 }
-                else //otherwise, is just divide operator
+                else
+                {
                     kind = Token.Kind.MULDIV;
+                    //has read in start of next token, so store in buffer
+                    this.buffer.add(this.currentChar);
+                }
 
                 break;
             default:
@@ -277,6 +293,7 @@ public class Scanner
     	reorganize string builder stuff
     	possibly have complete methods return token instead of string
     	if newline is read in, need to get line number beforehand?
+    	handle error thrown by SourceFile?
     	*/
 
         //digit -> int constant
@@ -293,34 +310,33 @@ public class Scanner
             return null;
         }
     }
-
+    
     /**
      * Builds and returns a string token starting from the current character
-     *
      * @return the string token
      */
     private String completeStringToken()
     {
-        StringBuilder spellingBuilder = new StringBuilder();
-
-        //collect chars until closing double quote
-        while (this.currentChar != '\"')
-        {
-            spellingBuilder.append(Character.toString(this.currentChar));
-            this.currentChar = this.sourceFile.getNextChar();
-
-            //TODO:
-            //check for newline
-            //check for invalid escape chars
-            //check if too long
-        }
-
-        //append closing quote
-        spellingBuilder.append(Character.toString(this.currentChar));
-
-        return spellingBuilder.toString();
+    	StringBuilder spellingBuilder = new StringBuilder();
+    	
+    	//collect chars until closing double quote
+    	while (this.currentChar != '\"')
+    	{
+    		spellingBuilder.append(Character.toString(this.currentChar));
+        	this.currentChar = this.sourceFile.getNextChar();
+        	
+        	//TODO:
+        	//check for newline
+        	//check for invalid escape chars
+        	//check if too long
+    	}
+    	
+    	//append closing quote
+    	spellingBuilder.append(Character.toString(this.currentChar));
+    	
+    	return spellingBuilder.toString();
     }
-
+    
     /**
      * Builds and returns a block comment token string starting from the current char
      *
