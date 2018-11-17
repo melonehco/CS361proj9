@@ -47,8 +47,10 @@ public class Scanner
      */
     public Token scan()
     {
-        StringBuilder spelling = new StringBuilder();
         Token.Kind kind = null;
+        StringBuilder spelling = new StringBuilder();
+        int lineNumber;
+
         boolean isTokenComplete = true; // start as true, and set to false if not a single char token
 
         // Set first char to that caught in the buffer, if there was one. Else nextChar.
@@ -56,11 +58,15 @@ public class Scanner
             this.currentChar = this.buffer.poll();
         else
             do { this.currentChar = this.sourceFile.getNextChar(); }
-            while (this.currentChar != ' ' ||
-                    this.currentChar != System.lineSeparator().charAt(0));
-        // || this.currentChar != '\t' TODO ?????
+            while
+            (
+                    this.currentChar == ' ' ||
+                            this.currentChar == System.lineSeparator().charAt(0) ||
+                            this.currentChar != '\t'
+            );
 
         spelling.append(this.currentChar);
+        lineNumber = this.sourceFile.getCurrentLineNumber();
 
         //check for single-char tokens that can be identified at once
     	switch(this.currentChar)
@@ -118,9 +124,9 @@ public class Scanner
     	}
 
         if (isTokenComplete)
-            return new Token(kind, spelling.toString(), this.sourceFile.getCurrentLineNumber());
+            return new Token(kind, spelling.toString(), lineNumber);
 
-        isTokenComplete = true; // set to true, and set to false if fail next check
+        isTokenComplete = true; // set to true, and set to false if fails next check
 
         //TODO: should check in these cases for whether illegal chars appear
         // complete longer tokens that can be identified at once by first char
@@ -143,29 +149,34 @@ public class Scanner
                 spelling.append(this.completeStringToken());
                 break;
             default:
-                isTokenComplete = false;
+                isTokenComplete = false; // (it has failed next check)
                 break;
         }
 
         if (isTokenComplete)
-            return new Token(kind, spelling.toString(), this.sourceFile.getCurrentLineNumber());
+            return new Token(kind, spelling.toString(), lineNumber);
 
+        isTokenComplete = true;  // set to true, and set to false if fails next check
 
-        //otherwise, handle other token types
         //integer constant
         if (Character.isDigit(this.currentChar))
         {
             kind = Token.Kind.INTCONST;
-            String tokenString = this.completeIntconstToken();
-            spelling.append(tokenString);
+            spelling.append(this.completeIntconstToken());
         }
         //identifier/boolean/keyword
         else if (Character.isLetter(this.currentChar))
         {
             kind = Token.Kind.IDENTIFIER;
-            String tokenString = this.completeIdentifierToken();
-            spelling.append(tokenString);
+            spelling.append(this.completeIdentifierToken());
         }
+        else
+        {
+            isTokenComplete = false; // (it has failed next check)
+        }
+
+        if (isTokenComplete)
+            return new Token(kind, spelling.toString(), lineNumber);
     	
     	//TODO: I don't actually know how to organize this part
     	//but I'll just write it
@@ -267,8 +278,8 @@ public class Scanner
     	
     	//+ -> + or ++
     	//- -> - or --
-    	
-    	return new Token(kind, spelling.toString(), this.sourceFile.getCurrentLineNumber());
+
+        return new Token(kind, spelling.toString(), lineNumber);
     }
     
     /**
