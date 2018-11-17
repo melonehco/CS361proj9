@@ -184,66 +184,83 @@ public class Scanner
         switch(this.currentChar)
         {
             case '+': //token can be + or ++
-                spelling.append(this.currentChar);
                 this.currentChar = this.sourceFile.getNextChar();
                 if (this.currentChar == '+') //check whether has second +
                 {
                     spelling.append(this.currentChar);
-                    this.currentChar = this.sourceFile.getNextChar();
                     kind = Token.Kind.UNARYINCR;
                 }
                 else
+                {
                     kind = Token.Kind.PLUSMINUS;
+                    //has read in start of next token, so store in buffer
+                    this.buffer.add(this.currentChar);
+                }
                 break;
             case '-': //token can be - or --
-                spelling.append(this.currentChar);
                 this.currentChar = this.sourceFile.getNextChar();
                 if (this.currentChar == '-') //check whether has second -
                 {
                     spelling.append(this.currentChar);
-                    this.currentChar = this.sourceFile.getNextChar();
                     kind = Token.Kind.UNARYDECR;
                 }
                 else
+                {
                     kind = Token.Kind.PLUSMINUS;
+                    //has read in start of next token, so store in buffer
+                    this.buffer.add(this.currentChar);
+                }
                 break;
             case '<': //token can be < or <=
                 kind = Token.Kind.COMPARE;
-                spelling.append(this.currentChar);
+                
+                //check whether has =
                 this.currentChar = this.sourceFile.getNextChar();
-                if (this.currentChar == '=') //check whether has =
+                if (this.currentChar == '=')
                 {
                     spelling.append(this.currentChar);
-                    this.currentChar = this.sourceFile.getNextChar();
+                }
+                else
+                {
+                    //has read in start of next token, so store in buffer
+                    this.buffer.add(this.currentChar);
                 }
 
                 break;
             case '>': //token can be > or >=
                 kind = Token.Kind.COMPARE;
-                spelling.append(this.currentChar);
+                
+                //check whether has =
                 this.currentChar = this.sourceFile.getNextChar();
-                if (this.currentChar == '=') //check whether has =
+                if (this.currentChar == '=')
                 {
                     spelling.append(this.currentChar);
-                    this.currentChar = this.sourceFile.getNextChar();
+                }
+                else
+                {
+                    //has read in start of next token, so store in buffer
+                    this.buffer.add(this.currentChar);
                 }
                 break;
             case '=': //token can be = or ==
-                spelling.append(this.currentChar);
-                this.currentChar = this.sourceFile.getNextChar();
-                if (this.currentChar == '=') //check whether has =
+            	//check whether has =
+            	this.currentChar = this.sourceFile.getNextChar();
+                if (this.currentChar == '=')
                 {
                     spelling.append(this.currentChar);
-                    this.currentChar = this.sourceFile.getNextChar();
                     kind = Token.Kind.COMPARE;
                 }
                 else //otherwise, is just assignment operator
+                {
                     kind = Token.Kind.ASSIGN;
+                    //has read in start of next token, so store in buffer
+                    this.buffer.add(this.currentChar);
+                }
                 break;
             case '/': //token can be / or a comment
-                spelling.append(this.currentChar);
+            	//check whether next char starts a comment
                 this.currentChar = this.sourceFile.getNextChar();
-                if (this.currentChar == '*') //multiline comment
+                if (this.currentChar == '*') //block comment
                 {
                     kind = Token.Kind.COMMENT;
                     String tokenString = this.completeBlockCommentToken();
@@ -255,8 +272,12 @@ public class Scanner
                     String tokenString = this.completeLineCommentToken();
                     spelling.append(tokenString);
                 }
-                else //otherwise, is just divide operator
+                else
+                {
                     kind = Token.Kind.MULDIV;
+                    //has read in start of next token, so store in buffer
+                    this.buffer.add(this.currentChar);
+                }
 
                 break;
         }
