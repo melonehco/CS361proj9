@@ -63,70 +63,67 @@ public class Scanner
             this.currentChar = this.buffer.poll();
         else
             do { this.currentChar = this.sourceFile.getNextChar(); }
-            while
-            (
-                    this.currentChar == ' ' ||
-                            this.currentChar == System.lineSeparator().charAt(0) ||
-                            this.currentChar != '\t'
-            );
+            while (this.currentChar == ' ' ||
+                    this.currentChar == System.lineSeparator().charAt(0) ||
+                    this.currentChar != '\t');
 
         spelling.append(this.currentChar);
         lineNumber = this.sourceFile.getCurrentLineNumber();
 
         //check for single-char tokens that can be identified at once
-    	switch(this.currentChar)
-    	{
-	    	//punctuation
-    		case '.':
-    			kind = Token.Kind.DOT;
-	    		break;
-	    	case ':':
-    			kind = Token.Kind.COLON;
-	    		break;
-	    	case ';':
-    			kind = Token.Kind.SEMICOLON;
-	    		break;
-	    	case ',':
-    			kind = Token.Kind.COMMA;
-	    		break;
-	    	//brackets
-	    	case '(':
-    			kind = Token.Kind.LPAREN;
-	    		break;
-	    	case ')':
-    			kind = Token.Kind.RPAREN;
-	    		break;
-	    	case '[':
-    			kind = Token.Kind.LBRACKET;
-	    		break;
-	    	case ']':
-    			kind = Token.Kind.RBRACKET;
-	    		break;
-	    	case '{':
-    			kind = Token.Kind.LCURLY;
-	    		break;
-	    	case '}':
-    			kind = Token.Kind.RCURLY;
-	    		break;
-	    	//end of file
-	    	case SourceFile.eof:
-    			kind = Token.Kind.EOF;
-	    		break;
-	    	//some operators
-	    	case '*':
-	    		kind = Token.Kind.MULDIV;
-	    		break;
-	    	case '!':
-	    		kind = Token.Kind.UNARYNOT;
-	    		break;
-	    	case '%':
-	    		kind = Token.Kind.MULDIV;
-	    		break;
+        switch (this.currentChar)
+        {
+            //punctuation
+            case '.':
+                kind = Token.Kind.DOT;
+                break;
+            case ':':
+                kind = Token.Kind.COLON;
+                break;
+            case ';':
+                kind = Token.Kind.SEMICOLON;
+                break;
+            case ',':
+                kind = Token.Kind.COMMA;
+                break;
+            //brackets
+            case '(':
+                kind = Token.Kind.LPAREN;
+                break;
+            case ')':
+                kind = Token.Kind.RPAREN;
+                break;
+            case '[':
+                kind = Token.Kind.LBRACKET;
+                break;
+            case ']':
+                kind = Token.Kind.RBRACKET;
+                break;
+            case '{':
+                kind = Token.Kind.LCURLY;
+                break;
+            case '}':
+                kind = Token.Kind.RCURLY;
+                break;
+            //end of file
+            case SourceFile.eof:
+                kind = Token.Kind.EOF;
+                break;
+            //some operators
+            case '*':
+                kind = Token.Kind.MULDIV;
+                break;
+            case '!':
+                kind = Token.Kind.UNARYNOT;
+                break;
+            case '%':
+                kind = Token.Kind.MULDIV;
+                break;
             //otherwise, is not single-char token that can be identified at once
             default:
                 isTokenComplete = false;
                 break;
-    	}
+        }
 
         if (isTokenComplete)
             return new Token(kind, spelling.toString(), lineNumber);
@@ -182,11 +179,13 @@ public class Scanner
 
         if (isTokenComplete)
             return new Token(kind, spelling.toString(), lineNumber);
-    	
-    	//TODO: I don't actually know how to organize this part
-    	//but I'll just write it
+
+        isTokenComplete = true;  // set to true, and set to false if fails next check
+
+        //TODO: I don't actually know how to organize this part
+        //but I'll just write it
         //TODO check StringBuilder spelling = new StringBuilder();
-        switch(this.currentChar)
+        switch (this.currentChar)
         {
             case '+': //token can be + or ++
                 spelling.append(this.currentChar);
@@ -264,10 +263,13 @@ public class Scanner
                     kind = Token.Kind.MULDIV;
 
                 break;
+            default:
+                isTokenComplete = false;
+                break;
         }
-    	
+
         //if first char doesn't match any of above cases, is illegal char
-    	//TODO: error
+        //TODO: error
 
     	/* TODO:
     	handle having already reached EOF
@@ -277,13 +279,19 @@ public class Scanner
     	if newline is read in, need to get line number beforehand?
     	*/
 
-    	//digit -> int constant
-    	//letter -> identifier; token handles distinction between letter things
-    	
-    	//+ -> + or ++
-    	//- -> - or --
+        //digit -> int constant
+        //letter -> identifier; token handles distinction between letter things
 
-        return new Token(kind, spelling.toString(), lineNumber);
+        //+ -> + or ++
+        //- -> - or --
+
+        if (isTokenComplete)
+            return new Token(kind, spelling.toString(), lineNumber);
+        else
+        {
+            System.out.println("something went wrong");
+            return null;
+        }
     }
 
     /**
@@ -315,108 +323,108 @@ public class Scanner
 
     /**
      * Builds and returns a block comment token string starting from the current char
+     *
      * @return the comment token string
      */
     private String completeBlockCommentToken()
     {
-    	StringBuilder spellingBuilder = new StringBuilder();
+        StringBuilder spellingBuilder = new StringBuilder();
 
-    	boolean atTentativeEnd = false; //whether a * has been seen
-    	boolean terminated = false; //whether consecutive */ have been seen
-    	while (!terminated)
-    	{
-    		spellingBuilder.append(this.currentChar);
-        	this.currentChar = this.sourceFile.getNextChar();
+        boolean atTentativeEnd = false; // a '*' has been seen
+        boolean terminated = false; // a '*' and '/' have been seen in sequence
 
-        	if (atTentativeEnd) //if * has been seen
-        	{
-        		if (this.currentChar == '/') //block comment terminated
-        		{
-        			terminated = true;
-        		}
-        		else //otherwise just a * in the middle somewhere
-        		{
-        			atTentativeEnd = false;
-        		}
-        	}
-        	else if (this.currentChar == '*')
-        	{
-        		atTentativeEnd = true;
-        	}
-        	else if (this.currentChar == SourceFile.eof)
-        	{
-        		break;
-        	}
+        while (!(terminated || this.currentChar == SourceFile.eof))
+        {
+            this.currentChar = this.sourceFile.getNextChar();
+            spellingBuilder.append(this.currentChar);
 
-    	}
+            if (atTentativeEnd) // if '*' has been seen
+            {
+                if (this.currentChar == '/') // block comment indeed terminated
+                {
+                    terminated = true;
+                }
+                else //otherwise just a '*' in the middle somewhere
+                {
+                    atTentativeEnd = false;
+                }
+            }
+            else if (this.currentChar == '*')
+            {
+                atTentativeEnd = true;
+            }
+        }
 
-    	//if left loop before seeing */, block comment was not terminated correctly
-    	if (!terminated)
-    	{
-    		//TODO: error
-    	}
+        //if left loop before seeing "*/", block comment was not terminated correctly
+        if (!terminated)
+        {
+            //TODO: error
+        }
 
-    	return spellingBuilder.toString();
+        return spellingBuilder.toString();
     }
 
     /**
      * Builds and returns a single-line comment token string starting from the current char
+     *
      * @return the comment token string
      */
     private String completeLineCommentToken()
     {
-    	StringBuilder spellingBuilder = new StringBuilder();
+        StringBuilder spellingBuilder = new StringBuilder();
 
-    	//collect chars until end of line or file
-    	while (this.currentChar != '\n' && this.currentChar != SourceFile.eof)
-    	{
-    		spellingBuilder.append(this.currentChar);
-        	this.currentChar = this.sourceFile.getNextChar();
-    	}
+        //collect chars until end of line or file
+        while (this.currentChar != '\n' && this.currentChar != SourceFile.eof)
+        {
+            spellingBuilder.append(this.currentChar);
+            this.currentChar = this.sourceFile.getNextChar();
+        }
 
-    	return spellingBuilder.toString();
+        return spellingBuilder.toString();
     }
 
     /**
      * Builds and returns an intconst token string starting from the current char
      * Returns upon reading in any non-digit char
+     *
      * @return the intconst token string
      */
     private String completeIntconstToken()
     {
-    	StringBuilder spellingBuilder = new StringBuilder();
-    	
-    	//collect chars until non-digit char
-    	while (Character.isDigit(this.currentChar))
-    	{
-    		spellingBuilder.append(this.currentChar);
-        	this.currentChar = this.sourceFile.getNextChar();
+        StringBuilder spellingBuilder = new StringBuilder();
 
-        	//TODO: check whether int is too long
-    	}
+        //collect chars until non-digit char
+        while (Character.isDigit(this.currentChar))
+        {
+            spellingBuilder.append(this.currentChar);
+            this.currentChar = this.sourceFile.getNextChar();
 
-    	return spellingBuilder.toString();
+            //TODO: check whether int is too long
+        }
+
+        return spellingBuilder.toString();
     }
 
     /**
      * Builds and returns an identifier token string (or boolean or keyword)
      * starting from the current character
      * Returns upon reading in any non-identifier char
+     *
      * @return the identifier token string
      */
     private String completeIdentifierToken()
     {
-    	StringBuilder spellingBuilder = new StringBuilder();
+        StringBuilder spellingBuilder = new StringBuilder();
 
-    	//collect chars until non-identifier char
-    	while (Character.isLetter(this.currentChar) ||
-    			Character.isDigit(this.currentChar) ||
-    			this.currentChar == '_')
-    	{
-    		spellingBuilder.append(this.currentChar);
-        	this.currentChar = this.sourceFile.getNextChar();
-    	}
-    	
-    	return spellingBuilder.toString();
+        //collect chars until non-identifier char
+        while (Character.isLetter(this.currentChar) ||
+                Character.isDigit(this.currentChar) ||
+                this.currentChar == '_')
+        {
+            spellingBuilder.append(this.currentChar);
+            this.currentChar = this.sourceFile.getNextChar();
+        }
+
+        return spellingBuilder.toString();
     }
 }
