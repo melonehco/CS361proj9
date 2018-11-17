@@ -47,6 +47,11 @@ public class Scanner
      */
     public Token scan()
     {
+        if (this.currentChar == SourceFile.eof)
+            return new Token(Token.Kind.EOF,
+                             Character.toString(SourceFile.eof),
+                             this.sourceFile.getCurrentLineNumber());
+
         Token.Kind kind = null;
         StringBuilder spelling = new StringBuilder();
         int lineNumber;
@@ -288,12 +293,8 @@ public class Scanner
         //TODO: error
 
     	/* TODO:
-    	handle having already reached EOF
-    	handle EOF in longer tokens
-    	reorganize string builder stuff
-    	possibly have complete methods return token instead of string
-    	if newline is read in, need to get line number beforehand?
-    	handle error thrown by SourceFile?
+    	-handle EOF in longer tokens
+    	-handle error thrown by SourceFile?
     	*/
 
         //digit -> int constant
@@ -326,6 +327,7 @@ public class Scanner
         	this.currentChar = this.sourceFile.getNextChar();
         	
         	//TODO:
+            //EOF
         	//check for newline
         	//check for invalid escape chars
         	//check if too long
@@ -349,21 +351,17 @@ public class Scanner
         boolean atTentativeEnd = false; // a '*' has been seen
         boolean terminated = false; // a '*' and '/' have been seen in sequence
 
-        while (!(terminated || this.currentChar == SourceFile.eof))
+        while (!terminated && this.currentChar != SourceFile.eof)
         {
             this.currentChar = this.sourceFile.getNextChar();
             spellingBuilder.append(this.currentChar);
 
             if (atTentativeEnd) // if '*' has been seen
             {
-                if (this.currentChar == '/') // block comment indeed terminated
-                {
+                if (this.currentChar == '/')    // block comment indeed terminated
                     terminated = true;
-                }
-                else //otherwise just a '*' in the middle somewhere
-                {
+                else                            // otherwise just a '*' in the middle somewhere
                     atTentativeEnd = false;
-                }
             }
             else if (this.currentChar == '*')
             {
@@ -392,8 +390,8 @@ public class Scanner
         //collect chars until end of line or file
         while (this.currentChar != '\n' && this.currentChar != SourceFile.eof)
         {
-            spellingBuilder.append(this.currentChar);
             this.currentChar = this.sourceFile.getNextChar();
+            spellingBuilder.append(this.currentChar);
         }
 
         return spellingBuilder.toString();
