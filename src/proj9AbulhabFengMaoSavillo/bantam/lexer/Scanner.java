@@ -53,19 +53,22 @@ public class Scanner
      */
     public Token scan()
     {
-        //initialize token kind
+        StringBuilder spelling = new StringBuilder();
         Token.Kind kind = null;
+        boolean isTokenComplete = true; // start as true, and set to false if not a single char token
 
+        // Set first char to that caught in the buffer, if there was one. Else nextChar.
         if (!this.buffer.isEmpty())
             this.currentChar = this.buffer.poll();
         else
             do { this.currentChar = this.sourceFile.getNextChar(); }
             while (this.currentChar != ' ' ||
                     this.currentChar != System.lineSeparator().charAt(0));
-        // || this.currentChar != '\t'
+        // || this.currentChar != '\t' TODO ?????
+
+        spelling.append(this.currentChar);
 
         //check for single-char tokens that can be identified at once
-        boolean isSingleCharIDToken = true;
         switch (this.currentChar)
         {
             //punctuation
@@ -116,58 +119,42 @@ public class Scanner
                 break;
             //otherwise, is not single-char token that can be identified at once
             default:
-                isSingleCharIDToken = false;
+                isTokenComplete = false;
+                break;
         }
 
-        if (isSingleCharIDToken)
-        {
-            //make new token before updating current char
-            Token token = new Token(kind, Character.toString(this.currentChar), this.sourceFile.getCurrentLineNumber());
+        if (isTokenComplete)
+            return new Token(kind, spelling.toString(), this.sourceFile.getCurrentLineNumber());
 
-            //move currentChar forward to next char
-            //to match behavior of other cases, where current token
-            //can be ended by reading in first char of next token
-            this.currentChar = this.sourceFile.getNextChar();
-
-            return token;
-        }
+        isTokenComplete = true; // set to true, and set to false if fail next check
 
         //TODO: should check in these cases for whether illegal chars appear
-        //check for longer tokens that can be identified at once by first char
-        String fullToken = null;
+        // complete longer tokens that can be identified at once by first char
         switch (this.currentChar)
         {
             case '&':
                 kind = Token.Kind.BINARYLOGIC;
-                fullToken = Character.toString(this.currentChar);
-                //add on second &
+                //add a second &
                 this.currentChar = this.sourceFile.getNextChar();
-                fullToken += this.currentChar;
+                spelling.append(this.currentChar);
                 break;
             case '|':
                 kind = Token.Kind.BINARYLOGIC;
-                fullToken = Character.toString(this.currentChar);
-                //add on second |
+                //add a second |
                 this.currentChar = this.sourceFile.getNextChar();
-                fullToken += this.currentChar;
+                spelling.append(this.currentChar);
                 break;
             case '\"':
                 kind = Token.Kind.STRCONST;
-                fullToken = this.completeStringToken();
+                spelling.append(this.completeStringToken());
+                break;
+            default:
+                isTokenComplete = false;
                 break;
         }
-        //if token type was identified by first char
-        if (fullToken != null)
-        {
-            Token token = new Token(kind, fullToken, this.sourceFile.getCurrentLineNumber());
 
-            //move currentChar forward to next char
-            //to match behavior of other cases, where current token
-            //can be ended by reading in first char of next token
-            this.currentChar = this.sourceFile.getNextChar();
-
-            return token;
-        }
+        if (isTokenComplete)
+            return new Token(kind, spelling.toString(), this.sourceFile.getCurrentLineNumber());
 
         //otherwise, handle other token types
         //integer constant
