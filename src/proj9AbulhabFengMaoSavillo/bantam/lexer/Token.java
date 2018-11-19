@@ -79,11 +79,6 @@
          RETURN, WHILE
      }
 
-     /*
-     private static Set<String> reservedWords = Set.of("break", "cast", "class", "var",
-             "else", "extends", "for", "if", "instanceof", "new", "return", "while");
-     */
-
      private static Set<String> reservedWords = Collections.unmodifiableSet(
              new HashSet<>(Arrays.asList("break", "cast", "class", "var",
                      "else", "extends", "for", "if", "instanceof", "new", "return", "while")));
