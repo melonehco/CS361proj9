@@ -20,6 +20,7 @@ import javafx.stage.Window;
 import proj9AbulhabFengMaoSavillo.JavaCodeArea;
 import proj9AbulhabFengMaoSavillo.JavaTab;
 import proj9AbulhabFengMaoSavillo.JavaTabPane;
+import proj9AbulhabFengMaoSavillo.ControllerErrorCreator;
 
 import java.io.File;
 import java.io.FileWriter;
@@ -109,7 +110,7 @@ public class FileMenuController
         }
         catch (IOException ex)
         {
-            this.createErrorDialog("Saving File", "Cannot save to " + file.getName() + ".");
+            ControllerErrorCreator.createErrorDialog("Saving File", "Cannot save to " + file.getName() + ".");
             return false;
         }
     }
@@ -236,7 +237,7 @@ public class FileMenuController
     }
 
     /**
-     * Helper method to handle closing tag action.
+     * Helper method to handle closing tab action.
      * If the text embedded in the tab window has not been saved yet,
      * or if a saved file has been changed, asks the user if to save
      * the file via a dialog window.
@@ -386,24 +387,9 @@ public class FileMenuController
         }
         catch (Exception ex)
         {
-            this.createErrorDialog("Reading File", "Cannot read " + file.getName() + ".");
+            ControllerErrorCreator.createErrorDialog("Reading File", "Cannot read " + file.getName() + ".");
             return null;
         }
-    }
-
-    /**
-     * Creates a error dialog displaying message of any error encountered.
-     *
-     * @param errorTitle  String of the error title
-     * @param errorString String of error message
-     */
-    public void createErrorDialog(String errorTitle, String errorString)
-    {
-        Alert alert = new Alert(Alert.AlertType.WARNING);
-        alert.setTitle(errorTitle + " Error");
-        alert.setHeaderText("Error for " + errorTitle);
-        alert.setContentText(errorString);
-        alert.showAndWait();
     }
 
     /**
@@ -493,8 +479,6 @@ public class FileMenuController
      */
     public void handleCloseAction(Event event)
     {
-        System.out.println("entered handleCloseAction");
-        if (this.javaTabPane.getCurrentTab()==null)System.out.println("null tab");
         Tab selectedTab = this.javaTabPane.getCurrentTab();
 
         // selectedTab is null if this method is evoked by closing a tab
@@ -507,9 +491,11 @@ public class FileMenuController
         if (!this.closeTab((JavaTab) selectedTab))
         {
             event.consume();
+            System.out.println(selectedTab);
             return;
         }
 
+        // If no tabs open after this, close structure view
         if (this.tablessProperty().getValue())
         {
             this.checkBox.setSelected(false);

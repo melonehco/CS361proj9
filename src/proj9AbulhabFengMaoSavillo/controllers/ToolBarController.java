@@ -18,6 +18,8 @@ import java.io.*;
 import javafx.concurrent.Task;
 import javafx.concurrent.Service;
 
+import proj9AbulhabFengMaoSavillo.ControllerErrorCreator;
+
 /**
  * ToolbarController handles Toolbar related actions.
  *
@@ -130,7 +132,7 @@ public class ToolBarController {
             return this.curProcess.waitFor() == 0;
         } catch (Throwable e) {
             Platform.runLater(() -> {
-                this.fileMenuController.createErrorDialog("File Compilation", "Error compiling.\nPlease try again with another valid Java File.");
+                ControllerErrorCreator.createErrorDialog("File Compilation", "Error compiling.\nPlease try again with another valid Java File.");
             });
             return false;
         }
@@ -190,7 +192,7 @@ public class ToolBarController {
             return curProcess.waitFor() == 0;
         } catch (Throwable e) {
             Platform.runLater(() -> {
-                this.fileMenuController.createErrorDialog("File Running", "Error running " + file.getName() + ".");
+                ControllerErrorCreator.createErrorDialog("File Running", "Error running " + file.getName() + ".");
             });
             return false;
         }
@@ -331,7 +333,7 @@ public class ToolBarController {
                 this.curProcess.destroy();
             }
         } catch (Throwable e) {
-            this.fileMenuController.createErrorDialog("Program Stop", "Error stopping the Java program.");
+            ControllerErrorCreator.createErrorDialog("Program Stop", "Error stopping the Java program.");
         }
     }
 

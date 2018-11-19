@@ -1,1 +1,1 @@
-- figure out what to do with createErrorDialog, because FileMenuController, ToolbarController, and PreferencesMenuController all need it
+- [Done] figure out what to do with createErrorDialog, because FileMenuController, ToolbarController, and PreferencesMenuController all need it

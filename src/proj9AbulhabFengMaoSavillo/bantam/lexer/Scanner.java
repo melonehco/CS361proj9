@@ -61,15 +61,22 @@ public class Scanner
 
         boolean isTokenComplete = true; // start as true, and set to false if not a single char token
 
-        // Set first char to that caught in the buffer, if there was one. Else nextChar.
+        Character c = ' ';
         if (!this.buffer.isEmpty())
-            this.currentChar = this.buffer.poll();
+        {
+        		c = this.buffer.poll();
+        }
+        
+        // Set first char to that caught in the buffer, if there was one. Else nextChar.
+        if (!Character.isWhitespace(c))
+        {
+            this.currentChar = c;
+        }
         else
+        {
             do { this.currentChar = this.sourceFile.getNextChar(); }
-            while (this.currentChar == ' ' ||
-                    this.currentChar == '\n' ||
-                    this.currentChar == '\r' ||
-                    this.currentChar == '\t');
+            while (Character.isWhitespace(this.currentChar));
+        }
 
         spelling.append(this.currentChar);
         lineNumber = this.sourceFile.getCurrentLineNumber();
@@ -152,6 +159,7 @@ public class Scanner
                 break;
             case '\"':
                 kind = Token.Kind.STRCONST;
+                this.currentChar = this.sourceFile.getNextChar();
                 spelling.append(this.completeStringToken());
                 break;
             default:
@@ -168,12 +176,14 @@ public class Scanner
         if (Character.isDigit(this.currentChar))
         {
             kind = Token.Kind.INTCONST;
+            this.currentChar = this.sourceFile.getNextChar();
             spelling.append(this.completeIntconstToken());
         }
         //identifier/boolean/keyword
         else if (Character.isLetter(this.currentChar))
         {
             kind = Token.Kind.IDENTIFIER;
+            this.currentChar = this.sourceFile.getNextChar();
             spelling.append(this.completeIdentifierToken());
         }
         else
@@ -311,7 +321,8 @@ public class Scanner
             return new Token(kind, spelling.toString(), lineNumber);
         else
         {
-            System.out.println("something went wrong: char " + this.currentChar);
+            System.out.println("is whitespace?" + Character.isWhitespace(this.currentChar));
+        		System.out.println("something went wrong: char " + this.currentChar);
             return null;
         }
     }
@@ -322,26 +333,54 @@ public class Scanner
      */
     private String completeStringToken()
     {
-    	StringBuilder spellingBuilder = new StringBuilder();
-    	
-    	//collect chars until closing double quote
-    	while (this.currentChar != '\"')
-    	{
-    		spellingBuilder.append(Character.toString(this.currentChar));
-        	this.currentChar = this.sourceFile.getNextChar();
-        	
-        	//TODO:
-            //EOF
-        	//check for newline
-        	//check for invalid escape chars
-        	//check if too long
-        	//handle having escaped quote \"
-    	}
-    	
-    	//append closing quote
-    	spellingBuilder.append(Character.toString(this.currentChar));
-    	
-    	return spellingBuilder.toString();
+	    	StringBuilder spellingBuilder = new StringBuilder();
+	    	
+	    	//collect chars until closing double quote
+	    	while (this.currentChar != '\"')
+	    	{
+	    		spellingBuilder.append(Character.toString(this.currentChar));
+	        	this.currentChar = this.sourceFile.getNextChar();
+	        	
+	        	//check for escaped chars
+	        	if (this.currentChar == '\\')
+	        	{
+	        		spellingBuilder.append(Character.toString(this.currentChar));
+	    	        this.currentChar = this.sourceFile.getNextChar();	        		
+	    	        
+	    	        //handle having escaped quote \"
+	    	        if (this.currentChar == '"')
+	    	        {
+		        		spellingBuilder.append(Character.toString(this.currentChar));
+		    	        this.currentChar = this.sourceFile.getNextChar();	  
+	    	        }
+	        		
+	    	        //check for invalid escape chars
+	    	        else if (this.currentChar != 'n' && this.currentChar != 't' &&
+	    	        		this.currentChar != '"' && this.currentChar != '\\' &&
+	    	        		this.currentChar != 'f' && this.currentChar != 'r')
+	    	        {
+	    	        		//TODO
+	    	        		System.out.println("illegal escape: " + this.currentChar);
+	    	        }
+	        	}
+	        	
+	        	//check if not terminated correctly
+	        	if (this.currentChar == SourceFile.eof || this.currentChar == SourceFile.eol)
+	        	{
+	        		System.out.println("string not terminated");
+	        		break;
+	        	}
+	        	
+	        	//TODO:
+	            //EOF
+	        	//check for newline
+	        	//check if too long
+	    	}
+	    	
+	    	//append closing quote
+	    	spellingBuilder.append(Character.toString(this.currentChar));
+	    	
+	    	return spellingBuilder.toString();
     }
     
     /**
@@ -358,13 +397,16 @@ public class Scanner
 
         while (!terminated && this.currentChar != SourceFile.eof)
         {
-            this.currentChar = this.sourceFile.getNextChar();
             spellingBuilder.append(this.currentChar);
+            this.currentChar = this.sourceFile.getNextChar();
 
             if (atTentativeEnd) // if '*' has been seen
             {
                 if (this.currentChar == '/')    // block comment indeed terminated
+                {
+                		spellingBuilder.append(this.currentChar);
                     terminated = true;
+                }
                 else                            // otherwise just a '*' in the middle somewhere
                     atTentativeEnd = false;
             }
@@ -378,6 +420,7 @@ public class Scanner
         if (!terminated)
         {
             //TODO: error
+        		System.out.println("unterminated");
         }
 
         return spellingBuilder.toString();
@@ -395,9 +438,11 @@ public class Scanner
         //collect chars until end of line or file
         while (this.currentChar != '\n' && this.currentChar != SourceFile.eof)
         {
+        		spellingBuilder.append(this.currentChar);
             this.currentChar = this.sourceFile.getNextChar();
-            spellingBuilder.append(this.currentChar);
         }
+
+        this.buffer.add(this.currentChar);
 
         return spellingBuilder.toString();
     }
@@ -420,6 +465,8 @@ public class Scanner
 
             //TODO: check whether int is too long
         }
+
+        this.buffer.add(this.currentChar);
 
         return spellingBuilder.toString();
     }
@@ -444,6 +491,8 @@ public class Scanner
             this.currentChar = this.sourceFile.getNextChar();
         }
 
+        this.buffer.add(this.currentChar);
+        
         return spellingBuilder.toString();
     }
     
@@ -451,7 +500,7 @@ public class Scanner
     {
 	    	ArrayList<Token> tokenStream = new ArrayList<Token>();
 	    	ErrorHandler errorHandler = new ErrorHandler();
-	    	String filename = "/Users/hopehu/Desktop/Winwin.java";
+	    	String filename = System.getProperty("user.dir") + "/include/Winwin.java";
 	    	Scanner scanner = new Scanner(filename, errorHandler);
 	    	
 	    	Token currentToken = scanner.scan();
@@ -461,6 +510,10 @@ public class Scanner
 	    		currentToken = scanner.scan();
 	    	}
 	    	
-	    	System.out.println(tokenStream);
+	    	for (Token t: tokenStream)
+	    	{
+	    		System.out.println(t);
+	    		System.out.println("--------------------");
+	    	}
     }
 }

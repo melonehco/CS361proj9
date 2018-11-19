@@ -216,6 +216,8 @@ public class JavaCodeArea extends CodeArea
                 .subscribe(ignore -> this.highlightText());
     }
 
+    // instead of referring to the edit menu, make a new context menu and store a bunch of built-in
+    // code area methods
     private void addRightClickMenu(){
 
         this.setOnMousePressed(event ->
