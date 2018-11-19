@@ -21,6 +21,7 @@ public class Scanner
         this.errorHandler = handler;
         this.currentChar = ' ';
         this.sourceFile = null;
+        this.buffer = new ArrayDeque<Character>();
     }
 
     public Scanner(String filename, ErrorHandler handler)
@@ -28,6 +29,7 @@ public class Scanner
         this.errorHandler = handler;
         this.currentChar = ' ';
         this.sourceFile = new SourceFile(filename);
+        this.buffer = new ArrayDeque<Character>();
     }
 
     //Code?
@@ -36,6 +38,7 @@ public class Scanner
         this.errorHandler = handler;
         this.currentChar = ' ';
         this.sourceFile = new SourceFile(reader);
+        this.buffer = new ArrayDeque<Character>();
     }
 
     /**
@@ -64,8 +67,9 @@ public class Scanner
         else
             do { this.currentChar = this.sourceFile.getNextChar(); }
             while (this.currentChar == ' ' ||
-                    this.currentChar == System.lineSeparator().charAt(0) ||
-                    this.currentChar != '\t');
+                    this.currentChar == '\n' ||
+                    this.currentChar == '\r' ||
+                    this.currentChar == '\t');
 
         spelling.append(this.currentChar);
         lineNumber = this.sourceFile.getCurrentLineNumber();
@@ -307,7 +311,7 @@ public class Scanner
             return new Token(kind, spelling.toString(), lineNumber);
         else
         {
-            System.out.println("something went wrong");
+            System.out.println("something went wrong: char " + this.currentChar);
             return null;
         }
     }
@@ -331,6 +335,7 @@ public class Scanner
         	//check for newline
         	//check for invalid escape chars
         	//check if too long
+        	//handle having escaped quote \"
     	}
     	
     	//append closing quote
@@ -440,5 +445,22 @@ public class Scanner
         }
 
         return spellingBuilder.toString();
+    }
+    
+    public static void main(String[] args)
+    {
+	    	ArrayList<Token> tokenStream = new ArrayList<Token>();
+	    	ErrorHandler errorHandler = new ErrorHandler();
+	    	String filename = "/Users/hopehu/Desktop/Winwin.java";
+	    	Scanner scanner = new Scanner(filename, errorHandler);
+	    	
+	    	Token currentToken = scanner.scan();
+	    	while(currentToken.kind != Token.Kind.EOF)
+	    	{
+	    		tokenStream.add(currentToken);
+	    		currentToken = scanner.scan();
+	    	}
+	    	
+	    	System.out.println(tokenStream);
     }
 }
