@@ -33,7 +33,8 @@ import proj9AbulhabFengMaoSavillo.bantam.util.ErrorHandler;
  * @author Zena Abulhab
  * @author Melody Mao
  */
-public class ToolBarController {
+public class ToolBarController
+{
     /**
      * Console defined in Main.fxml
      */
@@ -41,7 +42,7 @@ public class ToolBarController {
     /**
      * Process currently compiling or running a Java file
      */
-    private Process curProcess;
+    private Process currentProcess;
     /**
      * Thread representing the Java program input stream
      */
@@ -82,7 +83,8 @@ public class ToolBarController {
      * Initializes the ToolBarController controller.
      * Sets the Semaphore, the CompileWorker and the CompileRunWorker.
      */
-    public void initialize() {
+    public void initialize()
+    {
         this.mutex = new Semaphore(1);
         this.compileWorker = new CompileWorker();
         this.compileRunWorker = new CompileRunWorker();
@@ -93,7 +95,8 @@ public class ToolBarController {
      *
      * @param console StyleClassedTextArea defined in Main.fxml
      */
-    public void setConsole(StyleClassedTextArea console) {
+    public void setConsole(StyleClassedTextArea console)
+    {
         this.console = console;
     }
 
@@ -102,7 +105,8 @@ public class ToolBarController {
      *
      * @param fileMenuController FileMenuController created in main Controller.
      */
-    public void setFileMenuController(FileMenuController fileMenuController) {
+    public void setFileMenuController(FileMenuController fileMenuController)
+    {
         this.fileMenuController = fileMenuController;
     }
 
@@ -111,7 +115,8 @@ public class ToolBarController {
      *
      * @return CompileWorker
      */
-    public CompileWorker getCompileWorker() {
+    public CompileWorker getCompileWorker()
+    {
         return this.compileWorker;
     }
 
@@ -120,7 +125,8 @@ public class ToolBarController {
      *
      * @return CompileRunWorker
      */
-    public CompileRunWorker getCompileRunWorker() {
+    public CompileRunWorker getCompileRunWorker()
+    {
         return this.compileRunWorker;
     }
 
@@ -128,47 +134,57 @@ public class ToolBarController {
     /**
      * handler of the scan button
      */
-    public void handleScanButtonAction(File file){
+    public void handleScanButtonAction(File file)
+    {
         System.out.println("handleScanButtonAction");
         scanFile(file);
     }
 
     /**
      * helper function to scan the file
+     *
      * @param file
      */
-    private void scanFile(File file){
-    //TODO: print to our own console
+    private void scanFile(File file)
+    {
+        //TODO: print to our own console
         Thread scanThread = new Thread();
 
-        scanThread = new Thread() {
-            public void run() {
-                try {
+        scanThread = new Thread()
+        {
+            public void run()
+            {
+                try
+                {
                     ArrayList<Token> tokenStream = new ArrayList<Token>();
                     ErrorHandler errorHandler = new ErrorHandler();
                     String filename = file.getAbsolutePath();
                     Scanner scanner = new Scanner(filename, errorHandler);
 
                     Token currentToken = scanner.scan();
-                    while(currentToken.kind != Token.Kind.EOF)
+                    while (currentToken.kind != Token.Kind.EOF)
                     {
                         tokenStream.add(currentToken);
                         currentToken = scanner.scan();
                     }
 
-                    for (Token t: tokenStream)
+                    for (Token t : tokenStream)
                     {
                         System.out.println(t);
                         System.out.println("--------------------");
                     }
-                } catch (Throwable e) {
-                    Platform.runLater(() -> {
-                        // print stop message if other thread hasn't
-                        if (consoleLength == console.getLength()) {
-                            console.appendText("\nScanner stopped unexpectedly\n");
-                            console.requestFollowCaret();
-                        }
-                    });
+                }
+                catch (Throwable e)
+                {
+                    Platform.runLater(() ->
+                                      {
+                                          // print stop message if other thread hasn't
+                                          if (consoleLength == console.getLength())
+                                          {
+                                              console.appendText("\nScanner stopped unexpectedly\n");
+                                              console.requestFollowCaret();
+                                          }
+                                      });
                 }
             }
         };
@@ -179,84 +195,31 @@ public class ToolBarController {
     /**
      * Helper method for running Java Compiler.
      */
-    private boolean compileJavaFile(File file) {
-        try {
-            Platform.runLater(() -> {
-                this.console.clear();
-                this.consoleLength = 0;
-            });
+    private boolean compileJavaFile(File file)
+    {
+        try
+        {
+            Platform.runLater(() ->
+                              {
+                                  this.console.clear();
+                                  this.consoleLength = 0;
+                              });
 
             ProcessBuilder pb = new ProcessBuilder("javac", file.getAbsolutePath());
-            this.curProcess = pb.start();
+            this.currentProcess = pb.start();
 
             this.outputToConsole();
 
             // true if compiled without compile-time error, else false
-            return this.curProcess.waitFor() == 0;
-        } catch (Throwable e) {
-            Platform.runLater(() -> {
-                ControllerErrorCreator.createErrorDialog("File Compilation", "Error compiling.\nPlease try again with another valid Java File.");
-            });
-            return false;
+            return this.currentProcess.waitFor() == 0;
         }
-    }
-
-    /**
-     * Helper method for running Java Program.
-     */
-    private boolean runJavaFile(File file) {
-        try {
-            Platform.runLater(() -> {
-                this.console.clear();
-                consoleLength = 0;
-            });
-            ProcessBuilder pb = new ProcessBuilder("java", file.getName().substring(0, file.getName().length() - 5));
-            pb.directory(file.getParentFile());
-            this.curProcess = pb.start();
-
-            // Start output and input in different threads to avoid deadlock
-            this.outThread = new Thread() {
-                public void run() {
-                    try {
-                        // start output thread first
-                        mutex.acquire();
-                        outputToConsole();
-                    } catch (Throwable e) {
-                        Platform.runLater(() -> {
-                            // print stop message if other thread hasn't
-                            if (consoleLength == console.getLength()) {
-                                console.appendText("\nProgram exited unexpectedly\n");
-                                console.requestFollowCaret();
-                            }
-                        });
-                    }
-                }
-            };
-            outThread.start();
-
-            inThread = new Thread() {
-                public void run() {
-                    try {
-                        inputFromConsole();
-                    } catch (Throwable e) {
-                        Platform.runLater(() -> {
-                            // print stop message if other thread hasn't
-                            if (consoleLength == console.getLength()) {
-                                console.appendText("\nProgram exited unexpectedly\n");
-                                console.requestFollowCaret();
-                            }
-                        });
-                    }
-                }
-            };
-            inThread.start();
-
-            // true if ran without error, else false
-            return curProcess.waitFor() == 0;
-        } catch (Throwable e) {
-            Platform.runLater(() -> {
-                ControllerErrorCreator.createErrorDialog("File Running", "Error running " + file.getName() + ".");
-            });
+        catch (Throwable e)
+        {
+            Platform.runLater(() ->
+                              {
+                                  ControllerErrorCreator.createErrorDialog("File Compilation",
+                                                                           "Error compiling.\nPlease try again with another valid Java File.");
+                              });
             return false;
         }
     }
@@ -264,9 +227,10 @@ public class ToolBarController {
     /**
      * Helper method for getting program output
      */
-    private void outputToConsole() throws java.io.IOException, java.lang.InterruptedException {
-        InputStream stdout = this.curProcess.getInputStream();
-        InputStream stderr = this.curProcess.getErrorStream();
+    private void outputToConsole() throws java.io.IOException, java.lang.InterruptedException
+    {
+        InputStream stdout = this.currentProcess.getInputStream();
+        InputStream stderr = this.currentProcess.getErrorStream();
 
         BufferedReader outputReader = new BufferedReader(new InputStreamReader(stdout));
         printOutput(outputReader);
@@ -276,13 +240,139 @@ public class ToolBarController {
     }
 
     /**
+     * Helper method for printing to console
+     *
+     * @throws java.io.IOException
+     * @throws java.lang.InterruptedException
+     */
+    private void printOutput(BufferedReader reader) throws java.io.IOException, java.lang.InterruptedException
+    {
+        // if the output stream is paused, signal the input thread
+        if (!reader.ready())
+        {
+            this.mutex.release();
+        }
+
+        //TODO rename
+        int intch;
+        // read in program output one character at a time
+        while ((intch = reader.read()) != -1)
+        {
+            this.mutex.tryAcquire();
+            char ch = (char) intch;
+            String out = Character.toString(ch);
+            Platform.runLater(() ->
+                              {
+                                  // add output to console
+                                  this.console.appendText(out);
+                                  this.console.requestFollowCaret();
+                              });
+            // update console length tracker to include output character
+            this.consoleLength++;
+
+            // if the output stream is paused, signal the input thread
+            if (!reader.ready())
+            {
+                this.mutex.release();
+            }
+            // wait for input thread to acquire mutex if necessary
+            Thread.sleep(1);
+        }
+        this.mutex.release();
+        reader.close();
+    }
+
+    /**
+     * Helper method for running Java Program.
+     */
+    private boolean runJavaFile(File file)
+    {
+        try
+        {
+            Platform.runLater(() ->
+                              {
+                                  this.console.clear();
+                                  consoleLength = 0;
+                              });
+            ProcessBuilder pb = new ProcessBuilder("java", file.getName().substring(0, file.getName().length() - 5));
+            pb.directory(file.getParentFile());
+            this.currentProcess = pb.start();
+
+            // Start output and input in different threads to avoid deadlock
+            this.outThread = new Thread()
+            {
+                public void run()
+                {
+                    try
+                    {
+                        // start output thread first
+                        mutex.acquire();
+                        outputToConsole();
+                    }
+                    catch (Throwable e)
+                    {
+                        Platform.runLater(() ->
+                                          {
+                                              // print stop message if other thread hasn't
+                                              if (consoleLength == console.getLength())
+                                              {
+                                                  console.appendText("\nProgram exited unexpectedly\n");
+                                                  console.requestFollowCaret();
+                                              }
+                                          });
+                    }
+                }
+            };
+            outThread.start();
+
+            inThread = new Thread()
+            {
+                public void run()
+                {
+                    try
+                    {
+                        inputFromConsole();
+                    }
+                    catch (Throwable e)
+                    {
+                        Platform.runLater(() ->
+                                          {
+                                              // print stop message if other thread hasn't
+                                              if (consoleLength == console.getLength())
+                                              {
+                                                  console.appendText("\nProgram exited unexpectedly\n");
+                                                  console.requestFollowCaret();
+                                              }
+                                          });
+                    }
+                }
+            };
+            inThread.start();
+
+            // true if ran without error, else false
+            return currentProcess.waitFor() == 0;
+        }
+        catch (Throwable e)
+        {
+            Platform.runLater(() ->
+                              {
+                                  ControllerErrorCreator.createErrorDialog("File Running",
+                                                                           "Error running " + file.getName() + ".");
+                              });
+            return false;
+        }
+    }
+
+    /**
      * Helper method for getting program input
      */
-    public void inputFromConsole() throws java.io.IOException, java.lang.InterruptedException {
-        OutputStream stdin = curProcess.getOutputStream();
+    public void inputFromConsole() throws java.io.IOException, java.lang.InterruptedException
+    {
+        OutputStream stdin = currentProcess.getOutputStream();
         BufferedWriter inputWriter = new BufferedWriter(new OutputStreamWriter(stdin));
 
-        while (curProcess.isAlive()) {
+        while (currentProcess.isAlive())
+        {
             // wait until signaled by output thread
             this.mutex.acquire();
             // write input to program
@@ -296,52 +386,18 @@ public class ToolBarController {
     }
 
     /**
-     * Helper method for printing to console
-     *
-     * @throws java.io.IOException
-     * @throws java.lang.InterruptedException
-     */
-    private void printOutput(BufferedReader reader) throws java.io.IOException, java.lang.InterruptedException {
-        // if the output stream is paused, signal the input thread
-        if (!reader.ready()) {
-            this.mutex.release();
-        }
-
-        int intch;
-        // read in program output one character at a time
-        while ((intch = reader.read()) != -1) {
-            this.mutex.tryAcquire();
-            char ch = (char) intch;
-            String out = Character.toString(ch);
-            Platform.runLater(() -> {
-                // add output to console
-                this.console.appendText(out);
-                this.console.requestFollowCaret();
-            });
-            // update console length tracker to include output character
-            this.consoleLength++;
-
-            // if the output stream is paused, signal the input thread
-            if (!reader.ready()) {
-                this.mutex.release();
-            }
-            // wait for input thread to acquire mutex if necessary
-            Thread.sleep(1);
-        }
-        this.mutex.release();
-        reader.close();
-    }
-
-
-    /**
      * Helper function to write user input
      */
-    public void writeInput(BufferedWriter writer) throws java.io.IOException {
+    public void writeInput(BufferedWriter writer) throws java.io.IOException
+    {
         // wait for user to input line of text
-        while (true) {
-            if (this.console.getLength() > this.consoleLength) {
+        while (true)
+        {
+            if (this.console.getLength() > this.consoleLength)
+            {
                 // check if user has hit enter
-                if (this.console.getText().substring(this.consoleLength).contains("\n")) {
+                if (this.console.getText().substring(this.consoleLength).contains("\n"))
+                {
                     break;
                 }
             }
@@ -359,11 +415,15 @@ public class ToolBarController {
      * @param event Event object
      * @param file  the Selected file
      */
-    public void handleCompileButtonAction(Event event, File file) {
+    public void handleCompileButtonAction(Event event, File file)
+    {
         // user select cancel button
-        if (this.fileMenuController.checkSaveBeforeCompile() == 2) {
+        if (this.fileMenuController.checkSaveBeforeCompile() == 2)
+        {
             event.consume();
-        } else {
+        }
+        else
+        {
             compileWorker.setFile(file);
             compileWorker.restart();
         }
@@ -375,11 +435,15 @@ public class ToolBarController {
      * @param event Event object
      * @param file  the Selected file
      */
-    public void handleCompileRunButtonAction(Event event, File file) {
+    public void handleCompileRunButtonAction(Event event, File file)
+    {
         // user select cancel button
-        if (this.fileMenuController.checkSaveBeforeCompile() == 2) {
+        if (this.fileMenuController.checkSaveBeforeCompile() == 2)
+        {
             event.consume();
-        } else {
+        }
+        else
+        {
             compileRunWorker.setFile(file);
             compileRunWorker.restart();
         }
@@ -388,14 +452,19 @@ public class ToolBarController {
     /**
      * Handles the Stop button action.
      */
-    public void handleStopButtonAction() {
-        try {
-            if (this.curProcess.isAlive()) {
+    public void handleStopButtonAction()
+    {
+        try
+        {
+            if (this.currentProcess.isAlive())
+            {
                 this.inThread.interrupt();
                 this.outThread.interrupt();
-                this.curProcess.destroy();
+                this.currentProcess.destroy();
             }
-        } catch (Throwable e) {
+        }
+        catch (Throwable e)
+        {
             ControllerErrorCreator.createErrorDialog("Program Stop", "Error stopping the Java program.");
         }
     }
@@ -404,7 +473,8 @@ public class ToolBarController {
      * A CompileWorker subclass handling Java program compiling in a separated thread in the background.
      * CompileWorker extends the javafx Service class.
      */
-    protected class CompileWorker extends Service<Boolean> {
+    protected class CompileWorker extends Service<Boolean>
+    {
         /**
          * the file to be compiled.
          */
@@ -415,7 +485,8 @@ public class ToolBarController {
          *
          * @param file the file to be compiled.
          */
-        private void setFile(File file) {
+        private void setFile(File file)
+        {
             this.file = file;
         }
 
@@ -427,8 +498,10 @@ public class ToolBarController {
          * false otherwise.
          */
         @Override
-        protected Task<Boolean> createTask() {
-            return new Task<Boolean>() {
+        protected Task<Boolean> createTask()
+        {
+            return new Task<Boolean>()
+            {
                 /**
                  * Called when we execute the start() method of a CompileRunWorker object
                  * Compiles the file.
@@ -437,9 +510,11 @@ public class ToolBarController {
                  *         false otherwise.
                  */
                 @Override
-                protected Boolean call() {
+                protected Boolean call()
+                {
                     Boolean compileResult = compileJavaFile(file);
-                    if (compileResult) {
+                    if (compileResult)
+                    {
                         Platform.runLater(() -> console.appendText("Compilation was successful!\n"));
                     }
                     return compileResult;
@@ -448,11 +523,13 @@ public class ToolBarController {
         }
     }
 
+
     /**
      * A CompileRunWorker subclass handling Java program compiling and running in a separated thread in the background.
      * CompileWorker extends the javafx Service class.
      */
-    protected class CompileRunWorker extends Service<Boolean> {
+    protected class CompileRunWorker extends Service<Boolean>
+    {
         /**
          * the file to be compiled.
          */
@@ -463,7 +540,8 @@ public class ToolBarController {
          *
          * @param file the file to be compiled.
          */
-        private void setFile(File file) {
+        private void setFile(File file)
+        {
             this.file = file;
         }
 
@@ -475,8 +553,10 @@ public class ToolBarController {
          * false otherwise.
          */
         @Override
-        protected Task<Boolean> createTask() {
-            return new Task<Boolean>() {
+        protected Task<Boolean> createTask()
+        {
+            return new Task<Boolean>()
+            {
                 /**
                  * Called when we execute the start() method of a CompileRunWorker object.
                  * Compiles the file and runs it if compiles successfully.
@@ -485,8 +565,10 @@ public class ToolBarController {
                  *         false otherwise.
                  */
                 @Override
-                protected Boolean call() {
-                    if (compileJavaFile(file)) {
+                protected Boolean call()
+                {
+                    if (compileJavaFile(file))
+                    {
                         return runJavaFile(file);
                     }
                     return false;
