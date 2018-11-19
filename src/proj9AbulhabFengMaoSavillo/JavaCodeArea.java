@@ -1,8 +1,8 @@
 /*
  * File: StyledCodeArea.java
- * F18 CS361 Project 7
+ * F18 CS361 Project 9
  * Names: Melody Mao, Zena Abulhab, Yi Feng, Evan Savillo
- * Date: 10/27/2018
+ * Date: 11/28/2018
  * This file contains the StyledCodeArea class, which extends the CodeArea class
  * to handle syntax highlighting for Java.
  */
@@ -41,6 +41,15 @@ import java.util.regex.Pattern;
  */
 public class JavaCodeArea extends CodeArea
 {
+
+    private ContextMenu contextMenu;
+
+    //constructor
+    public JavaCodeArea(ObservableList<MenuItem> menu){
+        this.contextMenu=new ContextMenu();
+        this.contextMenu.getItems().addAll(menu);
+        this.addRightClickMenu();
+    }
     /**
      * a list of key words to be highlighted
      */
@@ -210,21 +219,20 @@ public class JavaCodeArea extends CodeArea
     // instead of referring to the edit menu, make a new context menu and store a bunch of built-in
     // code area methods
     private void addRightClickMenu(){
-//        ContextMenu contextMenu = new ContextMenu();
-//        contextMenu.getItems().addAll(duplicateMenuItems(this.editMenu.getItems()));
-//        this.setOnMousePressed(event ->
-//        {
-//            if (event.isSecondaryButtonDown())
-//            {
-//                contextMenu.show(this,
-//                        event.getScreenX(),
-//                        event.getScreenY());
-//            }
-//            else if (event.isPrimaryButtonDown() && contextMenu.isShowing())
-//            {
-//                contextMenu.hide();
-//            }
-//        });
+
+        this.setOnMousePressed(event ->
+        {
+            if (event.isSecondaryButtonDown())
+            {
+                this.contextMenu.show(this,
+                        event.getScreenX(),
+                        event.getScreenY());
+            }
+            else if (event.isPrimaryButtonDown() && this.contextMenu.isShowing())
+            {
+                this.contextMenu.hide();
+            }
+        });
     }
 
 

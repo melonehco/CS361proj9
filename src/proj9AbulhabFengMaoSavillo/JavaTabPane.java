@@ -1,16 +1,21 @@
+/*
+ * File: JavaTabPane
+ * F18 CS361 Project 9
+ * Names: Melody Mao, Zena Abulhab, Yi Feng, Evan Savillo
+ * Date: 11/18/18
+ */
+
 package proj9AbulhabFengMaoSavillo;
 
-import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import javafx.scene.control.ContextMenu;
+import javafx.event.Event;
+import javafx.event.EventHandler;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
-import org.fxmisc.flowless.VirtualizedScrollPane;
-
 import java.io.File;
 import java.util.ArrayList;
-import java.util.Map;
+
 
 public class JavaTabPane extends TabPane {
 
@@ -18,21 +23,16 @@ public class JavaTabPane extends TabPane {
     private ArrayList<Tab> tabList = new ArrayList<>();
 
     /**
-     * Helper method to create a new tab.
      *
-     * @param contentString the contentString being added into the styled code area; empty string if
-     *                      creating an empty window
-     * @param filename      the name of the file opened; "untitled" if creating an empty window
-     * @param file          File opened; null if creating an empty window
+     * @param contentString content of the new tab
+     * @param file
+     * @param handler
+     * @param menu
      */
-    public void createTab(String contentString, String filename, File file)
+    public void createTab(String contentString, File file, EventHandler<Event> handler, ObservableList<MenuItem> menu)
     {
-        //this.javaTabPane.handleNewTab();
-        JavaCodeArea newJavaCodeArea = new JavaCodeArea();
-        newJavaCodeArea.appendText(contentString); //set to given contents
 
-
-        Tab newTab = new JavaTab(newJavaCodeArea,file);
+        JavaTab newTab = new JavaTab(contentString,file,handler,menu);
 
         //order is important
         this.getTabs().add(newTab);
@@ -41,6 +41,15 @@ public class JavaTabPane extends TabPane {
         this.tabList.add(newTab);
     }
 
+    /**
+     * remove a tab from the tabpane and the tablist
+     * @param tab
+     */
+    public void removeTab(JavaTab tab){
+        this.tabList.remove(tab);
+        this.getTabs().remove(tab);
+
+    }
 
 
     /**
@@ -87,7 +96,14 @@ public class JavaTabPane extends TabPane {
         else return null;
     }
 
+    /**
+     * getter of the tabList
+     * @return tabList
+     */
     public ArrayList<Tab> getTabList() {
         return tabList;
     }
+
+
+
 }

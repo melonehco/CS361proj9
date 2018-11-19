@@ -1,11 +1,19 @@
+/*
+ * File: JavaTab
+ * F18 CS361 Project 9
+ * Names: Melody Mao, Zena Abulhab, Yi Feng, Evan Savillo
+ * Date: 11/18/18
+ */
+
 package proj9AbulhabFengMaoSavillo;
 
-import com.sun.java.swing.action.FileMenu;
+import javafx.collections.ObservableList;
+import javafx.event.Event;
+import javafx.event.EventHandler;
 import javafx.scene.control.Alert;
+import javafx.scene.control.MenuItem;
 import javafx.scene.control.Tab;
 import org.fxmisc.flowless.VirtualizedScrollPane;
-import proj9AbulhabFengMaoSavillo.controllers.FileMenuController;
-import proj9AbulhabFengMaoSavillo.ControllerErrorCreator;
 
 import java.io.File;
 import java.nio.file.Files;
@@ -20,12 +28,17 @@ public class JavaTab extends Tab{
     private File file;
 
 
-    public JavaTab(JavaCodeArea codeArea, File file){
-        this.javaCodeArea = codeArea;
+    public JavaTab(String contentString, File file, EventHandler<Event> handler, ObservableList<MenuItem> menu){
+
+        this.javaCodeArea = new JavaCodeArea(menu);
+        this.javaCodeArea.appendText(contentString);
+
         this.setContent(new VirtualizedScrollPane<>(this.javaCodeArea));
-        this.setOnCloseRequest(event -> close());
+
         this.file = file;
         this.setTabName();
+
+        this.setOnCloseRequest(handler);
     }
 
     /**
@@ -44,6 +57,11 @@ public class JavaTab extends Tab{
         return javaCodeArea;
     }
 
+
+    /**
+     * set file
+     * @param file
+     */
     public void setFile(File file){
         this.file = file;
     }
@@ -105,11 +123,25 @@ public class JavaTab extends Tab{
         }
         catch (Exception ex)
         {
-            ControllerErrorCreator.createErrorDialog("Reading File", "Cannot read " + file.getName() + ".");
+            this.createErrorDialog("Reading File", "Cannot read " + file.getName() + ".");
             return null;
         }
     }
-    
+
+    /**
+     * Creates a error dialog displaying message of any error encountered.
+     *
+     * @param errorTitle  String of the error title
+     * @param errorString String of error message
+     */
+    public void createErrorDialog(String errorTitle, String errorString)
+    {
+        Alert alert = new Alert(Alert.AlertType.WARNING);
+        alert.setTitle(errorTitle + " Error");
+        alert.setHeaderText("Error for " + errorTitle);
+        alert.setContentText(errorString);
+        alert.showAndWait();
+    }
 
     /**
      * Sets the name of the tab to untitled if the file is new, or to the name of an existing file
@@ -126,10 +158,5 @@ public class JavaTab extends Tab{
         }
     }
 
-    /**
-     * Closes this tab
-     */
-    public void close(){
 
-    }
 }
