@@ -551,7 +551,7 @@ public class Scanner
     {
 	    	ArrayList<Token> tokenStream = new ArrayList<Token>();
 	    	ErrorHandler errorHandler = new ErrorHandler();
-	    	String filename = System.getProperty("user.dir") + "/include/Doyoung.java";
+	    	String filename = System.getProperty("user.dir") + "/include/Jaemin.java";
 	    	Scanner scanner = new Scanner(filename, errorHandler);
 	    	
 	    	Token currentToken = scanner.scan();
