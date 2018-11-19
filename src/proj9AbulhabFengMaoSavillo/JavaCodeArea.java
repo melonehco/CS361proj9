@@ -216,8 +216,9 @@ public class JavaCodeArea extends CodeArea
                 .subscribe(ignore -> this.highlightText());
     }
 
-    // instead of referring to the edit menu, make a new context menu and store a bunch of built-in
-    // code area methods
+    /**
+     * set up the right click menu
+     */
     private void addRightClickMenu(){
 
         this.setOnMousePressed(event ->
@@ -235,26 +236,4 @@ public class JavaCodeArea extends CodeArea
         });
     }
 
-
-    /**
-     * Static helper method to duplicate the contents of a menu
-     *
-     * @param menuItems List of Menu items to be duplicated
-     * @return a clone of menu.getItems()
-     */
-    private static ObservableList<MenuItem> duplicateMenuItems(ObservableList<MenuItem> menuItems)
-    {
-        ArrayList<MenuItem> clone = new ArrayList<>();
-
-        menuItems.forEach(menuItem ->
-        {
-            MenuItem newItem = new MenuItem();
-            newItem.setText(menuItem.getText());
-            newItem.setOnAction(menuItem.getOnAction());
-            newItem.setId(menuItem.getId());
-            clone.add(newItem);
-        });
-
-        return FXCollections.observableList(clone);
-    }
 }

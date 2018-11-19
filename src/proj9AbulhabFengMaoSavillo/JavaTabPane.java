@@ -23,7 +23,7 @@ public class JavaTabPane extends TabPane {
     private ArrayList<Tab> tabList = new ArrayList<>();
 
     /**
-     *
+     * Constructor
      * @param contentString content of the new tab
      * @param file
      * @param handler
@@ -34,7 +34,6 @@ public class JavaTabPane extends TabPane {
 
         JavaTab newTab = new JavaTab(contentString,file,handler,menu);
 
-        //order is important
         this.getTabs().add(newTab);
         this.getSelectionModel().select(newTab);
 

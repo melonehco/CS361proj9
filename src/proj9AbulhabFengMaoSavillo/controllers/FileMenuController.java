@@ -304,6 +304,7 @@ public class FileMenuController
      * @param menuItems List of Menu items to be duplicated
      * @return a clone of menu.getItems()
      */
+    //TODO: Where to put this method?
     private static ObservableList<MenuItem> duplicateMenuItems(ObservableList<MenuItem> menuItems)
     {
         ArrayList<MenuItem> clone = new ArrayList<>();
@@ -344,7 +345,8 @@ public class FileMenuController
     }
 
     /**
-     * Handles the opening of a file independent of the FileChooserPrompt
+     * Handles the opening of a file
+     * @param file
      */
     public void openFile(File file)
     {
@@ -415,6 +417,7 @@ public class FileMenuController
         // then the styled code area is saved to that file
         else
         {
+            //TODO: Should we have a getCurrentCodeArea function in TabPane?
             if (!this.setFileContent(this.javaTabPane.getCurrentCodeArea().getText(),
                     this.javaTabPane.getCurrentFile()))
             {
