@@ -372,6 +372,11 @@ public class Controller
         this.directoryViewController.setTreeView(this.directoryTreeView);
     }
 
+    @FXML
+    private void handleScanButtonAction(){
+        this.toolbarController.handleScanButtonAction(this.javaTabPane.getCurrentFile());
+    }
+
     /**
      * Calls the method that handles the Compile button action from the toolbarController.
      *

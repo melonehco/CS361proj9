@@ -12,6 +12,7 @@ import javafx.application.Platform;
 import org.fxmisc.richtext.StyleClassedTextArea;
 import javafx.event.Event;
 
+import java.util.ArrayList;
 import java.util.concurrent.*;
 import java.io.*;
 
@@ -19,6 +20,10 @@ import javafx.concurrent.Task;
 import javafx.concurrent.Service;
 
 import proj9AbulhabFengMaoSavillo.ControllerErrorCreator;
+import proj9AbulhabFengMaoSavillo.bantam.lexer.Scanner;
+import proj9AbulhabFengMaoSavillo.bantam.lexer.Token;
+import proj9AbulhabFengMaoSavillo.bantam.util.ErrorHandler;
+
 
 /**
  * ToolbarController handles Toolbar related actions.
@@ -67,6 +72,12 @@ public class ToolBarController {
      */
     private CompileRunWorker compileRunWorker;
 
+
+    /**
+     * scanner
+     */
+    private Scanner scanner;
+
     /**
      * Initializes the ToolBarController controller.
      * Sets the Semaphore, the CompileWorker and the CompileRunWorker.
@@ -111,6 +122,58 @@ public class ToolBarController {
      */
     public CompileRunWorker getCompileRunWorker() {
         return this.compileRunWorker;
+    }
+
+
+    /**
+     * handler of the scan button
+     */
+    public void handleScanButtonAction(File file){
+        System.out.println("handleScanButtonAction");
+        scanFile(file);
+    }
+
+    /**
+     * helper function to scan the file
+     * @param file
+     */
+    private void scanFile(File file){
+    //TODO: print to our own console
+        Thread scanThread = new Thread();
+
+        scanThread = new Thread() {
+            public void run() {
+                try {
+                    ArrayList<Token> tokenStream = new ArrayList<Token>();
+                    ErrorHandler errorHandler = new ErrorHandler();
+                    String filename = file.getAbsolutePath();
+                    Scanner scanner = new Scanner(filename, errorHandler);
+
+                    Token currentToken = scanner.scan();
+                    while(currentToken.kind != Token.Kind.EOF)
+                    {
+                        tokenStream.add(currentToken);
+                        currentToken = scanner.scan();
+                    }
+
+                    for (Token t: tokenStream)
+                    {
+                        System.out.println(t);
+                        System.out.println("--------------------");
+                    }
+                } catch (Throwable e) {
+                    Platform.runLater(() -> {
+                        // print stop message if other thread hasn't
+                        if (consoleLength == console.getLength()) {
+                            console.appendText("\nScanner stopped unexpectedly\n");
+                            console.requestFollowCaret();
+                        }
+                    });
+                }
+            }
+        };
+        scanThread.start();
+
     }
 
     /**

@@ -7,6 +7,12 @@
  */
 
 
+#scanButton {
+    -fx-font: 13 arial;
+    -fx-base: paleTurquoise;
+    -fx-background-radius: 100;
+}
+
 #compileButton {
     -fx-font: 13 arial;
     -fx-base: paleTurquoise;
