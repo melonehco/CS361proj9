@@ -35,6 +35,7 @@ import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import proj9AbulhabFengMaoSavillo.Main;
+import proj9AbulhabFengMaoSavillo.ControllerErrorCreator;
 
 /**
  * Preferences Menu controller handles actions evoked by the Main window.
@@ -411,7 +412,7 @@ public class PreferencesMenuController {
     	}
     	catch (IOException e)
     	{
-    		createErrorDialog("Updating Preferences", "Preference file could not be accessed");
+    		ControllerErrorCreator.createErrorDialog("Updating Preferences", "Preference file could not be accessed");
     		return;
     	}
     	
@@ -419,20 +420,5 @@ public class PreferencesMenuController {
     	root.getStylesheets().remove(preferenceURLString);
     	preferenceURLString = getClass().getResource(preferenceFilePath).toExternalForm();
     	root.getStylesheets().add(preferenceURLString);
-    }
-
-    /**
-     * Creates a error dialog displaying message of any error encountered.
-     *
-     * @param errorTitle  String of the error title
-     * @param errorString String of error message
-     */
-    public void createErrorDialog(String errorTitle, String errorString)
-    {
-        Alert alert = new Alert(Alert.AlertType.WARNING);
-        alert.setTitle(errorTitle + " Error");
-        alert.setHeaderText("Error for " + errorTitle);
-        alert.setContentText(errorString);
-        alert.showAndWait();
     }
 }

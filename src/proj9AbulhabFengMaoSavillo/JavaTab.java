@@ -1,9 +1,11 @@
 package proj9AbulhabFengMaoSavillo;
 
+import com.sun.java.swing.action.FileMenu;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Tab;
 import org.fxmisc.flowless.VirtualizedScrollPane;
 import proj9AbulhabFengMaoSavillo.controllers.FileMenuController;
+import proj9AbulhabFengMaoSavillo.ControllerErrorCreator;
 
 import java.io.File;
 import java.nio.file.Files;
@@ -16,14 +18,12 @@ public class JavaTab extends Tab{
 
     private JavaCodeArea javaCodeArea;
     private File file;
-    private FileMenuController fileMenuController;
 
 
     public JavaTab(JavaCodeArea codeArea, File file){
         this.javaCodeArea = codeArea;
         this.setContent(new VirtualizedScrollPane<>(this.javaCodeArea));
-        this.fileMenuController = new FileMenuController();
-        this.setOnCloseRequest(fileMenuController::handleCloseAction);
+        this.setOnCloseRequest(event -> close());
         this.file = file;
         this.setTabName();
     }
@@ -105,25 +105,11 @@ public class JavaTab extends Tab{
         }
         catch (Exception ex)
         {
-            this.createErrorDialog("Reading File", "Cannot read " + file.getName() + ".");
+            ControllerErrorCreator.createErrorDialog("Reading File", "Cannot read " + file.getName() + ".");
             return null;
         }
     }
-
-    /**
-     * Creates a error dialog displaying message of any error encountered.
-     *
-     * @param errorTitle  String of the error title
-     * @param errorString String of error message
-     */
-    public void createErrorDialog(String errorTitle, String errorString)
-    {
-        Alert alert = new Alert(Alert.AlertType.WARNING);
-        alert.setTitle(errorTitle + " Error");
-        alert.setHeaderText("Error for " + errorTitle);
-        alert.setContentText(errorString);
-        alert.showAndWait();
-    }
+    
 
     /**
      * Sets the name of the tab to untitled if the file is new, or to the name of an existing file
@@ -138,5 +124,12 @@ public class JavaTab extends Tab{
         {
             this.setText(this.file.getName());
         }
+    }
+
+    /**
+     * Closes this tab
+     */
+    public void close(){
+
     }
 }
