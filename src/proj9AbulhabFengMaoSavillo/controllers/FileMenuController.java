@@ -236,7 +236,7 @@ public class FileMenuController
     }
 
     /**
-     * Helper method to handle closing tag action.
+     * Helper method to handle closing tab action.
      * If the text embedded in the tab window has not been saved yet,
      * or if a saved file has been changed, asks the user if to save
      * the file via a dialog window.
@@ -530,6 +530,7 @@ public class FileMenuController
      */
     public void handleCloseAction(Event event)
     {
+        System.out.println("handle close action");
         Tab selectedTab = this.javaTabPane.getCurrentTab();
 
         // selectedTab is null if this method is evoked by closing a tab
@@ -545,6 +546,7 @@ public class FileMenuController
             return;
         }
 
+        // If no tabs open after this, close structure view
         if (this.tablessProperty().getValue())
         {
             this.checkBox.setSelected(false);
