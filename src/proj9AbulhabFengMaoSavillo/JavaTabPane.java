@@ -19,11 +19,16 @@ import java.util.ArrayList;
 
 public class JavaTabPane extends TabPane {
 
-    //TODO: Maybe need a constructor
-    private ArrayList<Tab> tabList = new ArrayList<>();
+    private ArrayList<Tab> tabList;
 
     /**
-     * Constructor
+     * constructor, initialize the tab list
+     */
+    public JavaTabPane(){
+        this.tabList = new ArrayList<>();
+    }
+    /**
+     * Create a new tab
      * @param contentString content of the new tab
      * @param file
      * @param handler
