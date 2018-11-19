@@ -281,7 +281,6 @@ public class Scanner
                 if (this.currentChar == '*') //block comment
                 {
                     kind = Token.Kind.COMMENT;
-                    this.currentChar = this.sourceFile.getNextChar();
                     String tokenString = this.completeBlockCommentToken();
                     spelling.append(tokenString);
                 }
@@ -334,26 +333,54 @@ public class Scanner
      */
     private String completeStringToken()
     {
-    	StringBuilder spellingBuilder = new StringBuilder();
-    	
-    	//collect chars until closing double quote
-    	while (this.currentChar != '\"')
-    	{
-    		spellingBuilder.append(Character.toString(this.currentChar));
-        	this.currentChar = this.sourceFile.getNextChar();
-        	
-        	//TODO:
-            //EOF
-        	//check for newline
-        	//check for invalid escape chars
-        	//check if too long
-        	//handle having escaped quote \"
-    	}
-    	
-    	//append closing quote
-    	spellingBuilder.append(Character.toString(this.currentChar));
-    	
-    	return spellingBuilder.toString();
+	    	StringBuilder spellingBuilder = new StringBuilder();
+	    	
+	    	//collect chars until closing double quote
+	    	while (this.currentChar != '\"')
+	    	{
+	    		spellingBuilder.append(Character.toString(this.currentChar));
+	        	this.currentChar = this.sourceFile.getNextChar();
+	        	
+	        	//check for escaped chars
+	        	if (this.currentChar == '\\')
+	        	{
+	        		spellingBuilder.append(Character.toString(this.currentChar));
+	    	        this.currentChar = this.sourceFile.getNextChar();	        		
+	    	        
+	    	        //handle having escaped quote \"
+	    	        if (this.currentChar == '"')
+	    	        {
+		        		spellingBuilder.append(Character.toString(this.currentChar));
+		    	        this.currentChar = this.sourceFile.getNextChar();	  
+	    	        }
+	        		
+	    	        //check for invalid escape chars
+	    	        else if (this.currentChar != 'n' && this.currentChar != 't' &&
+	    	        		this.currentChar != '"' && this.currentChar != '\\' &&
+	    	        		this.currentChar != 'f' && this.currentChar != 'r')
+	    	        {
+	    	        		//TODO
+	    	        		System.out.println("illegal escape: " + this.currentChar);
+	    	        }
+	        	}
+	        	
+	        	//check if not terminated correctly
+	        	if (this.currentChar == SourceFile.eof || this.currentChar == SourceFile.eol)
+	        	{
+	        		System.out.println("string not terminated");
+	        		break;
+	        	}
+	        	
+	        	//TODO:
+	            //EOF
+	        	//check for newline
+	        	//check if too long
+	    	}
+	    	
+	    	//append closing quote
+	    	spellingBuilder.append(Character.toString(this.currentChar));
+	    	
+	    	return spellingBuilder.toString();
     }
     
     /**
@@ -376,7 +403,10 @@ public class Scanner
             if (atTentativeEnd) // if '*' has been seen
             {
                 if (this.currentChar == '/')    // block comment indeed terminated
+                {
+                		spellingBuilder.append(this.currentChar);
                     terminated = true;
+                }
                 else                            // otherwise just a '*' in the middle somewhere
                     atTentativeEnd = false;
             }
@@ -390,6 +420,7 @@ public class Scanner
         if (!terminated)
         {
             //TODO: error
+        		System.out.println("unterminated");
         }
 
         return spellingBuilder.toString();
@@ -407,7 +438,6 @@ public class Scanner
         //collect chars until end of line or file
         while (this.currentChar != '\n' && this.currentChar != SourceFile.eof)
         {
-            System.out.println(this.currentChar);
         		spellingBuilder.append(this.currentChar);
             this.currentChar = this.sourceFile.getNextChar();
         }
@@ -481,6 +511,9 @@ public class Scanner
 	    	}
 	    	
 	    	for (Token t: tokenStream)
-	    		System.out.println(t.spelling);
+	    	{
+	    		System.out.println(t);
+	    		System.out.println("--------------------");
+	    	}
     }
 }
