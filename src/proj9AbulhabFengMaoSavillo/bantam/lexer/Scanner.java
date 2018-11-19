@@ -209,13 +209,23 @@ public class Scanner
             spelling.append(this.completeIntconstToken());
             
             //check whether int is too long
-            int value = Integer.parseInt(spelling.toString());
-            if (value < 0)
+            try
             {
-		        	this.errorHandler.register(Error.Kind.LEX_ERROR,
-		    				this.sourceFile.getFilename(),
-		    				this.sourceFile.getCurrentLineNumber(),
-		    				"Integer exceeds maximum value");
+            	int value = Integer.parseInt(spelling.toString());
+                if (value < 0)
+                {
+    		        	this.errorHandler.register(Error.Kind.LEX_ERROR,
+    		    				this.sourceFile.getFilename(),
+    		    				this.sourceFile.getCurrentLineNumber(),
+    		    				"Integer exceeds maximum value");
+                }
+            }
+            catch (NumberFormatException e)
+            {
+            	this.errorHandler.register(Error.Kind.LEX_ERROR,
+	    				this.sourceFile.getFilename(),
+	    				this.sourceFile.getCurrentLineNumber(),
+	    				"Integer constant cannot be parsed");
             }
         }
         //identifier/boolean/keyword
@@ -541,7 +551,7 @@ public class Scanner
     {
 	    	ArrayList<Token> tokenStream = new ArrayList<Token>();
 	    	ErrorHandler errorHandler = new ErrorHandler();
-	    	String filename = System.getProperty("user.dir") + "/include/Winwin.java";
+	    	String filename = System.getProperty("user.dir") + "/include/Doyoung.java";
 	    	Scanner scanner = new Scanner(filename, errorHandler);
 	    	
 	    	Token currentToken = scanner.scan();
