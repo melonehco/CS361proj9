@@ -49,6 +49,8 @@ public class JavaTabPane extends TabPane {
      */
     public JavaTab getCurrentTab()
     {
+        System.out.println(this.getSelectionModel().
+                getSelectedItem());
         return (JavaTab)this.getSelectionModel().getSelectedItem();
 
     }
