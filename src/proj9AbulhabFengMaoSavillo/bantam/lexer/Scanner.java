@@ -61,15 +61,22 @@ public class Scanner
 
         boolean isTokenComplete = true; // start as true, and set to false if not a single char token
 
-        // Set first char to that caught in the buffer, if there was one. Else nextChar.
+        Character c = ' ';
         if (!this.buffer.isEmpty())
-            this.currentChar = this.buffer.poll();
+        {
+        		c = this.buffer.poll();
+        }
+        
+        // Set first char to that caught in the buffer, if there was one. Else nextChar.
+        if (!Character.isWhitespace(c))
+        {
+            this.currentChar = c;
+        }
         else
+        {
             do { this.currentChar = this.sourceFile.getNextChar(); }
-            while (this.currentChar == ' ' ||
-                    this.currentChar == '\n' ||
-                    this.currentChar == '\r' ||
-                    this.currentChar == '\t');
+            while (Character.isWhitespace(this.currentChar));
+        }
 
         spelling.append(this.currentChar);
         lineNumber = this.sourceFile.getCurrentLineNumber();
@@ -152,6 +159,7 @@ public class Scanner
                 break;
             case '\"':
                 kind = Token.Kind.STRCONST;
+                this.currentChar = this.sourceFile.getNextChar();
                 spelling.append(this.completeStringToken());
                 break;
             default:
@@ -168,12 +176,14 @@ public class Scanner
         if (Character.isDigit(this.currentChar))
         {
             kind = Token.Kind.INTCONST;
+            this.currentChar = this.sourceFile.getNextChar();
             spelling.append(this.completeIntconstToken());
         }
         //identifier/boolean/keyword
         else if (Character.isLetter(this.currentChar))
         {
             kind = Token.Kind.IDENTIFIER;
+            this.currentChar = this.sourceFile.getNextChar();
             spelling.append(this.completeIdentifierToken());
         }
         else
@@ -271,6 +281,7 @@ public class Scanner
                 if (this.currentChar == '*') //block comment
                 {
                     kind = Token.Kind.COMMENT;
+                    this.currentChar = this.sourceFile.getNextChar();
                     String tokenString = this.completeBlockCommentToken();
                     spelling.append(tokenString);
                 }
@@ -311,7 +322,8 @@ public class Scanner
             return new Token(kind, spelling.toString(), lineNumber);
         else
         {
-            System.out.println("something went wrong: char " + this.currentChar);
+            System.out.println("is whitespace?" + Character.isWhitespace(this.currentChar));
+        		System.out.println("something went wrong: char " + this.currentChar);
             return null;
         }
     }
@@ -358,8 +370,8 @@ public class Scanner
 
         while (!terminated && this.currentChar != SourceFile.eof)
         {
-            this.currentChar = this.sourceFile.getNextChar();
             spellingBuilder.append(this.currentChar);
+            this.currentChar = this.sourceFile.getNextChar();
 
             if (atTentativeEnd) // if '*' has been seen
             {
@@ -395,9 +407,12 @@ public class Scanner
         //collect chars until end of line or file
         while (this.currentChar != '\n' && this.currentChar != SourceFile.eof)
         {
+            System.out.println(this.currentChar);
+        		spellingBuilder.append(this.currentChar);
             this.currentChar = this.sourceFile.getNextChar();
-            spellingBuilder.append(this.currentChar);
         }
+
+        this.buffer.add(this.currentChar);
 
         return spellingBuilder.toString();
     }
@@ -420,6 +435,8 @@ public class Scanner
 
             //TODO: check whether int is too long
         }
+
+        this.buffer.add(this.currentChar);
 
         return spellingBuilder.toString();
     }
@@ -444,6 +461,8 @@ public class Scanner
             this.currentChar = this.sourceFile.getNextChar();
         }
 
+        this.buffer.add(this.currentChar);
+        
         return spellingBuilder.toString();
     }
     
@@ -461,6 +480,7 @@ public class Scanner
 	    		currentToken = scanner.scan();
 	    	}
 	    	
-	    	System.out.println(tokenStream);
+	    	for (Token t: tokenStream)
+	    		System.out.println(t.spelling);
     }
 }
