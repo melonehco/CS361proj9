@@ -253,14 +253,13 @@ public class ToolBarController
             this.mutex.release();
         }
 
-        //TODO rename
-        int intch;
+        int nextCharacter;
         // read in program output one character at a time
-        while ((intch = reader.read()) != -1)
+        while ((nextCharacter = reader.read()) != -1)
         {
             this.mutex.tryAcquire();
-            char ch = (char) intch;
-            String out = Character.toString(ch);
+            char c = (char) nextCharacter;
+            String out = Character.toString(c);
             Platform.runLater(() ->
                               {
                                   // add output to console
