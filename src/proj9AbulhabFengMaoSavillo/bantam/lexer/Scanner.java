@@ -500,7 +500,7 @@ public class Scanner
     {
 	    	ArrayList<Token> tokenStream = new ArrayList<Token>();
 	    	ErrorHandler errorHandler = new ErrorHandler();
-	    	String filename = "/Users/hopehu/Desktop/Winwin.java";
+	    	String filename = System.getProperty("user.dir") + "/include/Winwin.java";
 	    	Scanner scanner = new Scanner(filename, errorHandler);
 	    	
 	    	Token currentToken = scanner.scan();
