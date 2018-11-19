@@ -1,10 +1,12 @@
 package proj9AbulhabFengMaoSavillo.bantam.lexer;
 
-import proj9AbulhabFengMaoSavillo.bantam.util.ErrorHandler;
+import proj9AbulhabFengMaoSavillo.bantam.util.*;
+import proj9AbulhabFengMaoSavillo.bantam.util.Error;
 
 import java.io.Reader;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
+import java.util.List;
 
 
 public class Scanner
@@ -141,7 +143,6 @@ public class Scanner
 
         isTokenComplete = true; // set to true, and set to false if fails next check
 
-        //TODO: should check in these cases for whether illegal chars appear
         // complete longer tokens that can be identified at once by first char
         switch (this.currentChar)
         {
@@ -149,13 +150,41 @@ public class Scanner
                 kind = Token.Kind.BINARYLOGIC;
                 //add a second &
                 this.currentChar = this.sourceFile.getNextChar();
-                spelling.append(this.currentChar);
+                
+                if (this.currentChar != '&') //if not second &
+                {
+                		kind = Token.Kind.ERROR;
+                		this.errorHandler.register(Error.Kind.LEX_ERROR,
+        	    				this.sourceFile.getFilename(),
+        	    				lineNumber,
+        	    				"Badly formed binary logic operator: &");
+                    //has read in start of next token, so store in buffer
+                    this.buffer.add(this.currentChar);
+                }
+                else
+                {
+                    spelling.append(this.currentChar);
+                }
                 break;
             case '|':
                 kind = Token.Kind.BINARYLOGIC;
                 //add a second |
                 this.currentChar = this.sourceFile.getNextChar();
-                spelling.append(this.currentChar);
+                
+                if (this.currentChar != '|') //if not second |
+                {
+                		kind = Token.Kind.ERROR;
+                		this.errorHandler.register(Error.Kind.LEX_ERROR,
+        	    				this.sourceFile.getFilename(),
+        	    				lineNumber,
+        	    				"Badly formed binary logic operator: |");
+                    //has read in start of next token, so store in buffer
+                    this.buffer.add(this.currentChar);
+                }
+                else
+                {
+                    spelling.append(this.currentChar);
+                }
                 break;
             case '\"':
                 kind = Token.Kind.STRCONST;
@@ -178,6 +207,16 @@ public class Scanner
             kind = Token.Kind.INTCONST;
             this.currentChar = this.sourceFile.getNextChar();
             spelling.append(this.completeIntconstToken());
+            
+            //check whether int is too long
+            int value = Integer.parseInt(spelling.toString());
+            if (value < 0)
+            {
+		        	this.errorHandler.register(Error.Kind.LEX_ERROR,
+		    				this.sourceFile.getFilename(),
+		    				this.sourceFile.getCurrentLineNumber(),
+		    				"Integer exceeds maximum value");
+            }
         }
         //identifier/boolean/keyword
         else if (Character.isLetter(this.currentChar))
@@ -196,9 +235,6 @@ public class Scanner
 
         isTokenComplete = true;  // set to true, and set to false if fails next check
 
-        //TODO: I don't actually know how to organize this part
-        //but I'll just write it
-        //TODO check StringBuilder spelling = new StringBuilder();
         switch (this.currentChar)
         {
             case '+': //token can be + or ++
@@ -302,29 +338,23 @@ public class Scanner
                 isTokenComplete = false;
                 break;
         }
-
-        //if first char doesn't match any of above cases, is illegal char
-        //TODO: error
-
-    	/* TODO:
-    	-handle EOF in longer tokens
-    	-handle error thrown by SourceFile?
-    	*/
-
-        //digit -> int constant
-        //letter -> identifier; token handles distinction between letter things
-
-        //+ -> + or ++
-        //- -> - or --
-
+        
         if (isTokenComplete)
             return new Token(kind, spelling.toString(), lineNumber);
-        else
+        else //if first char doesn't match any of above cases, is illegal char
         {
-            System.out.println("is whitespace?" + Character.isWhitespace(this.currentChar));
-        		System.out.println("something went wrong: char " + this.currentChar);
-            return null;
+	        	this.errorHandler.register(Error.Kind.LEX_ERROR,
+	    				this.sourceFile.getFilename(),
+	    				lineNumber,
+	    				"Unexpected character: " + this.currentChar);
+	        	return new Token(Token.Kind.ERROR, spelling.toString(), lineNumber);
         }
+
+	    	/* TODO:
+	    	-handle error thrown by SourceFile?
+	    	-return error in every error case,
+	    	so make the complete... methods return Tokens instead of Strings
+	    	*/
     }
     
     /**
@@ -359,22 +389,33 @@ public class Scanner
 	    	        		this.currentChar != '"' && this.currentChar != '\\' &&
 	    	        		this.currentChar != 'f' && this.currentChar != 'r')
 	    	        {
-	    	        		//TODO
-	    	        		System.out.println("illegal escape: " + this.currentChar);
+		        		this.errorHandler.register(Error.Kind.LEX_ERROR,
+		        				this.sourceFile.getFilename(),
+		        				this.sourceFile.getCurrentLineNumber(),
+		        				"Illegal escape char in string: \\" + this.currentChar);
+		        		break;
 	    	        }
 	        	}
 	        	
 	        	//check if not terminated correctly
 	        	if (this.currentChar == SourceFile.eof || this.currentChar == SourceFile.eol)
 	        	{
-	        		System.out.println("string not terminated");
+	        		this.errorHandler.register(Error.Kind.LEX_ERROR,
+	        				this.sourceFile.getFilename(),
+	        				this.sourceFile.getCurrentLineNumber(),
+	        				"String not terminated");
 	        		break;
 	        	}
 	        	
-	        	//TODO:
-	            //EOF
-	        	//check for newline
 	        	//check if too long
+	        	if (spellingBuilder.length() > 5000)
+	        	{
+	        		this.errorHandler.register(Error.Kind.LEX_ERROR,
+	        				this.sourceFile.getFilename(),
+	        				this.sourceFile.getCurrentLineNumber(),
+	        				"String exceeds maximum length");
+	        		break;
+	        	}
 	    	}
 	    	
 	    	//append closing quote
@@ -419,8 +460,10 @@ public class Scanner
         //if left loop before seeing "*/", block comment was not terminated correctly
         if (!terminated)
         {
-            //TODO: error
-        		System.out.println("unterminated");
+	    		this.errorHandler.register(Error.Kind.LEX_ERROR,
+	    				this.sourceFile.getFilename(),
+	    				this.sourceFile.getCurrentLineNumber(),
+	    				"Block comment not terminated");
         }
 
         return spellingBuilder.toString();
@@ -462,8 +505,6 @@ public class Scanner
         {
             spellingBuilder.append(this.currentChar);
             this.currentChar = this.sourceFile.getNextChar();
-
-            //TODO: check whether int is too long
         }
 
         this.buffer.add(this.currentChar);
@@ -513,6 +554,15 @@ public class Scanner
 	    	for (Token t: tokenStream)
 	    	{
 	    		System.out.println(t);
+	    		System.out.println("--------------------");
+	    	}
+	    	
+	    	System.out.println("===================ERRORS");
+	    	
+	    	List<Error> errors = errorHandler.getErrorList();
+	    	for (Error e: errors)
+	    	{
+	    		System.out.println(e);
 	    		System.out.println("--------------------");
 	    	}
     }
