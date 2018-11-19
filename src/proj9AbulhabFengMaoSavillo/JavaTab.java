@@ -1,9 +1,19 @@
+/*
+ * File: JavaTab
+ * F18 CS361 Project 9
+ * Names: Melody Mao, Zena Abulhab, Yi Feng, Evan Savillo
+ * Date: 11/18/18
+ */
+
 package proj9AbulhabFengMaoSavillo;
 
+import javafx.collections.ObservableList;
+import javafx.event.Event;
+import javafx.event.EventHandler;
 import javafx.scene.control.Alert;
+import javafx.scene.control.MenuItem;
 import javafx.scene.control.Tab;
 import org.fxmisc.flowless.VirtualizedScrollPane;
-import proj9AbulhabFengMaoSavillo.controllers.FileMenuController;
 
 import java.io.File;
 import java.nio.file.Files;
@@ -16,16 +26,19 @@ public class JavaTab extends Tab{
 
     private JavaCodeArea javaCodeArea;
     private File file;
-    private FileMenuController fileMenuController;
 
 
-    public JavaTab(JavaCodeArea codeArea, File file){
-        this.javaCodeArea = codeArea;
+    public JavaTab(String contentString, File file, EventHandler<Event> handler, ObservableList<MenuItem> menu){
+
+        this.javaCodeArea = new JavaCodeArea(menu);
+        this.javaCodeArea.appendText(contentString);
+
         this.setContent(new VirtualizedScrollPane<>(this.javaCodeArea));
-        this.fileMenuController = new FileMenuController();
-        this.setOnCloseRequest(fileMenuController::handleCloseAction);
+
         this.file = file;
         this.setTabName();
+
+        this.setOnCloseRequest(handler);
     }
 
     /**
@@ -44,6 +57,11 @@ public class JavaTab extends Tab{
         return javaCodeArea;
     }
 
+
+    /**
+     * set file
+     * @param file
+     */
     public void setFile(File file){
         this.file = file;
     }
@@ -139,4 +157,6 @@ public class JavaTab extends Tab{
             this.setText(this.file.getName());
         }
     }
+
+
 }

@@ -1,8 +1,8 @@
 /*
  * File: Controller.java
- * F18 CS361 Project 7
+ * F18 CS361 Project 9
  * Names: Melody Mao, Zena Abulhab, Yi Feng, Evan Savillo
- * Date: 11/03/18
+ * Date: 11/18/18
  * This file contains the Main controller class, handling actions evoked by the Main window.
  */
 
@@ -22,8 +22,7 @@ import org.fxmisc.richtext.StyleClassedTextArea;
 import proj9AbulhabFengMaoSavillo.JavaCodeArea;
 
 import java.io.File;
-import java.util.HashMap;
-import java.util.Map;
+
 
 
 /**

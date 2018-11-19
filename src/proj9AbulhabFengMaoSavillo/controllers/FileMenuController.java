@@ -11,12 +11,12 @@ package proj9AbulhabFengMaoSavillo.controllers;
 import javafx.application.Platform;
 import javafx.beans.property.ReadOnlyBooleanProperty;
 import javafx.beans.property.SimpleListProperty;
+import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.Event;
 import javafx.scene.control.*;
 import javafx.stage.FileChooser;
 import javafx.stage.Window;
-import org.fxmisc.flowless.VirtualizedScrollPane;
 import proj9AbulhabFengMaoSavillo.JavaCodeArea;
 import proj9AbulhabFengMaoSavillo.JavaTab;
 import proj9AbulhabFengMaoSavillo.JavaTabPane;
@@ -162,14 +162,14 @@ public class FileMenuController
     }
 
     /**
-     * Helper method to handle closing tag action.
-     * Removed the tab from the tab file mapping and from the TabPane.
+     * Calls the removeTab function in javaTabPane
      *
      * @param tab Tab to be closed
      */
-    private void removeTab(Tab tab)
+    private void removeTab(JavaTab tab)
     {
-        this.javaTabPane.getTabs().remove(tab);
+        this.javaTabPane.removeTab(tab);
+
     }
 
     /**
@@ -291,72 +291,33 @@ public class FileMenuController
      */
     public void handleNewAction()
     {
-        this.javaTabPane.createTab("", "untitled", null);
+        ObservableList<MenuItem> editMenuCopy = duplicateMenuItems(this.editMenu.getItems());
+        this.javaTabPane.createTab("", null, this::handleCloseAction,editMenuCopy);
     }
 
-//    /**
-//     * Helper method to create a new tab.
-//     *
-//     * @param contentString the contentString being added into the styled code area; empty string if
-//     *                      creating an empty window
-//     * @param filename      the name of the file opened; "untitled" if creating an empty window
-//     * @param file          File opened; null if creating an empty window
-//     */
-//    private void createTab(String contentString, String filename, File file)
-//    {
-//        //this.javaTabPane.handleNewTab();
-//        JavaCodeArea newJavaCodeArea = new JavaCodeArea();
-//        newJavaCodeArea.appendText(contentString); //set to given contents
-//
-//        // Generate the context menu on right-clicking the code area
-//        ContextMenu contextMenu = new ContextMenu();
-//        contextMenu.getItems().addAll(duplicateMenuItems(this.editMenu.getItems()));
-//        newJavaCodeArea.setOnMousePressed(event ->
-//                                          {
-//                                              if (event.isSecondaryButtonDown())
-//                                              {
-//                                                  contextMenu.show(newJavaCodeArea,
-//                                                                   event.getScreenX(),
-//                                                                   event.getScreenY());
-//                                              }
-//                                              else if (event.isPrimaryButtonDown() && contextMenu.isShowing())
-//                                              {
-//                                                  contextMenu.hide();
-//                                              }
-//                                          });
-//
-//        Tab newTab = new Tab();
-//        newTab.setText(filename);
-//        newTab.setContent(new VirtualizedScrollPane<>(newJavaCodeArea));
-//        newTab.setOnCloseRequest(this::handleCloseAction); //clicking the 'x'
-//
-//        //order is important
-//        this.tabFileMap.put(newTab, file);
-//        this.javaTabPane.getTabs().add(newTab);
-//        this.javaTabPane.getSelectionModel().select(newTab);
-//    }
-//
-//    /**
-//     * Static helper method to duplicate the contents of a menu
-//     *
-//     * @param menuItems List of Menu items to be duplicated
-//     * @return a clone of menu.getItems()
-//     */
-//    private static ObservableList<MenuItem> duplicateMenuItems(ObservableList<MenuItem> menuItems)
-//    {
-//        ArrayList<MenuItem> clone = new ArrayList<>();
-//
-//        menuItems.forEach(menuItem ->
-//                          {
-//                              MenuItem newItem = new MenuItem();
-//                              newItem.setText(menuItem.getText());
-//                              newItem.setOnAction(menuItem.getOnAction());
-//                              newItem.setId(menuItem.getId());
-//                              clone.add(newItem);
-//                          });
-//
-//        return FXCollections.observableList(clone);
-//    }
+
+
+    /**
+     * Static helper method to duplicate the contents of a menu
+     *
+     * @param menuItems List of Menu items to be duplicated
+     * @return a clone of menu.getItems()
+     */
+    private static ObservableList<MenuItem> duplicateMenuItems(ObservableList<MenuItem> menuItems)
+    {
+        ArrayList<MenuItem> clone = new ArrayList<>();
+
+        menuItems.forEach(menuItem ->
+                          {
+                              MenuItem newItem = new MenuItem();
+                              newItem.setText(menuItem.getText());
+                              newItem.setOnAction(menuItem.getOnAction());
+                              newItem.setId(menuItem.getId());
+                              clone.add(newItem);
+                          });
+
+        return FXCollections.observableList(clone);
+    }
 
     /**
      * Handles the open button action.
@@ -406,7 +367,9 @@ public class FileMenuController
         if (contentString == null)
             return;
 
-        this.javaTabPane.createTab(contentString, file.getName(), file);
+        //TODO: MAYBE CODE DUPLICATE?
+        ObservableList<MenuItem> editMenuCopy = duplicateMenuItems(this.editMenu.getItems());
+        this.javaTabPane.createTab(contentString, file, this::handleCloseAction, editMenuCopy);
     }
 
     /**
@@ -530,6 +493,8 @@ public class FileMenuController
      */
     public void handleCloseAction(Event event)
     {
+        System.out.println("entered handleCloseAction");
+        if (this.javaTabPane.getCurrentTab()==null)System.out.println("null tab");
         Tab selectedTab = this.javaTabPane.getCurrentTab();
 
         // selectedTab is null if this method is evoked by closing a tab
@@ -560,7 +525,7 @@ public class FileMenuController
      */
     public void handleExitAction(Event event)
     {
-        ArrayList<Tab> list = this.javaTabPane.getTabList();
+        ArrayList<Tab> list = new ArrayList<>(this.javaTabPane.getTabList());
         Iterator<Tab> iter = list.iterator();
         while(iter.hasNext()){
             JavaTab tab = (JavaTab) iter.next();
@@ -592,7 +557,7 @@ public class FileMenuController
         dialog.setTitle("About");
         dialog.setHeaderText("Authors");
         dialog.setContentText(
-                "_.-- Project 6,7 --._ \n    Melody Mao\n    Zena Abulhab\n    Yi Feng\n    Evan Savillo" +
+                "_.-- Project 6,7,9 --._ \n    Melody Mao\n    Zena Abulhab\n    Yi Feng\n    Evan Savillo" +
                         "\n\n_.-- Project 5 --._ \n    Liwei Jiang\n    Martin Deutsch\n    Melody Mao\n    Tatsuya Yakota\n\n" +
                         "_.-- Project 4 --._ \n    Liwei Jiang\n    Danqing Zhao\n    Wyett MacDonald\n    Zeb Keith-Hardy"
         );
