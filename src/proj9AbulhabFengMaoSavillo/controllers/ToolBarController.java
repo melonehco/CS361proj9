@@ -68,6 +68,8 @@ public class ToolBarController
      */
     private FileMenuController fileMenuController;
 
+    private Thread thread;
+
     /**
      * Initializes the ToolBarController controller.
      * Sets the Semaphore, the CompileWorker and the CompileRunWorker.
@@ -109,6 +111,28 @@ public class ToolBarController
         }
         else
         {
+            // This may or may not solve a hard-to-replicate bug.
+            if (this.thread != null)
+            {
+                if (this.thread.isAlive())
+                {
+                    try
+                    {
+                        this.thread.join(5000);
+                    }
+                    catch (Exception e)
+                    {
+                        System.out.println("threading headaches1");
+                    }
+                    finally
+                    {
+                        if (!this.thread.isInterrupted())
+                            this.thread.interrupt();
+                        this.thread = null;
+                    }
+                }
+            }
+
             Platform.runLater(() ->
                               {
                                   this.console.clear();
@@ -153,9 +177,9 @@ public class ToolBarController
                 }
             };
 
-            Thread newThread = new Thread(task);
-            newThread.setDaemon(true);
-            newThread.start();
+            this.thread = new Thread(task);
+            this.thread.setDaemon(true);
+            this.thread.start();
         }
 
     }
