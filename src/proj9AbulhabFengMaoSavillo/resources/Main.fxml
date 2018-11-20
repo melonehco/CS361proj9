@@ -75,7 +75,7 @@
     <ToolBar VBox.vgrow="ALWAYS">
         <Button fx:id="scanButton" onAction="#handleScanButtonAction" text="Scan"/>
         <Separator maxWidth="25" minWidth="25"/>
-        <CheckBox fx:id="checkBox" alignment="CENTER_RIGHT" mnemonicParsing="false" text="Display File Structure"/>
+        <CheckBox fx:id="checkBox" alignment="CENTER_RIGHT" mnemonicParsing="false" text="Display File Structure/Directory"/>
     </ToolBar>
     <SplitPane fx:id="horizontalSplitPane" dividerPositions="0.25" prefHeight="1581.0" prefWidth="5387.0"
                VBox.vgrow="ALWAYS">
