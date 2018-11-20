@@ -38,9 +38,10 @@ public class JavaTabPane extends TabPane {
 
         JavaTab newTab = new JavaTab(contentString,file,handler,rightClickMenu);
 
+        this.getTabs().add(newTab);
+
         this.getSelectionModel().select(newTab);
 
-        this.getTabs().add(newTab);
     }
 
     /**

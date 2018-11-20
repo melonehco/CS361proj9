@@ -7,8 +7,6 @@ Date: 11/20/2018
 
 package proj9AbulhabFengMaoSavillo.controllers;
 
-import javafx.application.Platform;
-import javafx.beans.property.BooleanProperty;
 import javafx.concurrent.Task;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;

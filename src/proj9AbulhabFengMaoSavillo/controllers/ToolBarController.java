@@ -12,7 +12,6 @@ import javafx.application.Platform;
 import org.fxmisc.richtext.StyleClassedTextArea;
 import javafx.event.Event;
 import java.util.List;
-import java.util.concurrent.*;
 import java.io.*;
 import javafx.concurrent.Task;
 import proj9AbulhabFengMaoSavillo.JavaCodeArea;
@@ -88,7 +87,7 @@ public class ToolBarController
                     }
                     catch (Exception e)
                     {
-                        System.out.println("threading headaches1");
+                        System.out.println("threading exception");
                     }
                     finally
                     {
