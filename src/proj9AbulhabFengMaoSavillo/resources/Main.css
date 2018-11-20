@@ -13,23 +13,6 @@
     -fx-background-radius: 100;
 }
 
-#compileButton {
-    -fx-font: 13 arial;
-    -fx-base: paleTurquoise;
-    -fx-background-radius: 100;
-}
-
-#compileRunButton {
-    -fx-font: 13 arial;
-    -fx-base: PaleGreen;
-    -fx-background-radius: 100;
-}
-
-#stopButton {
-    -fx-font: 13 arial;
-    -fx-base: lightpink;
-    -fx-background-radius: 100;
-}
 
 /* style of keywords */
 .keyword {
