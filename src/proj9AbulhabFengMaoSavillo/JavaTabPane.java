@@ -19,14 +19,6 @@ import java.util.ArrayList;
 
 public class JavaTabPane extends TabPane {
 
-    private ArrayList<Tab> tabList;
-
-    /**
-     * constructor, initialize the tab list
-     */
-    public JavaTabPane(){
-        this.tabList = new ArrayList<>();
-    }
 
     /**
      * Create a new tab
@@ -40,10 +32,9 @@ public class JavaTabPane extends TabPane {
 
         JavaTab newTab = new JavaTab(contentString,file,handler,rightClickMenu);
 
-        this.getTabs().add(newTab);
         this.getSelectionModel().select(newTab);
 
-        this.tabList.add(newTab);
+        this.getTabs().add(newTab);
     }
 
     /**
@@ -51,7 +42,6 @@ public class JavaTabPane extends TabPane {
      * @param tab
      */
     public void removeTab(JavaTab tab){
-        this.tabList.remove(tab);
         this.getTabs().remove(tab);
 
     }
@@ -101,13 +91,6 @@ public class JavaTabPane extends TabPane {
         else return null;
     }
 
-    /**
-     * getter of the tabList
-     * @return tabList
-     */
-    public ArrayList<Tab> getTabList() {
-        return tabList;
-    }
 
 
 

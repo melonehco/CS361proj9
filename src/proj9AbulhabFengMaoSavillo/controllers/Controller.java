@@ -434,7 +434,7 @@ public class Controller
     @FXML
     private void handleNewAction()
     {
-        this.fileMenuController.handleNewAction();
+        this.fileMenuController.handleNewTabAction();
         //this.updateStructureView();
     }
 
