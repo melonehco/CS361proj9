@@ -1,8 +1,8 @@
 /*
- * File: Controller.java
- * F18 CS361 Project 7
+ * File: DirectoryViewController.java
+ * F18 CS361 Project 9
  * Names: Melody Mao, Zena Abulhab, Yi Feng, Evan Savillo
- * Date: 11/03/18
+ * Date: 11/20/18
  * This file contains the DirectoryViewController from another group's project
  */
 
@@ -10,7 +10,6 @@ package proj9AbulhabFengMaoSavillo.controllers;
 
 import javafx.event.EventHandler;
 import javafx.scene.control.Tab;
-import javafx.scene.control.TabPane;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
 import javafx.scene.input.MouseEvent;
@@ -36,10 +35,6 @@ public class DirectoryViewController
      * the tree view representing the directory
      */
     private TreeView<String> treeView;
-    /**
-     * a HashMap mapping the tabs and the associated files
-     */
-    private Map<Tab, File> tabFileMap;
     /**
      * A HashMap mapping the TreeItems and associated files
      */
@@ -84,16 +79,6 @@ public class DirectoryViewController
 
             this.fileMenuController.openFile(this.treeItemFileMap.get(selectedItem));
         }
-    }
-
-    /**
-     * Sets the tabFileMap.
-     *
-     * @param tabFileMap HashMap mapping the tabs and the associated files
-     */
-    public void setTabFileMap(Map<Tab, File> tabFileMap)
-    {
-        this.tabFileMap = tabFileMap;
     }
 
     /**

@@ -1,8 +1,8 @@
 /*
  * File: ToolBarController.java
- * F18 CS361 Project 7
+ * F18 CS361 Project 9
  * Names: Melody Mao, Zena Abulhab, Yi Feng, Evan Savillo
- * Date: 10/27/2018
+ * Date: 11/20/2018
  * This file contains the ToolBarController class, handling Toolbar related actions.
  */
 
@@ -12,7 +12,6 @@ import javafx.application.Platform;
 import org.fxmisc.richtext.StyleClassedTextArea;
 import javafx.event.Event;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.*;
 import java.io.*;

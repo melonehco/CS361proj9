@@ -2,21 +2,19 @@
  * File: Controller.java
  * F18 CS361 Project 9
  * Names: Melody Mao, Zena Abulhab, Yi Feng, Evan Savillo
- * Date: 11/18/18
+ * Date: 11/20/18
  * This file contains the Main controller class, handling actions evoked by the Main window.
  */
 
 package proj9AbulhabFengMaoSavillo.controllers;
 
 import proj9AbulhabFengMaoSavillo.JavaTabPane;
-import javafx.beans.property.ReadOnlyBooleanProperty;
 import javafx.event.ActionEvent;
 import javafx.event.Event;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
-import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.VBox;
 import org.fxmisc.richtext.StyleClassedTextArea;
 import proj9AbulhabFengMaoSavillo.JavaCodeArea;
@@ -358,7 +356,7 @@ public class Controller
     @FXML
     private void handleNewAction()
     {
-        this.fileMenuController.handleNewAction();
+        this.fileMenuController.handleNewTabAction();
         //this.updateStructureView();
     }
 

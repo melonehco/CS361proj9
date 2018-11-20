@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <!--File: Main.fxml-->
-<!--F18 CS361 Project 7-->
+<!--F18 CS361 Project 9-->
 <!--Names: Melody Mao, Zena Abulhab, Yi Feng, Evan Savillo-->
 <!--FXML file, laying out GUI elements of Main.java-->
-<!--Date: 11/3/2018-->
-<!--imported packages-->
+<!--Date: 11/20/2018-->
 
+<!--imported packages-->
 <?import proj9AbulhabFengMaoSavillo.JavaTabPane?>
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.CheckBox?>
