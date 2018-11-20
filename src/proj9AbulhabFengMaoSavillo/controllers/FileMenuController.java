@@ -169,7 +169,7 @@ public class FileMenuController
      */
     public JavaCodeArea giveNewCodeArea()
     {
-        Platform.runLater(this::handleNewAction);
+        this.handleNewAction();
         JavaCodeArea newCodeArea = this.javaTabPane.getCurrentCodeArea();
         newCodeArea.setEditable(false);
         return newCodeArea;

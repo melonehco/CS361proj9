@@ -154,8 +154,18 @@ public class ToolBarController
         }
         else
         {
-            scanWorker.setFile(file);
-            scanWorker.restart();
+            Scanner scanner = new Scanner(file.getAbsolutePath(), new ErrorHandler());
+
+            JavaCodeArea outputArea = requestAreaForOutput();
+
+            Token currentToken = scanner.scan();
+            while (currentToken.kind != Token.Kind.EOF)
+            {
+                outputArea.appendText(currentToken.toString() + "\n");
+                currentToken = scanner.scan();
+            }
+
+            outputArea.setEditable(true);
         }
     }
 
@@ -280,20 +290,9 @@ public class ToolBarController
                 {
                     try
                     {
-                        mutex.acquire();
+                        mutex.tryAcquire();
 
-                        Scanner scanner = new Scanner(file.getAbsolutePath(), new ErrorHandler());
 
-                        JavaCodeArea outputArea = requestAreaForOutput();
-
-                        Token currentToken = scanner.scan();
-                        while (currentToken.kind != Token.Kind.EOF)
-                        {
-                            outputArea.appendText(currentToken.toString() + "\n");
-                            currentToken = scanner.scan();
-                        }
-
-                        outputArea.setEditable(true);
                     }
                     catch (Throwable e)
                     {
@@ -695,3 +694,77 @@ public class ToolBarController
         }
     }
 }
+
+/*
+    private boolean scanBantamFile(File file)
+    {
+        try
+        {
+            Platform.runLater(() ->
+                              {
+                                  this.console.clear();
+                                  consoleLength = 0;
+                              });
+
+            this.outThread = new Thread()
+            {
+                public void run()
+                {
+                    try
+                    {
+                        mutex.tryAcquire();
+
+                        Scanner scanner = new Scanner(file.getAbsolutePath(), new ErrorHandler());
+
+                        JavaCodeArea outputArea = requestAreaForOutput();
+
+                        Token currentToken = scanner.scan();
+                        while (currentToken.kind != Token.Kind.EOF)
+                        {
+                            outputArea.appendText(currentToken.toString() + "\n");
+                            currentToken = scanner.scan();
+                        }
+
+                        outputArea.setEditable(true);
+                    }
+                    catch (Throwable e)
+                    {
+                        e.printStackTrace();
+                        Platform.runLater(() ->
+                                          {
+                                              // print stop message if other thread hasn't
+                                              if (consoleLength == console.getLength())
+                                              {
+                                                  console.appendText("\nScanner stopped unexpectedly\n");
+                                                  console.requestFollowCaret();
+                                              }
+                                          });
+                    }
+                }
+            };
+
+            this.outThread.setDaemon(true);
+            this.outThread.start();
+
+            this.outThread.join();
+
+            System.out.println("isalive: " + this.outThread.isAlive());
+
+            // true if ran without error, else false
+            return !this.outThread.isAlive();
+        }
+        catch (Throwable e)
+        {
+            Platform.runLater(() ->
+                              {
+                                  ControllerErrorCreator.createErrorDialog("File Running",
+                                                                           "Error running " + file.getName() + ".");
+                              });
+            return false;
+        }
+        finally
+        {
+            mutex.release();
+        }
+    }
+ */
