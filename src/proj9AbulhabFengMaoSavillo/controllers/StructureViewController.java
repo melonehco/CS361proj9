@@ -1,13 +1,12 @@
 /*
-File: Controller.java
-CS361 Project 7
+File: StructureViewController.java
+CS361 Project 9
 Names: Melody Mao, Zena Abulhab, Yi Feng, and Evan Savillo
-Date: 10/27/2018
+Date: 11/20/2018
 */
 
 package proj9AbulhabFengMaoSavillo.controllers;
 
-import javafx.scene.control.TabPane;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
 import javafx.scene.image.Image;
