@@ -2,8 +2,7 @@
  * File: EditMenuController.java
  * F18 CS361 Project 9
  * Names: Melody Mao, Zena Abulhab, Yi Feng, Evan Savillo
- * Find and Replace functionality adapted from Yue Lian, Mingchen Li, Peison Zhou, Zeb Keith-Hardy
- * Date: 10/27/2018
+ * Date: 11/20/2018
  * This file contains the EditMenuController class, handling Edit menu related actions.
  */
 
@@ -19,16 +18,12 @@ import proj9AbulhabFengMaoSavillo.JavaTabPane;
 
 
 /**
- * Main controller handles Edit menu related actions.
+ * Edit menu controller handles Edit menu related actions.
  *
  * @author Zena Abulhab
  * @author Yi Feng
  * @author Melody Mao
  * @author Evan Savillo
- * @author Yue Lian
- * @author Mingchen Li
- * @author Peison Zhou
- * @author Zeb Keith-Hardy
  */
 public class EditMenuController {
     /**

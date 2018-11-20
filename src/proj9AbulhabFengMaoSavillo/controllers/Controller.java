@@ -2,21 +2,19 @@
  * File: Controller.java
  * F18 CS361 Project 9
  * Names: Melody Mao, Zena Abulhab, Yi Feng, Evan Savillo
- * Date: 11/18/18
+ * Date: 11/20/18
  * This file contains the Main controller class, handling actions evoked by the Main window.
  */
 
 package proj9AbulhabFengMaoSavillo.controllers;
 
 import proj9AbulhabFengMaoSavillo.JavaTabPane;
-import javafx.beans.property.ReadOnlyBooleanProperty;
 import javafx.event.ActionEvent;
 import javafx.event.Event;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
-import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.VBox;
 import org.fxmisc.richtext.StyleClassedTextArea;
 import proj9AbulhabFengMaoSavillo.JavaCodeArea;
@@ -59,21 +57,6 @@ public class Controller
      * Controller for the directory
      */
     private DirectoryViewController directoryViewController;
-    /**
-     * Compile button defined in Main.fxml
-     */
-    @FXML
-    private Button compileButton;
-    /**
-     * CompileRun button defined in Main.fxml
-     */
-    @FXML
-    private Button compileRunButton;
-    /**
-     * Stop button defined in Main.fxml
-     */
-    @FXML
-    private Button stopButton;
     /**
      * TabPane defined in Main.fxml
      */
@@ -139,13 +122,6 @@ public class Controller
     @FXML
     private SplitPane horizontalSplitPane;
 
-
-
-
-    private ToolBarController.CompileWorker compileWorker;
-
-    private ToolBarController.CompileRunWorker compileRunWorker;
-
     /**
      * This function is called after the FXML fields are populated.
      * Sets up references to the sub Controllers.
@@ -182,16 +158,6 @@ public class Controller
      */
     private void setupEventAwareness()
     {
-        // Prevents user from moving caret in console during running
-        {
-            this.console.addEventFilter(MouseEvent.ANY, event ->
-            {
-                this.console.requestFocus();
-                if (this.compileRunWorker.isRunning())
-                    event.consume();
-            });
-        }
-
         // Detects presses to tab (overriding the system default that deletes the selection) and calls tabOrUntab
         {
             this.javaTabPane.addEventFilter(KeyEvent.KEY_PRESSED, event ->
@@ -301,18 +267,10 @@ public class Controller
      */
     private void setButtonBinding()
     {
-        ReadOnlyBooleanProperty ifCompiling = this.compileWorker.runningProperty();
-        ReadOnlyBooleanProperty ifCompilingRunning = this.compileRunWorker.runningProperty();
-
         this.closeMenuItem.disableProperty().bind(this.fileMenuController.tablessProperty());
         this.saveMenuItem.disableProperty().bind(this.fileMenuController.tablessProperty());
         this.saveAsMenuItem.disableProperty().bind(this.fileMenuController.tablessProperty());
         this.editMenu.disableProperty().bind(this.fileMenuController.tablessProperty());
-
-        this.stopButton.disableProperty().bind(((ifCompiling.not()).and(ifCompilingRunning.not())).or(this.fileMenuController.tablessProperty()));
-        this.compileButton.disableProperty().bind(ifCompiling.or(ifCompilingRunning).or(this.fileMenuController.tablessProperty()));
-        this.compileRunButton.disableProperty().bind(ifCompiling.or(ifCompilingRunning).or(this.fileMenuController.tablessProperty()));
-
     }
 
     /**
@@ -323,9 +281,6 @@ public class Controller
         this.toolbarController.setConsole(this.console);
         this.toolbarController.setFileMenuController(this.fileMenuController);
         this.toolbarController.initialize();
-        this.compileWorker = this.toolbarController.getCompileWorker();
-        this.compileRunWorker = this.toolbarController.getCompileRunWorker();
-        //TODO scanworker
     }
 
     /**
@@ -384,39 +339,6 @@ public class Controller
     private void handleScanButtonAction(Event event)
     {
         this.toolbarController.handleScanButtonAction(event, this.javaTabPane.getCurrentFile());
-    }
-
-    /**
-     * Calls the method that handles the Compile button action from the toolbarController.
-     *
-     * @param event Event object
-     */
-    @FXML
-    private void handleCompileButtonAction(Event event)
-    {
-        this.toolbarController.handleCompileButtonAction(event,
-                this.javaTabPane.getCurrentFile());
-    }
-
-    /**
-     * Calls the method that handles the CompileRun button action from the toolbarController.
-     *
-     * @param event Event object
-     */
-    @FXML
-    private void handleCompileRunButtonAction(Event event)
-    {
-        this.toolbarController.handleCompileRunButtonAction(event,
-                this.javaTabPane.getCurrentFile());
-    }
-
-    /**
-     * Calls the method that handles the Stop button action from the toolbarController.
-     */
-    @FXML
-    private void handleStopButtonAction()
-    {
-        this.toolbarController.handleStopButtonAction();
     }
 
     /**

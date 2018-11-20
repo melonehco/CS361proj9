@@ -2,7 +2,7 @@
  * File: StyledCodeArea.java
  * F18 CS361 Project 9
  * Names: Melody Mao, Zena Abulhab, Yi Feng, Evan Savillo
- * Date: 11/28/2018
+ * Date: 11/20/2018
  * This file contains the StyledCodeArea class, which extends the CodeArea class
  * to handle syntax highlighting for Java.
  */

@@ -1,3 +1,12 @@
+/*
+ * File: Scanner.java
+ * F18 CS361 Project 9
+ * Names: Melody Mao, Zena Abulhab, Yi Feng, Evan Savillo
+ * Date: 11/20/18
+ * This file contains the Scanner class, which reads through a file character by
+ * character and generates a stream of Bantam Java tokens.
+ */
+
 package proj9AbulhabFengMaoSavillo.bantam.lexer;
 
 import proj9AbulhabFengMaoSavillo.bantam.util.*;
@@ -5,19 +14,30 @@ import proj9AbulhabFengMaoSavillo.bantam.util.Error;
 
 import java.io.Reader;
 import java.util.ArrayDeque;
-import java.util.ArrayList;
 import java.util.List;
 
-
+/**
+ * The Scanner class reads in a stream of characters from a file
+ * and converts them into Bantam Java tokens.
+ * 
+ * @author Zena Abulhab
+ * @author Yi Feng
+ * @author Melody Mao
+ * @author Evan Savillo
+ *
+ */
 public class Scanner
 {
-	private SourceFile sourceFile;
+    private SourceFile sourceFile;
     private ErrorHandler errorHandler;
 
     private char currentChar;
     private ArrayDeque<Character> buffer; // for when another token is found too early.
 
-    //Code?
+    /**
+     * Creates a new Scanner that registers errors to the given ErrorHandler
+     * @param handler ErrorHandler to register to
+     */
     public Scanner(ErrorHandler handler)
     {
         this.errorHandler = handler;
@@ -26,6 +46,12 @@ public class Scanner
         this.buffer = new ArrayDeque<Character>();
     }
 
+    /**
+     * Creates a new Scanner that lexes the given file into tokens
+     * and registers errors to the given ErrorHandler
+     * @param filename file to scan
+     * @param handler ErrorHandler to register to
+     */
     public Scanner(String filename, ErrorHandler handler)
     {
         this.errorHandler = handler;
@@ -34,12 +60,12 @@ public class Scanner
         this.buffer = new ArrayDeque<Character>();
     }
 
-    public List<Error> getErrorList()
-    {
-        return this.errorHandler.getErrorList();
-    }
-
-    //Code?
+    /**
+     * Creates a new Scanner that lexes the characters from the given Reader into tokens
+     * and registers errors to the given ErrorHandler
+     * @param reader Reader to read characters from
+     * @param handler ErrorHandler to register to
+     */
     public Scanner(Reader reader, ErrorHandler handler)
     {
         this.errorHandler = handler;
@@ -47,13 +73,66 @@ public class Scanner
         this.sourceFile = new SourceFile(reader);
         this.buffer = new ArrayDeque<Character>();
     }
+    
+    /**
+     * Test code for Scanner methods
+     * To test, run Scanner with one or more command-line arguments listing
+     * files to scan.
+     */
+    public static void main(String[] args)
+    {
+        //make sure at least one filename was given
+        if (args.length < 1)
+        {
+            System.err.println("Missing input filename");
+            System.exit(-1);
+        }
+
+        //for each file given, scan
+        ErrorHandler errorHandler = new ErrorHandler();
+        for (String filename : args)
+        {
+            System.out.println("Scanning file: " + filename + "\n");
+
+            //scan tokens
+            try
+            {
+                Scanner scanner = new Scanner(filename, errorHandler);
+                Token currentToken = scanner.scan();
+                while (currentToken.kind != Token.Kind.EOF)
+                {
+                    System.out.println(currentToken);
+                    currentToken = scanner.scan();
+                }
+            }
+            catch (CompilationException e)
+            {
+                errorHandler.register(Error.Kind.LEX_ERROR, "Failed to read in source file");
+            }
+
+            //check for errors
+            if (errorHandler.errorsFound())
+            {
+                System.out.println(String.format("\n%d errors found", errorHandler.getErrorList().size()));
+            }
+            else
+            {
+                System.out.println("\nScanning was successful");
+            }
+
+            System.out.println("-----------------------------------------------");
+
+            //clear errors to scan next file
+            errorHandler.clear();
+        }
+    }
 
     /**
      * Each call of this method builds the next Token from the contents
      * of the file being scanned and returns it. When it reaches the end of the file,
      * any calls to scan() result in a Token of kind EOF.
      *
-     * @return
+     * @return the next token or EOF if has already reached EOF
      */
     public Token scan()
     {
@@ -71,9 +150,9 @@ public class Scanner
         Character c = ' ';
         if (!this.buffer.isEmpty())
         {
-        		c = this.buffer.poll();
+            c = this.buffer.poll();
         }
-        
+
         // Set first char to that caught in the buffer, if there was one. Else nextChar.
         if (!Character.isWhitespace(c))
         {
@@ -155,14 +234,14 @@ public class Scanner
                 kind = Token.Kind.BINARYLOGIC;
                 //add a second &
                 this.currentChar = this.sourceFile.getNextChar();
-                
+
                 if (this.currentChar != '&') //if not second &
                 {
-                		kind = Token.Kind.ERROR;
-                		this.errorHandler.register(Error.Kind.LEX_ERROR,
-        	    				this.sourceFile.getFilename(),
-        	    				lineNumber,
-        	    				"Badly formed binary logic operator: &");
+                    kind = Token.Kind.ERROR;
+                    this.errorHandler.register(Error.Kind.LEX_ERROR,
+                                               this.sourceFile.getFilename(),
+                                               lineNumber,
+                                               "Badly formed binary logic operator: &");
                     //has read in start of next token, so store in buffer
                     this.buffer.add(this.currentChar);
                 }
@@ -175,14 +254,14 @@ public class Scanner
                 kind = Token.Kind.BINARYLOGIC;
                 //add a second |
                 this.currentChar = this.sourceFile.getNextChar();
-                
+
                 if (this.currentChar != '|') //if not second |
                 {
-                		kind = Token.Kind.ERROR;
-                		this.errorHandler.register(Error.Kind.LEX_ERROR,
-        	    				this.sourceFile.getFilename(),
-        	    				lineNumber,
-        	    				"Badly formed binary logic operator: |");
+                    kind = Token.Kind.ERROR;
+                    this.errorHandler.register(Error.Kind.LEX_ERROR,
+                                               this.sourceFile.getFilename(),
+                                               lineNumber,
+                                               "Badly formed binary logic operator: |");
                     //has read in start of next token, so store in buffer
                     this.buffer.add(this.currentChar);
                 }
@@ -217,15 +296,6 @@ public class Scanner
             kind = Token.Kind.IDENTIFIER;
             return this.completeIdentifierToken(lineNumber);
         }
-        else
-        {
-            isTokenComplete = false; // (it has failed next check)
-        }
-
-        if (isTokenComplete)
-            return new Token(kind, spelling.toString(), lineNumber);
-
-        isTokenComplete = true;  // set to true, and set to false if fails next check
 
         switch (this.currentChar)
         {
@@ -259,7 +329,7 @@ public class Scanner
                 break;
             case '<': //token can be < or <=
                 kind = Token.Kind.COMPARE;
-                
+
                 //check whether has =
                 this.currentChar = this.sourceFile.getNextChar();
                 if (this.currentChar == '=')
@@ -275,7 +345,7 @@ public class Scanner
                 break;
             case '>': //token can be > or >=
                 kind = Token.Kind.COMPARE;
-                
+
                 //check whether has =
                 this.currentChar = this.sourceFile.getNextChar();
                 if (this.currentChar == '=')
@@ -289,8 +359,8 @@ public class Scanner
                 }
                 break;
             case '=': //token can be = or ==
-            	//check whether has =
-            	this.currentChar = this.sourceFile.getNextChar();
+                //check whether has =
+                this.currentChar = this.sourceFile.getNextChar();
                 if (this.currentChar == '=')
                 {
                     spelling.append(this.currentChar);
@@ -304,7 +374,7 @@ public class Scanner
                 }
                 break;
             case '/': //token can be / or a comment
-            	//check whether next char starts a comment
+                //check whether next char starts a comment
                 this.currentChar = this.sourceFile.getNextChar();
                 if (this.currentChar == '*') //block comment
                 {
@@ -328,91 +398,92 @@ public class Scanner
                 isTokenComplete = false;
                 break;
         }
-        
+
         if (isTokenComplete)
             return new Token(kind, spelling.toString(), lineNumber);
         else //if first char doesn't match any of above cases, is illegal char
         {
-	        	this.errorHandler.register(Error.Kind.LEX_ERROR,
-	    				this.sourceFile.getFilename(),
-	    				lineNumber,
-	    				"Unexpected character: " + this.currentChar);
-	        	return new Token(Token.Kind.ERROR, spelling.toString(), lineNumber);
+            this.errorHandler.register(Error.Kind.LEX_ERROR,
+                                       this.sourceFile.getFilename(),
+                                       lineNumber,
+                                       "Unexpected character: " + this.currentChar);
+            return new Token(Token.Kind.ERROR, spelling.toString(), lineNumber);
         }
     }
-    
+
     /**
      * Builds and returns a string token starting from the current character
+     *
      * @return the string token, or error token if error encountered
      */
     private Token completeStringToken()
     {
-	    //init string with opening " because scan method already read it in	
-    	StringBuilder spellingBuilder = new StringBuilder("\"");
-    	Token.Kind kind = Token.Kind.STRCONST;
-	    	
-    	//collect chars until closing double quote
-    	while (this.currentChar != '\"')
-    	{
-    		spellingBuilder.append(Character.toString(this.currentChar));
-        	this.currentChar = this.sourceFile.getNextChar();
-        	
-        	//check for escaped chars
-        	if (this.currentChar == '\\')
-        	{
-        		spellingBuilder.append(Character.toString(this.currentChar));
-    	        this.currentChar = this.sourceFile.getNextChar();	        		
-    	        
-    	        //handle having escaped quote \"
-    	        if (this.currentChar == '"')
-    	        {
-	        		spellingBuilder.append(Character.toString(this.currentChar));
-	    	        this.currentChar = this.sourceFile.getNextChar();	  
-    	        }
-        		
-    	        //check for invalid escape chars
-    	        else if (this.currentChar != 'n' && this.currentChar != 't' &&
-    	        		this.currentChar != '"' && this.currentChar != '\\' &&
-    	        		this.currentChar != 'f' && this.currentChar != 'r')
-    	        {
-	        		this.errorHandler.register(Error.Kind.LEX_ERROR,
-	        				this.sourceFile.getFilename(),
-	        				this.sourceFile.getCurrentLineNumber(),
-	        				"Illegal escape char in string: \\" + this.currentChar);
-	        		kind = Token.Kind.ERROR;
-	        		break;
-    	        }
-        	}
-        	
-        	//check if not terminated correctly
-        	if (this.currentChar == SourceFile.eof || this.currentChar == SourceFile.eol)
-        	{
-        		this.errorHandler.register(Error.Kind.LEX_ERROR,
-        				this.sourceFile.getFilename(),
-        				this.sourceFile.getCurrentLineNumber(),
-        				"String not terminated");
-        		kind = Token.Kind.ERROR;
-        		break;
-        	}
-        	
-        	//check if too long
-        	if (spellingBuilder.length() > 5000)
-        	{
-        		this.errorHandler.register(Error.Kind.LEX_ERROR,
-        				this.sourceFile.getFilename(),
-        				this.sourceFile.getCurrentLineNumber(),
-        				"String exceeds maximum length");
-        		kind = Token.Kind.ERROR;
-        		break;
-        	}
-    	}
-    	
-    	//append closing quote
-    	spellingBuilder.append(Character.toString(this.currentChar));
-    	
-    	return new Token(kind, spellingBuilder.toString(), this.sourceFile.getCurrentLineNumber());
+        //init string with opening " because scan method already read it in
+        StringBuilder spellingBuilder = new StringBuilder("\"");
+        Token.Kind kind = Token.Kind.STRCONST;
+
+        //collect chars until closing double quote
+        while (this.currentChar != '\"')
+        {
+            spellingBuilder.append(Character.toString(this.currentChar));
+            this.currentChar = this.sourceFile.getNextChar();
+
+            //check for escaped chars
+            if (this.currentChar == '\\')
+            {
+                spellingBuilder.append(Character.toString(this.currentChar));
+                this.currentChar = this.sourceFile.getNextChar();
+
+                //handle having escaped quote \"
+                if (this.currentChar == '"')
+                {
+                    spellingBuilder.append(Character.toString(this.currentChar));
+                    this.currentChar = this.sourceFile.getNextChar();
+                }
+
+                //check for invalid escape chars
+                else if (this.currentChar != 'n' && this.currentChar != 't' &&
+                        this.currentChar != '"' && this.currentChar != '\\' &&
+                        this.currentChar != 'f' && this.currentChar != 'r')
+                {
+                    this.errorHandler.register(Error.Kind.LEX_ERROR,
+                                               this.sourceFile.getFilename(),
+                                               this.sourceFile.getCurrentLineNumber(),
+                                               "Illegal escape char in string: \\" + this.currentChar);
+                    kind = Token.Kind.ERROR;
+                    break;
+                }
+            }
+
+            //check if not terminated correctly
+            if (this.currentChar == SourceFile.eof || this.currentChar == SourceFile.eol)
+            {
+                this.errorHandler.register(Error.Kind.LEX_ERROR,
+                                           this.sourceFile.getFilename(),
+                                           this.sourceFile.getCurrentLineNumber(),
+                                           "String not terminated");
+                kind = Token.Kind.ERROR;
+                break;
+            }
+
+            //check if too long
+            if (spellingBuilder.length() > 5000)
+            {
+                this.errorHandler.register(Error.Kind.LEX_ERROR,
+                                           this.sourceFile.getFilename(),
+                                           this.sourceFile.getCurrentLineNumber(),
+                                           "String exceeds maximum length");
+                kind = Token.Kind.ERROR;
+                break;
+            }
+        }
+
+        //append closing quote
+        spellingBuilder.append(Character.toString(this.currentChar));
+
+        return new Token(kind, spellingBuilder.toString(), this.sourceFile.getCurrentLineNumber());
     }
-    
+
     /**
      * Builds and returns a block comment token starting from the current char
      * with position at the given line number
@@ -423,8 +494,8 @@ public class Scanner
     private Token completeBlockCommentToken(int lineNumber)
     {
         //init string with starting / because scan read it
-    	StringBuilder spellingBuilder = new StringBuilder("/");
-    	Token.Kind kind = Token.Kind.COMMENT;
+        StringBuilder spellingBuilder = new StringBuilder("/");
+        Token.Kind kind = Token.Kind.COMMENT;
 
         boolean atTentativeEnd = false; // a '*' has been seen
         boolean terminated = false; // a '*' and '/' have been seen in sequence
@@ -438,7 +509,7 @@ public class Scanner
             {
                 if (this.currentChar == '/')    // block comment indeed terminated
                 {
-                		spellingBuilder.append(this.currentChar);
+                    spellingBuilder.append(this.currentChar);
                     terminated = true;
                 }
                 else                            // otherwise just a '*' in the middle somewhere
@@ -453,11 +524,11 @@ public class Scanner
         //if left loop before seeing "*/", block comment was not terminated correctly
         if (!terminated)
         {
-	    		this.errorHandler.register(Error.Kind.LEX_ERROR,
-	    				this.sourceFile.getFilename(),
-	    				this.sourceFile.getCurrentLineNumber(),
-	    				"Block comment not terminated");
-	    		kind = Token.Kind.ERROR;
+            this.errorHandler.register(Error.Kind.LEX_ERROR,
+                                       this.sourceFile.getFilename(),
+                                       this.sourceFile.getCurrentLineNumber(),
+                                       "Block comment not terminated");
+            kind = Token.Kind.ERROR;
         }
 
         return new Token(kind, spellingBuilder.toString(), lineNumber);
@@ -471,13 +542,13 @@ public class Scanner
      */
     private Token completeLineCommentToken(int lineNumber)
     {
-    	//init string with starting / because scan already read it in
+        //init string with starting / because scan already read it in
         StringBuilder spellingBuilder = new StringBuilder("/");
 
         //collect chars until end of line or file
         while (this.currentChar != '\n' && this.currentChar != SourceFile.eof)
         {
-        		spellingBuilder.append(this.currentChar);
+            spellingBuilder.append(this.currentChar);
             this.currentChar = this.sourceFile.getNextChar();
         }
 
@@ -495,10 +566,10 @@ public class Scanner
      */
     private Token completeIntconstToken(int lineNumber)
     {
-    	//start string with first digit read in by scan method
+        //start string with first digit read in by scan method
         StringBuilder spellingBuilder = new StringBuilder();
         Token.Kind kind = Token.Kind.INTCONST;
-        
+
         //collect chars until non-digit char
         while (Character.isDigit(this.currentChar))
         {
@@ -507,28 +578,28 @@ public class Scanner
         }
 
         this.buffer.add(this.currentChar);
-        
+
         //check whether int is too long
         try
         {
-        	int value = Integer.parseInt(spellingBuilder.toString());
+            int value = Integer.parseInt(spellingBuilder.toString());
             if (value < 0)
             {
-		        	this.errorHandler.register(Error.Kind.LEX_ERROR,
-		    				this.sourceFile.getFilename(),
-		    				this.sourceFile.getCurrentLineNumber(),
-		    				"Integer exceeds maximum value");
-		        	kind = Token.Kind.ERROR;
-		        	
+                this.errorHandler.register(Error.Kind.LEX_ERROR,
+                                           this.sourceFile.getFilename(),
+                                           this.sourceFile.getCurrentLineNumber(),
+                                           "Integer exceeds maximum value");
+                kind = Token.Kind.ERROR;
+
             }
         }
         catch (NumberFormatException e)
         {
-        	this.errorHandler.register(Error.Kind.LEX_ERROR,
-    				this.sourceFile.getFilename(),
-    				this.sourceFile.getCurrentLineNumber(),
-    				"Integer constant cannot be parsed");
-        	kind = Token.Kind.ERROR;
+            this.errorHandler.register(Error.Kind.LEX_ERROR,
+                                       this.sourceFile.getFilename(),
+                                       this.sourceFile.getCurrentLineNumber(),
+                                       "Integer constant cannot be parsed");
+            kind = Token.Kind.ERROR;
         }
 
         return new Token(kind, spellingBuilder.toString(), lineNumber);
@@ -539,7 +610,7 @@ public class Scanner
      * starting from the current character
      * Returns upon reading in any non-identifier char
      *
-     * @param lineNumber starting line number of token 
+     * @param lineNumber starting line number of token
      * @return the identifier token
      */
     private Token completeIdentifierToken(int lineNumber)
@@ -556,55 +627,16 @@ public class Scanner
         }
 
         this.buffer.add(this.currentChar);
-        
+
         return new Token(Token.Kind.IDENTIFIER, spellingBuilder.toString(), lineNumber);
     }
-    
-    public static void main(String[] args)
+
+    /**
+     * Returns the errors registered by the associated ErrorHandler
+     * @return the error list
+     */
+    public List<Error> getErrorList()
     {
-    	//make sure at least one filename was given
-		if ( args.length < 1 )
-		{
-			System.err.println("Missing input filename");
-			System.exit( -1 );
-		}
-		
-		//for each file given, scan
-		ErrorHandler errorHandler = new ErrorHandler();
-    	for (String filename: args)
-		{
-			System.out.println("Scanning file: " + filename + "\n");
-			
-			//scan tokens
-			try
-			{
-				Scanner scanner = new Scanner(filename, errorHandler);
-		    	Token currentToken = scanner.scan();
-		    	while(currentToken.kind != Token.Kind.EOF)
-		    	{
-		    		System.out.println(currentToken);
-		    		currentToken = scanner.scan();
-		    	}
-			}
-			catch (CompilationException e)
-			{
-				errorHandler.register(Error.Kind.LEX_ERROR, "Failed to read in source file");
-			}
-	    	
-	    	//check for errors
-	    	if (errorHandler.errorsFound())
-	    	{
-	    		System.out.println(String.format("\n%d errors found", errorHandler.getErrorList().size()));
-	    	}
-	    	else
-	    	{
-	    		System.out.println("\nScanning was successful");
-	    	}
-			
-			System.out.println("-----------------------------------------------");
-			
-			//clear errors to scan next file
-			errorHandler.clear();
-		}
+        return this.errorHandler.getErrorList();
     }
 }

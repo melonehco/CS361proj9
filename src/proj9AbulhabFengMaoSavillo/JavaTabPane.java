@@ -2,7 +2,7 @@
  * File: JavaTabPane
  * F18 CS361 Project 9
  * Names: Melody Mao, Zena Abulhab, Yi Feng, Evan Savillo
- * Date: 11/18/18
+ * Date: 11/20/18
  */
 
 package proj9AbulhabFengMaoSavillo;
@@ -16,7 +16,15 @@ import javafx.scene.control.TabPane;
 import java.io.File;
 import java.util.ArrayList;
 
-
+/**
+ * This class extends the TabPane class from JavaFx to handle JavaTabs.
+ *
+ * @author Evan Savillo
+ * @author Yi Feng
+ * @author Zena Abulhab
+ * @author Melody Mao
+ *
+ */
 public class JavaTabPane extends TabPane {
 
 
@@ -43,7 +51,6 @@ public class JavaTabPane extends TabPane {
      */
     public void removeTab(JavaTab tab){
         this.getTabs().remove(tab);
-
     }
 
 
@@ -53,8 +60,6 @@ public class JavaTabPane extends TabPane {
      */
     public JavaTab getCurrentTab()
     {
-        System.out.println(this.getSelectionModel().
-                getSelectedItem());
         return (JavaTab)this.getSelectionModel().getSelectedItem();
 
     }
