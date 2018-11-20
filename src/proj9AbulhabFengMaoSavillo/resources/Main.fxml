@@ -74,9 +74,6 @@
     </MenuBar>
     <ToolBar VBox.vgrow="ALWAYS">
         <Button fx:id="scanButton" onAction="#handleScanButtonAction" text="Scan"/>
-        <Button fx:id="compileButton" onAction="#handleCompileButtonAction" text="Compile"/>
-        <Button fx:id="compileRunButton" onAction="#handleCompileRunButtonAction" text="Compile &amp; Run"/>
-        <Button fx:id="stopButton" onAction="#handleStopButtonAction" text="Stop"/>
         <Separator maxWidth="25" minWidth="25"/>
         <CheckBox fx:id="checkBox" alignment="CENTER_RIGHT" mnemonicParsing="false" text="Display File Structure"/>
     </ToolBar>
