@@ -9,6 +9,8 @@
 package proj9AbulhabFengMaoSavillo.controllers;
 
 import javafx.application.Platform;
+import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.value.ObservableValue;
 import org.fxmisc.richtext.StyleClassedTextArea;
 import javafx.event.Event;
 
@@ -101,73 +103,73 @@ public class ToolBarController
      */
     public void handleScanButtonAction(Event event, File file)
     {
-        Platform.runLater(() ->
-                          {
-
-                              // user select cancel button
-                              if (this.fileMenuController.checkSaveBeforeCompile() == 2)
-                              {
-                                  event.consume();
-                              }
-                              else
+        // user select cancel button
+        if (this.fileMenuController.checkSaveBeforeCompile() == 2)
+        {
+            event.consume();
+        }
+        else
+        {
+            Platform.runLater(() ->
                               {
                                   this.console.clear();
                                   consoleLength = 0;
+                              });
 
-                                  Scanner scanner = new Scanner(file.getAbsolutePath(), new ErrorHandler());
+            JavaCodeArea outputArea = requestAreaForOutput();
+            Scanner scanner = new Scanner(file.getAbsolutePath(), new ErrorHandler());
 
-                                  JavaCodeArea outputArea = requestAreaForOutput();
+            Task task = new Task()
+            {
+                @Override
+                protected String call() throws Exception
+                {
+                    String scannedText = "";
+                    Token currentToken = scanner.scan();
+                    while (currentToken.kind != Token.Kind.EOF)
+                    {
+                        scannedText += currentToken.toString() + "\n";
+                        currentToken = scanner.scan();
 
-                                  Token currentToken = scanner.scan();
-                                  while (currentToken.kind != Token.Kind.EOF)
-                                  {
-                                      outputArea.appendText(currentToken.toString() + "\n");
-                                      currentToken = scanner.scan();
-                                  }
+                        updateValue(scannedText);
+                    }
 
-                                  outputArea.setEditable(true);
+                    outputArea.setEditable(true);
 
-                                  List<Error> errorList = scanner.getErrorList();
-                                  int errorCount = errorList.size();
-                                  if (errorCount == 0)
-                                  {
-                                      Platform.runLater(() -> console.appendText("No errors detected\n"));
-                                  }
-                                  else
-                                  {
-                                      errorList.forEach((error) ->
-                                                        {
-                                                            Platform.runLater(() -> console.appendText(error.toString() + "\n"));
-                                                        });
-                                      String msg = String.format("Found %d error(s)", errorCount);
-                                      Platform.runLater(() -> console.appendText(msg));
-                                  }
-                              }
-                          });
+                    List<Error> errorList = scanner.getErrorList();
+                    int errorCount = errorList.size();
+                    if (errorCount == 0)
+                    {
+                        Platform.runLater(() -> console.appendText("No errors detected\n"));
+                    }
+                    else
+                    {
+                        errorList.forEach((error) ->
+                                          {
+                                              Platform.runLater(() -> console.appendText(error.toString() + "\n"));
+                                          });
+                        String msg = String.format("Found %d error(s)", errorCount);
+                        Platform.runLater(() -> console.appendText(msg));
+                    }
+
+                    return scannedText;
+                }
+            };
+
+            task.valueProperty().addListener((observable, oldValue, newValue) ->
+                                             {
+                                                 outputArea.replaceText((String) newValue);
+                                             });
+
+            Thread newThread = new Thread(task);
+            newThread.setDaemon(true);
+            newThread.start();
+        }
+
     }
 
     private JavaCodeArea requestAreaForOutput()
     {
         return this.fileMenuController.giveNewCodeArea();
-    }
-
-    /**
-     * Handles the Stop button action.
-     */
-    public void handleStopButtonAction()
-    {
-        try
-        {
-            if (this.currentProcess.isAlive())
-            {
-                this.inThread.interrupt();
-                this.outThread.interrupt();
-                this.currentProcess.destroy();
-            }
-        }
-        catch (Throwable e)
-        {
-            ControllerErrorCreator.createErrorDialog("Program Stop", "Error stopping the Java program.");
-        }
     }
 }
