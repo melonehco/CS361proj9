@@ -140,7 +140,6 @@ public class FileMenuController
      */
     public boolean tabNeedsSaving(JavaTab tab, boolean ifSaveEmptyFile)
     {
-        System.out.println("entered tabNeedsSaving");
         JavaCodeArea activeJavaCodeArea = tab.getJavaCodeArea();
         // check whether the embedded text has been saved or not
         if (tab.getFile() == null)
