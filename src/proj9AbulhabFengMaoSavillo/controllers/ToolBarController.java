@@ -13,6 +13,7 @@ import org.fxmisc.richtext.StyleClassedTextArea;
 import javafx.event.Event;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.*;
 import java.io.*;
 
@@ -20,8 +21,10 @@ import javafx.concurrent.Task;
 import javafx.concurrent.Service;
 
 import proj9AbulhabFengMaoSavillo.ControllerErrorCreator;
+import proj9AbulhabFengMaoSavillo.JavaCodeArea;
 import proj9AbulhabFengMaoSavillo.bantam.lexer.Scanner;
 import proj9AbulhabFengMaoSavillo.bantam.lexer.Token;
+import proj9AbulhabFengMaoSavillo.bantam.util.Error;
 import proj9AbulhabFengMaoSavillo.bantam.util.ErrorHandler;
 
 
@@ -51,7 +54,6 @@ public class ToolBarController
      * Thread representing the Java program output stream
      */
     private Thread outThread;
-
     /**
      * Mutex lock to control input and output threads' access to console
      */
@@ -72,8 +74,14 @@ public class ToolBarController
      * A CompileRunWorker object compiles and runs a Java file in a separate thread.
      */
     private CompileRunWorker compileRunWorker;
-
-
+    /**
+     * A ScanWorker
+     */
+    private ScanWorker scanWorker;
+    /**
+     * last list of errors
+     */
+    private ArrayList<Error> errorList;
     /**
      * scanner
      */
@@ -88,6 +96,8 @@ public class ToolBarController
         this.mutex = new Semaphore(1);
         this.compileWorker = new CompileWorker();
         this.compileRunWorker = new CompileRunWorker();
+        this.scanWorker = new ScanWorker();
+        this.errorList = new ArrayList<>();
     }
 
     /**
@@ -130,66 +140,26 @@ public class ToolBarController
         return this.compileRunWorker;
     }
 
+    public ScanWorker getScanWorker()
+    {
+        return this.scanWorker;
+    }
 
     /**
      * handler of the scan button
      */
-    public void handleScanButtonAction(File file)
+    public void handleScanButtonAction(Event event, File file)
     {
-        System.out.println("handleScanButtonAction");
-        scanFile(file);
-    }
-
-    /**
-     * helper function to scan the file
-     *
-     * @param file
-     */
-    private void scanFile(File file)
-    {
-        //TODO: print to our own console
-        Thread scanThread = new Thread();
-
-        scanThread = new Thread()
+        // user select cancel button
+        if (this.fileMenuController.checkSaveBeforeCompile() == 2)
         {
-            public void run()
-            {
-                try
-                {
-                    ArrayList<Token> tokenStream = new ArrayList<Token>();
-                    ErrorHandler errorHandler = new ErrorHandler();
-                    String filename = file.getAbsolutePath();
-                    Scanner scanner = new Scanner(filename, errorHandler);
-
-                    Token currentToken = scanner.scan();
-                    while (currentToken.kind != Token.Kind.EOF)
-                    {
-                        tokenStream.add(currentToken);
-                        currentToken = scanner.scan();
-                    }
-
-                    for (Token t : tokenStream)
-                    {
-                        System.out.println(t);
-                        System.out.println("--------------------");
-                    }
-                }
-                catch (Throwable e)
-                {
-                    Platform.runLater(() ->
-                                      {
-                                          // print stop message if other thread hasn't
-                                          if (consoleLength == console.getLength())
-                                          {
-                                              console.appendText("\nScanner stopped unexpectedly\n");
-                                              console.requestFollowCaret();
-                                          }
-                                      });
-                }
-            }
-        };
-        scanThread.start();
-
+            event.consume();
+        }
+        else
+        {
+            scanWorker.setFile(file);
+            scanWorker.restart();
+        }
     }
 
     /**
@@ -279,6 +249,93 @@ public class ToolBarController
         }
         this.mutex.release();
         reader.close();
+    }
+
+    private void outputToNewTab()
+    {
+
+    }
+
+    private JavaCodeArea requestAreaForOutput()
+    {
+        return this.fileMenuController.giveNewCodeArea();
+    }
+
+    private ArrayList<Error> getErrorList()
+    {
+        return this.errorList;
+    }
+
+    /**
+     * helper function to scan the file
+     *
+     * @param file
+     */
+    private boolean scanBantamFile(File file)
+    {
+        try
+        {
+            Platform.runLater(() ->
+                              {
+                                  this.console.clear();
+                                  consoleLength = 0;
+                              });
+
+            this.outThread = new Thread()
+            {
+                public void run()
+                {
+                    try
+                    {
+                        mutex.acquire();
+
+                        Scanner scanner = new Scanner(file.getAbsolutePath(), new ErrorHandler());
+                        ArrayList<Token> tokenStream = new ArrayList<>();
+
+                        JavaCodeArea outputArea = requestAreaForOutput();
+
+                        Token currentToken = scanner.scan();
+                        while (currentToken.kind != Token.Kind.EOF)
+                        {
+                            tokenStream.add(currentToken);
+                            currentToken = scanner.scan();
+                        }
+
+                        outputToConsole();
+                    }
+                    catch (Throwable e)
+                    {
+                        Platform.runLater(() ->
+                                          {
+                                              // print stop message if other thread hasn't
+                                              if (consoleLength == console.getLength())
+                                              {
+                                                  console.appendText("\nScanner stopped unexpectedly\n");
+                                                  console.requestFollowCaret();
+                                              }
+                                          });
+                    }
+                }
+            };
+
+            this.outThread.join(100);
+
+            // true if ran without error, else false
+            return !this.outThread.isAlive();
+        }
+        catch (Throwable e)
+        {
+            Platform.runLater(() ->
+                              {
+                                  ControllerErrorCreator.createErrorDialog("File Running",
+                                                                           "Error running " + file.getName() + ".");
+                              });
+            return false;
+        }
+        finally
+        {
+            mutex.release();
+        }
     }
 
     /**
@@ -517,6 +574,70 @@ public class ToolBarController
                         Platform.runLater(() -> console.appendText("Compilation was successful!\n"));
                     }
                     return compileResult;
+                }
+            };
+        }
+    }
+
+
+    /**
+     * A CompileWorker subclass handling Java program compiling in a separated thread in the background.
+     * CompileWorker extends the javafx Service class.
+     */
+    protected class ScanWorker extends Service<Boolean>
+    {
+        /**
+         * the file to be compiled.
+         */
+        private File file;
+
+        /**
+         * Sets the selected file.
+         *
+         * @param file the file to be compiled.
+         */
+        private void setFile(File file)
+        {
+            this.file = file;
+        }
+
+        /**
+         * Overrides the createTask method in Service class.
+         * Compiles the file embedded in the selected tab, if appropriate.
+         *
+         * @return true if the program compiles successfully;
+         * false otherwise.
+         */
+        @Override
+        protected Task<Boolean> createTask()
+        {
+            return new Task<Boolean>()
+            {
+                /**
+                 * Called when we execute the start() method of a CompileRunWorker object
+                 * Compiles the file.
+                 *
+                 * @return true if the program compiles successfully;
+                 *         false otherwise.
+                 */
+                @Override
+                protected Boolean call()
+                {
+                    Boolean scanResult = scanBantamFile(file);
+                    int errorCount = getErrorList().size();
+                    if (scanResult)
+                    {
+                        Platform.runLater(() -> console.appendText("Scan completed normally\n"));
+                        if (errorCount == 0)
+                        {
+                            Platform.runLater(() -> console.appendText("No errors detected\n"));
+                        }
+                        else
+                        {
+                            Platform.runLater(() -> console.appendText(Integer.toString(errorCount)));
+                        }
+                    }
+                    return scanResult;
                 }
             };
         }

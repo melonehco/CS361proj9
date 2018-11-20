@@ -34,6 +34,11 @@ public class Scanner
         this.buffer = new ArrayDeque<Character>();
     }
 
+    public List<Error> getErrorList()
+    {
+        return this.errorHandler.getErrorList();
+    }
+
     //Code?
     public Scanner(Reader reader, ErrorHandler handler)
     {
