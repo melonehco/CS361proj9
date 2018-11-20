@@ -290,18 +290,17 @@ public class ToolBarController
                         mutex.acquire();
 
                         Scanner scanner = new Scanner(file.getAbsolutePath(), new ErrorHandler());
-                        ArrayList<Token> tokenStream = new ArrayList<>();
 
                         JavaCodeArea outputArea = requestAreaForOutput();
 
                         Token currentToken = scanner.scan();
                         while (currentToken.kind != Token.Kind.EOF)
                         {
-                            tokenStream.add(currentToken);
+                            outputArea.appendText(currentToken.toString() + "\n");
                             currentToken = scanner.scan();
                         }
 
-                        outputToConsole();
+                        outputArea.setEditable(true);
                     }
                     catch (Throwable e)
                     {
@@ -318,7 +317,11 @@ public class ToolBarController
                 }
             };
 
+            this.outThread.setDaemon(true);
+
             this.outThread.join(100);
+
+            System.out.println("isalive: " + this.outThread.isAlive());
 
             // true if ran without error, else false
             return !this.outThread.isAlive();
