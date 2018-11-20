@@ -170,7 +170,7 @@ public class FileMenuController
      */
     public JavaCodeArea giveNewCodeArea()
     {
-        this.handleNewTabAction();
+        this.handleNewAction();
         JavaCodeArea newCodeArea = this.javaTabPane.getCurrentCodeArea();
         newCodeArea.setEditable(false);
         return newCodeArea;
@@ -304,7 +304,7 @@ public class FileMenuController
      * Opens a styled code area embedded in a new tab.
      * Sets the newly opened tab to the the topmost one.
      */
-    public void handleNewTabAction()
+    public void handleNewAction()
     {
         ObservableList<MenuItem> editMenuCopy = duplicateMenuItems(this.editMenu.getItems());
         this.javaTabPane.createTab("", null, this::handleCloseAction,editMenuCopy);
@@ -384,7 +384,7 @@ public class FileMenuController
             return;
 
         // Create the tab for the file
-        this.handleNewTabAction();
+        this.handleNewAction();
     }
 
     /**

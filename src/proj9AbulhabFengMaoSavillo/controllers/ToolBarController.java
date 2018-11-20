@@ -98,7 +98,7 @@ public class ToolBarController
     }
 
     /**
-     * handler of the scan button
+     * handles clicking of the scan button
      */
     public void handleScanButtonAction(Event event, File file)
     {
@@ -121,16 +121,14 @@ public class ToolBarController
             Task task = new Task()
             {
                 @Override
-                protected String call() throws Exception
+                protected Object call() throws Exception
                 {
-                    String scannedText = "";
                     Token currentToken = scanner.scan();
                     while (currentToken.kind != Token.Kind.EOF)
                     {
-                        scannedText += currentToken.toString() + "\n";
+                        String s = currentToken.toString();
+                        Platform.runLater(() -> outputArea.appendText(s + "\n"));
                         currentToken = scanner.scan();
-
-                        updateValue(scannedText);
                     }
 
                     outputArea.setEditable(true);
@@ -151,14 +149,9 @@ public class ToolBarController
                         Platform.runLater(() -> console.appendText(msg));
                     }
 
-                    return scannedText;
+                    return null;
                 }
             };
-
-            task.valueProperty().addListener((observable, oldValue, newValue) ->
-                                             {
-                                                 outputArea.replaceText((String) newValue);
-                                             });
 
             Thread newThread = new Thread(task);
             newThread.setDaemon(true);

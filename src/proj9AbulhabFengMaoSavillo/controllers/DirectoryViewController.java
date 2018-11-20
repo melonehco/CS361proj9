@@ -8,6 +8,7 @@
 
 package proj9AbulhabFengMaoSavillo.controllers;
 
+import javafx.concurrent.Task;
 import javafx.event.EventHandler;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TreeItem;
@@ -132,6 +133,34 @@ public class DirectoryViewController
             }
         }
         return root;
+
+//        Task task = new Task()
+//        {
+//            @Override
+//            protected Object call() throws Exception
+//            {
+//                Java8Lexer lexer = new Java8Lexer(CharStreams.fromString(fileContents));
+//                lexer.removeErrorListeners();
+//
+//                CommonTokenStream tokens = new CommonTokenStream(lexer);
+//
+//                Java8Parser parser = new Java8Parser(tokens);
+//                parser.removeErrorListeners();
+//
+//                ParseTree tree = parser.compilationUnit();
+//
+//                //walk through parse tree with listening for code structure elements
+//                CodeStructureListener codeStructureListener = new CodeStructureListener(newRoot, treeItemLineNumMap);
+//
+//                walker.walk(codeStructureListener, tree);
+//
+//                return null;
+//            }
+//        };
+//
+//        Thread newThread = new Thread(task);
+//        newThread.setDaemon(true);
+//        newThread.start();
     }
 
     /**
