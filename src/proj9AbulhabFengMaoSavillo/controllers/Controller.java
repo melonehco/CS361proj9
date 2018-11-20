@@ -60,21 +60,6 @@ public class Controller
      */
     private DirectoryViewController directoryViewController;
     /**
-     * Compile button defined in Main.fxml
-     */
-    @FXML
-    private Button compileButton;
-    /**
-     * CompileRun button defined in Main.fxml
-     */
-    @FXML
-    private Button compileRunButton;
-    /**
-     * Stop button defined in Main.fxml
-     */
-    @FXML
-    private Button stopButton;
-    /**
      * TabPane defined in Main.fxml
      */
     @FXML
@@ -356,16 +341,6 @@ public class Controller
     private void handleScanButtonAction(Event event)
     {
         this.toolbarController.handleScanButtonAction(event, this.javaTabPane.getCurrentFile());
-    }
-
-
-    /**
-     * Calls the method that handles the Stop button action from the toolbarController.
-     */
-    @FXML
-    private void handleStopButtonAction()
-    {
-        this.toolbarController.handleStopButtonAction();
     }
 
     /**
