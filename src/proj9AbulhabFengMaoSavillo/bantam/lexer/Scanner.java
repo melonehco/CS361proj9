@@ -334,11 +334,6 @@ public class Scanner
 	    				"Unexpected character: " + this.currentChar);
 	        	return new Token(Token.Kind.ERROR, spelling.toString(), lineNumber);
         }
-
-	    	/* TODO:
-	    	-handle error thrown by SourceFile?
-	    	- have main method actually do what Dale wants
-	    	*/
     }
     
     /**
@@ -562,31 +557,49 @@ public class Scanner
     
     public static void main(String[] args)
     {
-	    	ArrayList<Token> tokenStream = new ArrayList<Token>();
-	    	ErrorHandler errorHandler = new ErrorHandler();
-	    	String filename = System.getProperty("user.dir") + "/include/Winwin.java";
-	    	Scanner scanner = new Scanner(filename, errorHandler);
+    	//make sure at least one filename was given
+		if ( args.length < 1 )
+		{
+			System.err.println("Missing input filename");
+			System.exit( -1 );
+		}
+		
+		//for each file given, scan
+		ErrorHandler errorHandler = new ErrorHandler();
+    	for (String filename: args)
+		{
+			System.out.println("Scanning file: " + filename + "\n");
+			
+			//scan tokens
+			try
+			{
+				Scanner scanner = new Scanner(filename, errorHandler);
+		    	Token currentToken = scanner.scan();
+		    	while(currentToken.kind != Token.Kind.EOF)
+		    	{
+		    		System.out.println(currentToken);
+		    		currentToken = scanner.scan();
+		    	}
+			}
+			catch (CompilationException e)
+			{
+				errorHandler.register(Error.Kind.LEX_ERROR, "Failed to read in source file");
+			}
 	    	
-	    	Token currentToken = scanner.scan();
-	    	while(currentToken.kind != Token.Kind.EOF)
+	    	//check for errors
+	    	if (errorHandler.errorsFound())
 	    	{
-	    		tokenStream.add(currentToken);
-	    		currentToken = scanner.scan();
+	    		System.out.println(String.format("\n%d errors found", errorHandler.getErrorList().size()));
 	    	}
-	    	
-	    	for (Token t: tokenStream)
+	    	else
 	    	{
-	    		System.out.println(t);
-	    		System.out.println("--------------------");
+	    		System.out.println("\nScanning was successful");
 	    	}
-	    	
-	    	System.out.println("===================ERRORS");
-	    	
-	    	List<Error> errors = errorHandler.getErrorList();
-	    	for (Error e: errors)
-	    	{
-	    		System.out.println(e);
-	    		System.out.println("--------------------");
-	    	}
+			
+			System.out.println("-----------------------------------------------");
+			
+			//clear errors to scan next file
+			errorHandler.clear();
+		}
     }
 }
