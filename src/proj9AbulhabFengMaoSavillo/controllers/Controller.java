@@ -121,6 +121,8 @@ public class Controller
      */
     @FXML
     private SplitPane horizontalSplitPane;
+    @FXML
+    private Button scanButton;
 
     /**
      * This function is called after the FXML fields are populated.
@@ -271,6 +273,7 @@ public class Controller
         this.saveMenuItem.disableProperty().bind(this.fileMenuController.tablessProperty());
         this.saveAsMenuItem.disableProperty().bind(this.fileMenuController.tablessProperty());
         this.editMenu.disableProperty().bind(this.fileMenuController.tablessProperty());
+        this.scanButton.disableProperty().bind(this.fileMenuController.tablessProperty());
     }
 
     /**
