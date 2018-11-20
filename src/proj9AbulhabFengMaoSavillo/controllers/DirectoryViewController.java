@@ -8,6 +8,7 @@
 
 package proj9AbulhabFengMaoSavillo.controllers;
 
+import javafx.application.Platform;
 import javafx.concurrent.Task;
 import javafx.event.EventHandler;
 import javafx.scene.control.Tab;
@@ -151,8 +152,12 @@ public class DirectoryViewController
                 @Override
                 protected Object call() throws Exception
                 {
-                    treeView.setRoot(getNode(file.getParentFile()));
-                    treeView.getRoot().setExpanded(true);
+                    Platform.runLater(() ->
+                                      {
+                                          treeView.setRoot(getNode(file.getParentFile()));
+                                          treeView.getRoot().setExpanded(true);
+
+                                      });
                     return null;
                 }
             };
