@@ -11,10 +11,8 @@ import javafx.collections.ObservableList;
 import javafx.event.Event;
 import javafx.event.EventHandler;
 import javafx.scene.control.MenuItem;
-import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
 import java.io.File;
-import java.util.ArrayList;
 
 /**
  * This class extends the TabPane class from JavaFx to handle JavaTabs.

@@ -44,10 +44,12 @@ public class FileMenuController
      * TabPane defined in Main.fxml
      */
     private JavaTabPane javaTabPane;
+
     /**
      * Controller for the directory
      */
     private DirectoryViewController directoryViewController;
+
     /**
      * checkBox
      */
