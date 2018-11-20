@@ -54,7 +54,7 @@ public class DirectoryViewController
      *
      * @param treeView the directory tree
      */
-    public void setTreeView(TreeView treeView)
+    public void setTreeView(TreeView<String> treeView)
     {
         this.treeView = treeView;
         this.treeItemFileMap = new HashMap<>();
@@ -133,34 +133,6 @@ public class DirectoryViewController
             }
         }
         return root;
-
-//        Task task = new Task()
-//        {
-//            @Override
-//            protected Object call() throws Exception
-//            {
-//                Java8Lexer lexer = new Java8Lexer(CharStreams.fromString(fileContents));
-//                lexer.removeErrorListeners();
-//
-//                CommonTokenStream tokens = new CommonTokenStream(lexer);
-//
-//                Java8Parser parser = new Java8Parser(tokens);
-//                parser.removeErrorListeners();
-//
-//                ParseTree tree = parser.compilationUnit();
-//
-//                //walk through parse tree with listening for code structure elements
-//                CodeStructureListener codeStructureListener = new CodeStructureListener(newRoot, treeItemLineNumMap);
-//
-//                walker.walk(codeStructureListener, tree);
-//
-//                return null;
-//            }
-//        };
-//
-//        Thread newThread = new Thread(task);
-//        newThread.setDaemon(true);
-//        newThread.start();
     }
 
     /**
@@ -169,12 +141,26 @@ public class DirectoryViewController
     public void createDirectoryTree()
     {
         // capture current file
-        File file = this.javaTabPane.getCurrentFile();
+        File file = javaTabPane.getCurrentFile();
         // create the directory tree
         if (file != null)
         {
-            this.treeView.setRoot(this.getNode(file.getParentFile()));
-            this.treeView.getRoot().setExpanded(true);
+
+            Task task = new Task()
+            {
+                @Override
+                protected Object call() throws Exception
+                {
+                    treeView.setRoot(getNode(file.getParentFile()));
+                    treeView.getRoot().setExpanded(true);
+                    return null;
+                }
+            };
+
+            Thread newThread = new Thread(task);
+            newThread.setDaemon(true);
+            newThread.start();
         }
+
     }
 }

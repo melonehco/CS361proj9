@@ -384,7 +384,8 @@ public class FileMenuController
             return;
 
         // Create the tab for the file
-        this.handleNewAction();
+        ObservableList<MenuItem> editMenuCopy = duplicateMenuItems(this.editMenu.getItems());
+        this.javaTabPane.createTab(contentString, file, this::handleCloseAction, editMenuCopy);
     }
 
     /**
