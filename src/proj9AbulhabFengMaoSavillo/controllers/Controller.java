@@ -283,7 +283,6 @@ public class Controller
     {
         this.toolbarController.setConsole(this.console);
         this.toolbarController.setFileMenuController(this.fileMenuController);
-        this.toolbarController.initialize();
     }
 
     /**
