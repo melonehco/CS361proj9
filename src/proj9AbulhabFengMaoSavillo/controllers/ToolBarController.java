@@ -75,10 +75,6 @@ public class ToolBarController
      */
     private CompileRunWorker compileRunWorker;
     /**
-     * A ScanWorker
-     */
-    private ScanWorker scanWorker;
-    /**
      * last list of errors
      */
     private ArrayList<Error> errorList;
@@ -93,7 +89,6 @@ public class ToolBarController
         this.mutex = new Semaphore(1);
         this.compileWorker = new CompileWorker();
         this.compileRunWorker = new CompileRunWorker();
-        this.scanWorker = new ScanWorker();
         this.errorList = new ArrayList<>();
     }
 
@@ -137,11 +132,6 @@ public class ToolBarController
         return this.compileRunWorker;
     }
 
-    public ScanWorker getScanWorker()
-    {
-        return this.scanWorker;
-    }
-
     /**
      * handler of the scan button
      */
@@ -166,6 +156,16 @@ public class ToolBarController
             }
 
             outputArea.setEditable(true);
+
+            int errorCount = getErrorList().size();
+            if (errorCount == 0)
+            {
+                Platform.runLater(() -> console.appendText("No errors detected\n"));
+            }
+            else
+            {
+                Platform.runLater(() -> console.appendText(Integer.toString(errorCount)));
+            }
         }
     }
 
@@ -267,72 +267,6 @@ public class ToolBarController
     private ArrayList<Error> getErrorList()
     {
         return this.errorList;
-    }
-
-    /**
-     * helper function to scan the file
-     *
-     * @param file
-     */
-    private boolean scanBantamFile(File file)
-    {
-        try
-        {
-            Platform.runLater(() ->
-                              {
-                                  this.console.clear();
-                                  consoleLength = 0;
-                              });
-
-            this.outThread = new Thread()
-            {
-                public void run()
-                {
-                    try
-                    {
-                        mutex.tryAcquire();
-
-
-                    }
-                    catch (Throwable e)
-                    {
-                        e.printStackTrace();
-                        Platform.runLater(() ->
-                                          {
-                                              // print stop message if other thread hasn't
-                                              if (consoleLength == console.getLength())
-                                              {
-                                                  console.appendText("\nScanner stopped unexpectedly\n");
-                                                  console.requestFollowCaret();
-                                              }
-                                          });
-                    }
-                }
-            };
-
-            this.outThread.setDaemon(true);
-            this.outThread.start();
-
-            this.outThread.join();
-
-            System.out.println("isalive: " + this.outThread.isAlive());
-
-            // true if ran without error, else false
-            return !this.outThread.isAlive();
-        }
-        catch (Throwable e)
-        {
-            Platform.runLater(() ->
-                              {
-                                  ControllerErrorCreator.createErrorDialog("File Running",
-                                                                           "Error running " + file.getName() + ".");
-                              });
-            return false;
-        }
-        finally
-        {
-            mutex.release();
-        }
     }
 
     /**
@@ -575,71 +509,6 @@ public class ToolBarController
             };
         }
     }
-
-
-    /**
-     * A CompileWorker subclass handling Java program compiling in a separated thread in the background.
-     * CompileWorker extends the javafx Service class.
-     */
-    protected class ScanWorker extends Service<Boolean>
-    {
-        /**
-         * the file to be compiled.
-         */
-        private File file;
-
-        /**
-         * Sets the selected file.
-         *
-         * @param file the file to be compiled.
-         */
-        private void setFile(File file)
-        {
-            this.file = file;
-        }
-
-        /**
-         * Overrides the createTask method in Service class.
-         * Compiles the file embedded in the selected tab, if appropriate.
-         *
-         * @return true if the program compiles successfully;
-         * false otherwise.
-         */
-        @Override
-        protected Task<Boolean> createTask()
-        {
-            return new Task<Boolean>()
-            {
-                /**
-                 * Called when we execute the start() method of a CompileRunWorker object
-                 * Compiles the file.
-                 *
-                 * @return true if the program compiles successfully;
-                 *         false otherwise.
-                 */
-                @Override
-                protected Boolean call()
-                {
-                    Boolean scanResult = scanBantamFile(file);
-                    int errorCount = getErrorList().size();
-                    if (scanResult)
-                    {
-                        Platform.runLater(() -> console.appendText("Scan completed normally\n"));
-                        if (errorCount == 0)
-                        {
-                            Platform.runLater(() -> console.appendText("No errors detected\n"));
-                        }
-                        else
-                        {
-                            Platform.runLater(() -> console.appendText(Integer.toString(errorCount)));
-                        }
-                    }
-                    return scanResult;
-                }
-            };
-        }
-    }
-
 
     /**
      * A CompileRunWorker subclass handling Java program compiling and running in a separated thread in the background.

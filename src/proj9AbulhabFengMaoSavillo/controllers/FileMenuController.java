@@ -175,7 +175,6 @@ public class FileMenuController
         return newCodeArea;
     }
 
-
     /**
      * Calls the removeTab function in javaTabPane
      *
