@@ -1,8 +1,8 @@
 /*
  * File: FileMenuController.java
- * F18 CS361 Project 7
+ * F18 CS361 Project 9
  * Names: Melody Mao, Zena Abulhab, Yi Feng, Evan Savillo
- * Date: 10/27/2018
+ * Date: 11/20/2018
  * This file contains the FileMenuController class, handling File menu related actions.
  */
 
@@ -44,10 +44,12 @@ public class FileMenuController
      * TabPane defined in Main.fxml
      */
     private JavaTabPane javaTabPane;
+
     /**
      * Controller for the directory
      */
     private DirectoryViewController directoryViewController;
+
     /**
      * checkBox
      */
@@ -168,7 +170,7 @@ public class FileMenuController
      */
     public JavaCodeArea giveNewCodeArea()
     {
-        this.handleNewAction();
+        this.handleNewTabAction();
         JavaCodeArea newCodeArea = this.javaTabPane.getCurrentCodeArea();
         newCodeArea.setEditable(false);
         return newCodeArea;
@@ -302,7 +304,7 @@ public class FileMenuController
      * Opens a styled code area embedded in a new tab.
      * Sets the newly opened tab to the the topmost one.
      */
-    public void handleNewAction()
+    public void handleNewTabAction()
     {
         ObservableList<MenuItem> editMenuCopy = duplicateMenuItems(this.editMenu.getItems());
         this.javaTabPane.createTab("", null, this::handleCloseAction,editMenuCopy);
@@ -311,13 +313,12 @@ public class FileMenuController
 
 
     /**
-     * Static helper method to duplicate the contents of a menu
+     * Helper method to duplicate the contents of a menu
      *
      * @param menuItems List of Menu items to be duplicated
      * @return a clone of menu.getItems()
      */
-    //TODO: Where to put this method?
-    private static ObservableList<MenuItem> duplicateMenuItems(ObservableList<MenuItem> menuItems)
+    private ObservableList<MenuItem> duplicateMenuItems(ObservableList<MenuItem> menuItems)
     {
         ArrayList<MenuItem> clone = new ArrayList<>();
 
@@ -362,7 +363,7 @@ public class FileMenuController
      */
     public void openFile(File file)
     {
-        // if the selected file is already open, it cannot be opened twice
+        // If the selected file is already open, it cannot be opened twice
         // the tab containing this file becomes the current (topmost) one
         for (Tab tab: this.javaTabPane.getTabs())
         {
@@ -382,9 +383,8 @@ public class FileMenuController
         if (contentString == null)
             return;
 
-        //TODO: MAYBE CODE DUPLICATE?
-        ObservableList<MenuItem> editMenuCopy = duplicateMenuItems(this.editMenu.getItems());
-        this.javaTabPane.createTab(contentString, file, this::handleCloseAction, editMenuCopy);
+        // Create the tab for the file
+        this.handleNewTabAction();
     }
 
     /**
@@ -429,8 +429,7 @@ public class FileMenuController
         // then the styled code area is saved to that file
         else
         {
-            //TODO: Should we have a getCurrentCodeArea function in TabPane?
-            if (!this.setFileContent(this.javaTabPane.getCurrentCodeArea().getText(),
+            if (!this.setFileContent(this.javaTabPane.getCurrentTab().getJavaCodeArea().getText(),
                     this.javaTabPane.getCurrentFile()))
             {
                 return false;
@@ -494,22 +493,20 @@ public class FileMenuController
      */
     public void handleCloseAction(Event event)
     {
-        Tab selectedTab = this.javaTabPane.getCurrentTab();
+        JavaTab selectedTab = this.javaTabPane.getCurrentTab();
 
         // selectedTab is null if this method is evoked by closing a tab
         // in this case the selectedTab tab should be the tab that evokes this method
         if (selectedTab == null)
         {
-            System.out.println("Here");
-            selectedTab = (Tab) event.getSource();
+            selectedTab = (JavaTab) event.getSource();
         }
 
         // Attempts to close the tab
         // If the user select to not close the tab, then we consume the event (not performing the closing action)
-        if (!this.closeTab((JavaTab) selectedTab))
+        if (!this.closeTab(selectedTab))
         {
             event.consume();
-            System.out.println(selectedTab);
             return;
         }
 
@@ -529,7 +526,7 @@ public class FileMenuController
      */
     public void handleExitAction(Event event)
     {
-        ArrayList<Tab> list = new ArrayList<>(this.javaTabPane.getTabList());
+        ArrayList<Tab> list = new ArrayList<>(this.javaTabPane.getTabs());
         Iterator<Tab> iter = list.iterator();
         while(iter.hasNext()){
             JavaTab tab = (JavaTab) iter.next();

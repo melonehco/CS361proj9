@@ -1,11 +1,10 @@
 /*
  * File: PreferencesMenuController.java
- * F18 CS361 Project 7
+ * F18 CS361 Project 9
  * Names: Melody Mao, Zena Abulhab, Yi Feng, Evan Savillo
  * Implemented using code from proj6AhnDeGrawHangSlager and proj6JiangQuanMarcello
- * Date: 10/31/2018
- * This file contains the Preferences Menu controller class, handling actions evoked by the Preferences Menu,
- * namely, changing the color theme of the IDE
+ * Date: 11/20/2018
+ * This file contains the Preferences Menu controller class, handling actions evoked by the Preferences Menu
  */
 package proj9AbulhabFengMaoSavillo.controllers;
 
@@ -13,7 +12,6 @@ import javafx.fxml.FXML;
 import javafx.geometry.Pos;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.control.Alert;
 import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.MenuItem;
 
@@ -25,7 +23,6 @@ import java.util.HashMap;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
@@ -38,8 +35,7 @@ import proj9AbulhabFengMaoSavillo.Main;
 import proj9AbulhabFengMaoSavillo.ControllerErrorCreator;
 
 /**
- * Preferences Menu controller handles actions evoked by the Main window.
- * Used for changing the color theme of the IDE.
+ * Preferences Menu controller handles preference menu actions .
  *
  * @author Zena Abulhab
  * @author Yi Feng

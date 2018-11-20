@@ -1,3 +1,12 @@
+/*
+ * File: Scanner.java
+ * F18 CS361 Project 9
+ * Names: Melody Mao, Zena Abulhab, Yi Feng, Evan Savillo
+ * Date: 11/20/18
+ * This file contains the Scanner class, which reads through a file character by
+ * character and generates a stream of Bantam Java tokens.
+ */
+
 package proj9AbulhabFengMaoSavillo.bantam.lexer;
 
 import proj9AbulhabFengMaoSavillo.bantam.util.*;
@@ -5,10 +14,18 @@ import proj9AbulhabFengMaoSavillo.bantam.util.Error;
 
 import java.io.Reader;
 import java.util.ArrayDeque;
-import java.util.ArrayList;
 import java.util.List;
 
-
+/**
+ * The Scanner class reads in a stream of characters from a file
+ * and converts them into Bantam Java tokens.
+ * 
+ * @author Zena Abulhab
+ * @author Yi Feng
+ * @author Melody Mao
+ * @author Evan Savillo
+ *
+ */
 public class Scanner
 {
     private SourceFile sourceFile;
@@ -17,7 +34,10 @@ public class Scanner
     private char currentChar;
     private ArrayDeque<Character> buffer; // for when another token is found too early.
 
-    //Code?
+    /**
+     * Creates a new Scanner that registers errors to the given ErrorHandler
+     * @param handler ErrorHandler to register to
+     */
     public Scanner(ErrorHandler handler)
     {
         this.errorHandler = handler;
@@ -26,6 +46,12 @@ public class Scanner
         this.buffer = new ArrayDeque<Character>();
     }
 
+    /**
+     * Creates a new Scanner that lexes the given file into tokens
+     * and registers errors to the given ErrorHandler
+     * @param filename file to scan
+     * @param handler ErrorHandler to register to
+     */
     public Scanner(String filename, ErrorHandler handler)
     {
         this.errorHandler = handler;
@@ -34,7 +60,12 @@ public class Scanner
         this.buffer = new ArrayDeque<Character>();
     }
 
-    //Code?
+    /**
+     * Creates a new Scanner that lexes the characters from the given Reader into tokens
+     * and registers errors to the given ErrorHandler
+     * @param reader Reader to read characters from
+     * @param handler ErrorHandler to register to
+     */
     public Scanner(Reader reader, ErrorHandler handler)
     {
         this.errorHandler = handler;
@@ -42,7 +73,12 @@ public class Scanner
         this.sourceFile = new SourceFile(reader);
         this.buffer = new ArrayDeque<Character>();
     }
-
+    
+    /**
+     * Test code for Scanner methods
+     * To test, run Scanner with one or more command-line arguments listing
+     * files to scan.
+     */
     public static void main(String[] args)
     {
         //make sure at least one filename was given
@@ -96,7 +132,7 @@ public class Scanner
      * of the file being scanned and returns it. When it reaches the end of the file,
      * any calls to scan() result in a Token of kind EOF.
      *
-     * @return
+     * @return the next token or EOF if has already reached EOF
      */
     public Token scan()
     {
@@ -595,6 +631,10 @@ public class Scanner
         return new Token(Token.Kind.IDENTIFIER, spellingBuilder.toString(), lineNumber);
     }
 
+    /**
+     * Returns the errors registered by the associated ErrorHandler
+     * @return the error list
+     */
     public List<Error> getErrorList()
     {
         return this.errorHandler.getErrorList();

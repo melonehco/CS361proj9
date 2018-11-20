@@ -1,8 +1,8 @@
 /*
  * File: Main.java
- * F18 CS361 Project 7
+ * F18 CS361 Project 9
  * Names: Melody Mao, Zena Abulhab, Yi Feng, Evan Savillo
- * Date: 10/27/2018
+ * Date: 11/20/2018
  */
 
 package proj9AbulhabFengMaoSavillo;
