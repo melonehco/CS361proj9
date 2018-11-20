@@ -150,18 +150,17 @@ public class DirectoryViewController
         // create the directory tree
         if (file != null)
         {
-            // This may or may not solve a hard-to-replicate bug.
             if (this.thread != null)
             {
                 if (this.thread.isAlive())
                 {
                     try
                     {
-                        this.thread.join(5000);
+                        this.thread.join(3000);
                     }
                     catch (Exception e)
                     {
-                        System.out.println("threading headaches1");
+                        System.out.println("threading headaches2");
                     }
                     finally
                     {
