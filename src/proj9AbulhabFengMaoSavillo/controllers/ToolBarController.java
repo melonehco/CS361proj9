@@ -9,19 +9,12 @@
 package proj9AbulhabFengMaoSavillo.controllers;
 
 import javafx.application.Platform;
-import javafx.beans.property.SimpleStringProperty;
-import javafx.beans.value.ObservableValue;
 import org.fxmisc.richtext.StyleClassedTextArea;
 import javafx.event.Event;
-
 import java.util.List;
 import java.util.concurrent.*;
 import java.io.*;
-
 import javafx.concurrent.Task;
-import javafx.concurrent.Service;
-
-import proj9AbulhabFengMaoSavillo.ControllerErrorCreator;
 import proj9AbulhabFengMaoSavillo.JavaCodeArea;
 import proj9AbulhabFengMaoSavillo.bantam.lexer.Scanner;
 import proj9AbulhabFengMaoSavillo.bantam.lexer.Token;
@@ -100,7 +93,10 @@ public class ToolBarController
     }
 
     /**
-     * handles clicking of the scan button
+     * Handles when the scan button is clicked; the current file is run through a lexical scanner.
+     *
+     * @param event the event triggered
+     * @param file the current file
      */
     public void handleScanButtonAction(Event event, File file)
     {
@@ -133,12 +129,14 @@ public class ToolBarController
                 }
             }
 
+            // Clear the console before printing
             Platform.runLater(() ->
                               {
                                   this.console.clear();
                                   consoleLength = 0;
                               });
 
+            // Request that the filemenucontroller create a new tab in which to print
             JavaCodeArea outputArea = requestAreaForOutput();
             Scanner scanner = new Scanner(file.getAbsolutePath(), new ErrorHandler());
 
@@ -147,6 +145,7 @@ public class ToolBarController
                 @Override
                 protected Object call() throws Exception
                 {
+                    // Scan the file and retrieve each token
                     Token currentToken = scanner.scan();
                     while (currentToken.kind != Token.Kind.EOF)
                     {
@@ -155,7 +154,7 @@ public class ToolBarController
                         currentToken = scanner.scan();
                     }
 
-                    outputArea.setEditable(true);
+                    outputArea.setEditable(true);  // set the codeArea to editable after we're done writing to it
 
                     List<Error> errorList = scanner.getErrorList();
                     int errorCount = errorList.size();
@@ -184,6 +183,11 @@ public class ToolBarController
 
     }
 
+    /**
+     * Request a new tab be made
+     *
+     * @return the code area in the newly made tab
+     */
     private JavaCodeArea requestAreaForOutput()
     {
         return this.fileMenuController.giveNewCodeArea();
