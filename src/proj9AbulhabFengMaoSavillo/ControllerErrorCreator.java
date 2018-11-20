@@ -1,3 +1,10 @@
+/*
+ * File: ControllerErrorCreator
+ * F18 CS361 Project 9
+ * Names: Melody Mao, Zena Abulhab, Yi Feng, Evan Savillo
+ * Date: 11/20/18
+ */
+
 package proj9AbulhabFengMaoSavillo;
 
 import javafx.scene.control.Alert;
