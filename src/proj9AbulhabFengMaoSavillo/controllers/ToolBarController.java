@@ -37,40 +37,11 @@ public class ToolBarController
      */
     private StyleClassedTextArea console;
     /**
-     * Process currently compiling or running a Java file
-     */
-    private Process currentProcess;
-    /**
-     * Thread representing the Java program input stream
-     */
-    private Thread inThread;
-    /**
-     * Thread representing the Java program output stream
-     */
-    private Thread outThread;
-    /**
-     * Mutex lock to control input and output threads' access to console
-     */
-    private Semaphore mutex;
-    /**
-     * The consoleLength of the output on the console
-     */
-    private int consoleLength;
-    /**
      * The FileMenuController
      */
     private FileMenuController fileMenuController;
 
     private Thread thread;
-
-    /**
-     * Initializes the ToolBarController controller.
-     * Sets the Semaphore, the CompileWorker and the CompileRunWorker.
-     */
-    public void initialize()
-    {
-        this.mutex = new Semaphore(1);
-    }
 
     /**
      * Sets the console pane.
@@ -133,7 +104,6 @@ public class ToolBarController
             Platform.runLater(() ->
                               {
                                   this.console.clear();
-                                  consoleLength = 0;
                               });
 
             // Request that the filemenucontroller create a new tab in which to print
