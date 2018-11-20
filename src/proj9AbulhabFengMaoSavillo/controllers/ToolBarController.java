@@ -248,10 +248,6 @@ public class ToolBarController
         reader.close();
     }
 
-    private void outputToNewTab()
-    {
-
-    }
 
     private JavaCodeArea requestAreaForOutput()
     {
@@ -301,6 +297,7 @@ public class ToolBarController
                     }
                     catch (Throwable e)
                     {
+                        e.printStackTrace();
                         Platform.runLater(() ->
                                           {
                                               // print stop message if other thread hasn't
@@ -315,8 +312,9 @@ public class ToolBarController
             };
 
             this.outThread.setDaemon(true);
+            this.outThread.start();
 
-            this.outThread.join(100);
+            this.outThread.join();
 
             System.out.println("isalive: " + this.outThread.isAlive());
 

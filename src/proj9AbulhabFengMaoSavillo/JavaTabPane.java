@@ -52,7 +52,6 @@ public class JavaTabPane extends TabPane {
     public void removeTab(JavaTab tab){
         this.tabList.remove(tab);
         this.getTabs().remove(tab);
-
     }
 
 
