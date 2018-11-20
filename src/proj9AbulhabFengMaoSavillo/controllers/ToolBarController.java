@@ -82,10 +82,7 @@ public class ToolBarController
      * last list of errors
      */
     private ArrayList<Error> errorList;
-    /**
-     * scanner
-     */
-    private Scanner scanner;
+
 
     /**
      * Initializes the ToolBarController controller.
