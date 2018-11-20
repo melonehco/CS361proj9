@@ -325,6 +325,7 @@ public class Controller
         this.toolbarController.initialize();
         this.compileWorker = this.toolbarController.getCompileWorker();
         this.compileRunWorker = this.toolbarController.getCompileRunWorker();
+        //TODO scanworker
     }
 
     /**
@@ -380,8 +381,9 @@ public class Controller
      *
      */
     @FXML
-    private void handleScanButtonAction(){
-        this.toolbarController.handleScanButtonAction(this.javaTabPane.getCurrentFile());
+    private void handleScanButtonAction(Event event)
+    {
+        this.toolbarController.handleScanButtonAction(event, this.javaTabPane.getCurrentFile());
     }
 
     /**
