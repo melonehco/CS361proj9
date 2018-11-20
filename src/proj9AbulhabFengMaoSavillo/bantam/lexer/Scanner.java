@@ -189,8 +189,7 @@ public class Scanner
             case '\"':
                 kind = Token.Kind.STRCONST;
                 this.currentChar = this.sourceFile.getNextChar();
-                spelling.append(this.completeStringToken());
-                break;
+                return this.completeStringToken();
             default:
                 isTokenComplete = false; // (it has failed next check)
                 break;
@@ -205,35 +204,13 @@ public class Scanner
         if (Character.isDigit(this.currentChar))
         {
             kind = Token.Kind.INTCONST;
-            this.currentChar = this.sourceFile.getNextChar();
-            spelling.append(this.completeIntconstToken());
-            
-            //check whether int is too long
-            try
-            {
-            	int value = Integer.parseInt(spelling.toString());
-                if (value < 0)
-                {
-    		        	this.errorHandler.register(Error.Kind.LEX_ERROR,
-    		    				this.sourceFile.getFilename(),
-    		    				this.sourceFile.getCurrentLineNumber(),
-    		    				"Integer exceeds maximum value");
-                }
-            }
-            catch (NumberFormatException e)
-            {
-            	this.errorHandler.register(Error.Kind.LEX_ERROR,
-	    				this.sourceFile.getFilename(),
-	    				this.sourceFile.getCurrentLineNumber(),
-	    				"Integer constant cannot be parsed");
-            }
+            return this.completeIntconstToken(lineNumber);
         }
         //identifier/boolean/keyword
         else if (Character.isLetter(this.currentChar))
         {
             kind = Token.Kind.IDENTIFIER;
-            this.currentChar = this.sourceFile.getNextChar();
-            spelling.append(this.completeIdentifierToken());
+            return this.completeIdentifierToken(lineNumber);
         }
         else
         {
@@ -327,14 +304,12 @@ public class Scanner
                 if (this.currentChar == '*') //block comment
                 {
                     kind = Token.Kind.COMMENT;
-                    String tokenString = this.completeBlockCommentToken();
-                    spelling.append(tokenString);
+                    return this.completeBlockCommentToken(lineNumber);
                 }
                 else if (this.currentChar == '/') //single-line comment
                 {
                     kind = Token.Kind.COMMENT;
-                    String tokenString = this.completeLineCommentToken();
-                    spelling.append(tokenString);
+                    return this.completeLineCommentToken(lineNumber);
                 }
                 else
                 {
@@ -362,86 +337,94 @@ public class Scanner
 
 	    	/* TODO:
 	    	-handle error thrown by SourceFile?
-	    	-return error in every error case,
-	    	so make the complete... methods return Tokens instead of Strings
+	    	- have main method actually do what Dale wants
 	    	*/
     }
     
     /**
      * Builds and returns a string token starting from the current character
-     * @return the string token
+     * @return the string token, or error token if error encountered
      */
-    private String completeStringToken()
+    private Token completeStringToken()
     {
-	    	StringBuilder spellingBuilder = new StringBuilder();
+	    //init string with opening " because scan method already read it in	
+    	StringBuilder spellingBuilder = new StringBuilder("\"");
+    	Token.Kind kind = Token.Kind.STRCONST;
 	    	
-	    	//collect chars until closing double quote
-	    	while (this.currentChar != '\"')
-	    	{
-	    		spellingBuilder.append(Character.toString(this.currentChar));
-	        	this.currentChar = this.sourceFile.getNextChar();
-	        	
-	        	//check for escaped chars
-	        	if (this.currentChar == '\\')
-	        	{
+    	//collect chars until closing double quote
+    	while (this.currentChar != '\"')
+    	{
+    		spellingBuilder.append(Character.toString(this.currentChar));
+        	this.currentChar = this.sourceFile.getNextChar();
+        	
+        	//check for escaped chars
+        	if (this.currentChar == '\\')
+        	{
+        		spellingBuilder.append(Character.toString(this.currentChar));
+    	        this.currentChar = this.sourceFile.getNextChar();	        		
+    	        
+    	        //handle having escaped quote \"
+    	        if (this.currentChar == '"')
+    	        {
 	        		spellingBuilder.append(Character.toString(this.currentChar));
-	    	        this.currentChar = this.sourceFile.getNextChar();	        		
-	    	        
-	    	        //handle having escaped quote \"
-	    	        if (this.currentChar == '"')
-	    	        {
-		        		spellingBuilder.append(Character.toString(this.currentChar));
-		    	        this.currentChar = this.sourceFile.getNextChar();	  
-	    	        }
-	        		
-	    	        //check for invalid escape chars
-	    	        else if (this.currentChar != 'n' && this.currentChar != 't' &&
-	    	        		this.currentChar != '"' && this.currentChar != '\\' &&
-	    	        		this.currentChar != 'f' && this.currentChar != 'r')
-	    	        {
-		        		this.errorHandler.register(Error.Kind.LEX_ERROR,
-		        				this.sourceFile.getFilename(),
-		        				this.sourceFile.getCurrentLineNumber(),
-		        				"Illegal escape char in string: \\" + this.currentChar);
-		        		break;
-	    	        }
-	        	}
-	        	
-	        	//check if not terminated correctly
-	        	if (this.currentChar == SourceFile.eof || this.currentChar == SourceFile.eol)
-	        	{
+	    	        this.currentChar = this.sourceFile.getNextChar();	  
+    	        }
+        		
+    	        //check for invalid escape chars
+    	        else if (this.currentChar != 'n' && this.currentChar != 't' &&
+    	        		this.currentChar != '"' && this.currentChar != '\\' &&
+    	        		this.currentChar != 'f' && this.currentChar != 'r')
+    	        {
 	        		this.errorHandler.register(Error.Kind.LEX_ERROR,
 	        				this.sourceFile.getFilename(),
 	        				this.sourceFile.getCurrentLineNumber(),
-	        				"String not terminated");
+	        				"Illegal escape char in string: \\" + this.currentChar);
+	        		kind = Token.Kind.ERROR;
 	        		break;
-	        	}
-	        	
-	        	//check if too long
-	        	if (spellingBuilder.length() > 5000)
-	        	{
-	        		this.errorHandler.register(Error.Kind.LEX_ERROR,
-	        				this.sourceFile.getFilename(),
-	        				this.sourceFile.getCurrentLineNumber(),
-	        				"String exceeds maximum length");
-	        		break;
-	        	}
-	    	}
-	    	
-	    	//append closing quote
-	    	spellingBuilder.append(Character.toString(this.currentChar));
-	    	
-	    	return spellingBuilder.toString();
+    	        }
+        	}
+        	
+        	//check if not terminated correctly
+        	if (this.currentChar == SourceFile.eof || this.currentChar == SourceFile.eol)
+        	{
+        		this.errorHandler.register(Error.Kind.LEX_ERROR,
+        				this.sourceFile.getFilename(),
+        				this.sourceFile.getCurrentLineNumber(),
+        				"String not terminated");
+        		kind = Token.Kind.ERROR;
+        		break;
+        	}
+        	
+        	//check if too long
+        	if (spellingBuilder.length() > 5000)
+        	{
+        		this.errorHandler.register(Error.Kind.LEX_ERROR,
+        				this.sourceFile.getFilename(),
+        				this.sourceFile.getCurrentLineNumber(),
+        				"String exceeds maximum length");
+        		kind = Token.Kind.ERROR;
+        		break;
+        	}
+    	}
+    	
+    	//append closing quote
+    	spellingBuilder.append(Character.toString(this.currentChar));
+    	
+    	return new Token(kind, spellingBuilder.toString(), this.sourceFile.getCurrentLineNumber());
     }
     
     /**
-     * Builds and returns a block comment token string starting from the current char
+     * Builds and returns a block comment token starting from the current char
+     * with position at the given line number
      *
-     * @return the comment token string
+     * @param lineNumber starting line number of token
+     * @return the block comment token, or error token if error encountered
      */
-    private String completeBlockCommentToken()
+    private Token completeBlockCommentToken(int lineNumber)
     {
-        StringBuilder spellingBuilder = new StringBuilder();
+        //init string with starting / because scan read it
+    	StringBuilder spellingBuilder = new StringBuilder("/");
+    	Token.Kind kind = Token.Kind.COMMENT;
 
         boolean atTentativeEnd = false; // a '*' has been seen
         boolean terminated = false; // a '*' and '/' have been seen in sequence
@@ -474,19 +457,22 @@ public class Scanner
 	    				this.sourceFile.getFilename(),
 	    				this.sourceFile.getCurrentLineNumber(),
 	    				"Block comment not terminated");
+	    		kind = Token.Kind.ERROR;
         }
 
-        return spellingBuilder.toString();
+        return new Token(kind, spellingBuilder.toString(), lineNumber);
     }
 
     /**
-     * Builds and returns a single-line comment token string starting from the current char
+     * Builds and returns a single-line comment token starting from the current char
      *
-     * @return the comment token string
+     * @param lineNumber starting line number of token
+     * @return the line comment token
      */
-    private String completeLineCommentToken()
+    private Token completeLineCommentToken(int lineNumber)
     {
-        StringBuilder spellingBuilder = new StringBuilder();
+    	//init string with starting / because scan already read it in
+        StringBuilder spellingBuilder = new StringBuilder("/");
 
         //collect chars until end of line or file
         while (this.currentChar != '\n' && this.currentChar != SourceFile.eof)
@@ -497,19 +483,22 @@ public class Scanner
 
         this.buffer.add(this.currentChar);
 
-        return spellingBuilder.toString();
+        return new Token(Token.Kind.COMMENT, spellingBuilder.toString(), lineNumber);
     }
 
     /**
-     * Builds and returns an intconst token string starting from the current char
+     * Builds and returns an intconst token starting from the current char
      * Returns upon reading in any non-digit char
      *
-     * @return the intconst token string
+     * @param lineNumber starting line number of token
+     * @return the intconst token, or error token if error encountered
      */
-    private String completeIntconstToken()
+    private Token completeIntconstToken(int lineNumber)
     {
+    	//start string with first digit read in by scan method
         StringBuilder spellingBuilder = new StringBuilder();
-
+        Token.Kind kind = Token.Kind.INTCONST;
+        
         //collect chars until non-digit char
         while (Character.isDigit(this.currentChar))
         {
@@ -518,18 +507,42 @@ public class Scanner
         }
 
         this.buffer.add(this.currentChar);
+        
+        //check whether int is too long
+        try
+        {
+        	int value = Integer.parseInt(spellingBuilder.toString());
+            if (value < 0)
+            {
+		        	this.errorHandler.register(Error.Kind.LEX_ERROR,
+		    				this.sourceFile.getFilename(),
+		    				this.sourceFile.getCurrentLineNumber(),
+		    				"Integer exceeds maximum value");
+		        	kind = Token.Kind.ERROR;
+		        	
+            }
+        }
+        catch (NumberFormatException e)
+        {
+        	this.errorHandler.register(Error.Kind.LEX_ERROR,
+    				this.sourceFile.getFilename(),
+    				this.sourceFile.getCurrentLineNumber(),
+    				"Integer constant cannot be parsed");
+        	kind = Token.Kind.ERROR;
+        }
 
-        return spellingBuilder.toString();
+        return new Token(kind, spellingBuilder.toString(), lineNumber);
     }
 
     /**
-     * Builds and returns an identifier token string (or boolean or keyword)
+     * Builds and returns an identifier token (or boolean or keyword)
      * starting from the current character
      * Returns upon reading in any non-identifier char
      *
-     * @return the identifier token string
+     * @param lineNumber starting line number of token 
+     * @return the identifier token
      */
-    private String completeIdentifierToken()
+    private Token completeIdentifierToken(int lineNumber)
     {
         StringBuilder spellingBuilder = new StringBuilder();
 
@@ -544,14 +557,14 @@ public class Scanner
 
         this.buffer.add(this.currentChar);
         
-        return spellingBuilder.toString();
+        return new Token(Token.Kind.IDENTIFIER, spellingBuilder.toString(), lineNumber);
     }
     
     public static void main(String[] args)
     {
 	    	ArrayList<Token> tokenStream = new ArrayList<Token>();
 	    	ErrorHandler errorHandler = new ErrorHandler();
-	    	String filename = System.getProperty("user.dir") + "/include/Jaemin.java";
+	    	String filename = System.getProperty("user.dir") + "/include/Winwin.java";
 	    	Scanner scanner = new Scanner(filename, errorHandler);
 	    	
 	    	Token currentToken = scanner.scan();
