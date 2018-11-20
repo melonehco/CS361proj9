@@ -139,13 +139,6 @@ public class Controller
     @FXML
     private SplitPane horizontalSplitPane;
 
-
-
-
-    private ToolBarController.CompileWorker compileWorker;
-
-    private ToolBarController.CompileRunWorker compileRunWorker;
-
     /**
      * This function is called after the FXML fields are populated.
      * Sets up references to the sub Controllers.
@@ -182,16 +175,6 @@ public class Controller
      */
     private void setupEventAwareness()
     {
-        // Prevents user from moving caret in console during running
-        {
-            this.console.addEventFilter(MouseEvent.ANY, event ->
-            {
-                this.console.requestFocus();
-                if (this.compileRunWorker.isRunning())
-                    event.consume();
-            });
-        }
-
         // Detects presses to tab (overriding the system default that deletes the selection) and calls tabOrUntab
         {
             this.javaTabPane.addEventFilter(KeyEvent.KEY_PRESSED, event ->
@@ -301,18 +284,10 @@ public class Controller
      */
     private void setButtonBinding()
     {
-        ReadOnlyBooleanProperty ifCompiling = this.compileWorker.runningProperty();
-        ReadOnlyBooleanProperty ifCompilingRunning = this.compileRunWorker.runningProperty();
-
         this.closeMenuItem.disableProperty().bind(this.fileMenuController.tablessProperty());
         this.saveMenuItem.disableProperty().bind(this.fileMenuController.tablessProperty());
         this.saveAsMenuItem.disableProperty().bind(this.fileMenuController.tablessProperty());
         this.editMenu.disableProperty().bind(this.fileMenuController.tablessProperty());
-
-        this.stopButton.disableProperty().bind(((ifCompiling.not()).and(ifCompilingRunning.not())).or(this.fileMenuController.tablessProperty()));
-        this.compileButton.disableProperty().bind(ifCompiling.or(ifCompilingRunning).or(this.fileMenuController.tablessProperty()));
-        this.compileRunButton.disableProperty().bind(ifCompiling.or(ifCompilingRunning).or(this.fileMenuController.tablessProperty()));
-
     }
 
     /**
@@ -323,9 +298,6 @@ public class Controller
         this.toolbarController.setConsole(this.console);
         this.toolbarController.setFileMenuController(this.fileMenuController);
         this.toolbarController.initialize();
-        this.compileWorker = this.toolbarController.getCompileWorker();
-        this.compileRunWorker = this.toolbarController.getCompileRunWorker();
-        //TODO scanworker
     }
 
     /**
@@ -386,29 +358,6 @@ public class Controller
         this.toolbarController.handleScanButtonAction(event, this.javaTabPane.getCurrentFile());
     }
 
-    /**
-     * Calls the method that handles the Compile button action from the toolbarController.
-     *
-     * @param event Event object
-     */
-    @FXML
-    private void handleCompileButtonAction(Event event)
-    {
-        this.toolbarController.handleCompileButtonAction(event,
-                this.javaTabPane.getCurrentFile());
-    }
-
-    /**
-     * Calls the method that handles the CompileRun button action from the toolbarController.
-     *
-     * @param event Event object
-     */
-    @FXML
-    private void handleCompileRunButtonAction(Event event)
-    {
-        this.toolbarController.handleCompileRunButtonAction(event,
-                this.javaTabPane.getCurrentFile());
-    }
 
     /**
      * Calls the method that handles the Stop button action from the toolbarController.
