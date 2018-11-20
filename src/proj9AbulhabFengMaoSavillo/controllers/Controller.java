@@ -141,6 +141,7 @@ public class Controller
 
 
 
+
     private ToolBarController.CompileWorker compileWorker;
 
     private ToolBarController.CompileRunWorker compileRunWorker;
@@ -253,7 +254,9 @@ public class Controller
                 editMenuController.handleUnindentation(currentCodeArea);
             }
             else // Tab only
+            {
                 editMenuController.handleIndentation(currentCodeArea);
+            }
 
         }
         event.consume();
@@ -268,16 +271,16 @@ public class Controller
         File currentFile = this.javaTabPane.getCurrentFile();
 
         // if the code area is open
-        if (currentCodeArea != null)
+        if (currentCodeArea != null) {
             // if this is not an unsaved file
             if (currentFile != null)
                 // if this is a java file
-                if (currentFile.getName().endsWith(".java"))
-                {
+                if (currentFile.getName().endsWith(".java")) {
                     // Re-generates the tree
                     this.structureViewController.generateStructureTree(currentCodeArea.getText());
                     return;
                 }
+        }
 
         // Gets rid of open structure view if not appropriate
         this.resetStructureView();
@@ -373,6 +376,10 @@ public class Controller
         this.directoryViewController.setTreeView(this.directoryTreeView);
     }
 
+    /**
+     * Calls the method that handles the Scan button action from the toolbarController.
+     *
+     */
     @FXML
     private void handleScanButtonAction(Event event)
     {
