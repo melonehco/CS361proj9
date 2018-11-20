@@ -32,16 +32,16 @@ public class JavaTab extends Tab{
      * @param contentString
      * @param file
      * @param handler
-     * @param menu
+     * @param rightClickMenu
      */
-    public JavaTab(String contentString, File file, EventHandler<Event> handler, ObservableList<MenuItem> menu){
+    public JavaTab(String contentString, File file, EventHandler<Event> handler, ObservableList<MenuItem> rightClickMenu){
 
-        this.javaCodeArea = new JavaCodeArea(menu);
+        this.javaCodeArea = new JavaCodeArea(rightClickMenu);
         this.javaCodeArea.appendText(contentString);
 
         this.setContent(new VirtualizedScrollPane<>(this.javaCodeArea));
 
-        this.file = file;
+        this.setFile(file);
         this.setTabName();
 
         this.setOnCloseRequest(handler);

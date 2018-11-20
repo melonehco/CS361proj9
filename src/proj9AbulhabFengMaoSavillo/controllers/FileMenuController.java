@@ -140,7 +140,7 @@ public class FileMenuController
      */
     public boolean tabNeedsSaving(JavaTab tab, boolean ifSaveEmptyFile)
     {
-        System.out.println("entered tabNeedSaving");
+        System.out.println("entered tabNeedsSaving");
         JavaCodeArea activeJavaCodeArea = tab.getJavaCodeArea();
         // check whether the embedded text has been saved or not
         if (tab.getFile() == null)
@@ -401,7 +401,7 @@ public class FileMenuController
      * If the current styled code area was loaded from a file or previously saved
      * to a file, then the styled code area is saved to that file.
      *
-     * @return true if save as successfully; false if cancels or an error occurs when saving the file.
+     * @return true if save was successful; false if cancels or an error occurs when saving the file.
      */
     public boolean handleSaveAction()
     {
@@ -438,7 +438,7 @@ public class FileMenuController
      * contents of the styled code area so that those contents can later be reloaded.
      * If the user presses the Cancel button in the dialog, then the dialog closes and no saving occurs.
      *
-     * @return true if save as successfully; false if cancels or an error occurs when saving the file.
+     * @return true if save was successful; false if cancelled or an error occurs when saving the file.
      */
     public boolean handleSaveAsAction()
     {
@@ -456,8 +456,8 @@ public class FileMenuController
             {
                 return false;
             }
-            // set the title of the tab to the name of the saved file
-//            selectedTab.setText(saveFile.getName());
+            // update the title of the tab to the name of the saved file
+            selectedTab.setText(saveFile.getName());
             selectedTab.setStyle("-fx-text-base-color: black");
 
             // map the tab and the associated file
@@ -488,9 +488,12 @@ public class FileMenuController
         // in this case the selectedTab tab should be the tab that evokes this method
         if (selectedTab == null)
         {
+            System.out.println("Here");
             selectedTab = (Tab) event.getSource();
         }
-        // if the user select to not close the tab, then we consume the event (not performing the closing action)
+
+        // Attempts to close the tab
+        // If the user select to not close the tab, then we consume the event (not performing the closing action)
         if (!this.closeTab((JavaTab) selectedTab))
         {
             event.consume();
@@ -518,6 +521,7 @@ public class FileMenuController
         Iterator<Tab> iter = list.iterator();
         while(iter.hasNext()){
             JavaTab tab = (JavaTab) iter.next();
+            // if the user cancels closing the tab, then we consume the event (not performing the closing action)
             if (!this.closeTab(tab))
             {
                 event.consume();

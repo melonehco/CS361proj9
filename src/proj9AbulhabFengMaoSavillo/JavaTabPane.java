@@ -27,17 +27,18 @@ public class JavaTabPane extends TabPane {
     public JavaTabPane(){
         this.tabList = new ArrayList<>();
     }
+
     /**
      * Create a new tab
      * @param contentString content of the new tab
      * @param file
      * @param handler
-     * @param menu
+     * @param rightClickMenu
      */
-    public void createTab(String contentString, File file, EventHandler<Event> handler, ObservableList<MenuItem> menu)
+    public void createTab(String contentString, File file, EventHandler<Event> handler, ObservableList<MenuItem> rightClickMenu)
     {
 
-        JavaTab newTab = new JavaTab(contentString,file,handler,menu);
+        JavaTab newTab = new JavaTab(contentString,file,handler,rightClickMenu);
 
         this.getTabs().add(newTab);
         this.getSelectionModel().select(newTab);

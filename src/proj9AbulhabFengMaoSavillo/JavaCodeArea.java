@@ -9,7 +9,6 @@
 
 package proj9AbulhabFengMaoSavillo;
 
-import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.MenuItem;
@@ -23,7 +22,6 @@ import org.reactfx.Subscription;
 import org.reactfx.util.FxTimer;
 
 import java.time.Duration;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.regex.Matcher;
@@ -42,13 +40,73 @@ import java.util.regex.Pattern;
 public class JavaCodeArea extends CodeArea
 {
 
+    /**
+     * The menu that appears on right-clicking this code area
+     */
     private ContextMenu contextMenu;
 
-    //constructor
+    /**
+     * Creates a new empty JavaCodeArea
+     * @param menu the right-click menu
+     */
     public JavaCodeArea(ObservableList<MenuItem> menu){
-        this.contextMenu=new ContextMenu();
-        this.contextMenu.getItems().addAll(menu);
-        this.addRightClickMenu();
+        // Handles coloring the text by syntax immediately
+        this.handleTextChange();
+        // Sets up updating syntax coloring whenever contents update
+        this.setOnKeyPressed(event -> this.handleTextChange());
+        // Sets up highlighting for syntax
+        this.highlightText();
+        // Enables line numbering
+        this.setParagraphGraphicFactory(LineNumberFactory.get(this));
+        // Sets up the right-click menu
+        this.addRightClickMenu(menu);
+
+        // Enables auto-closing parentheses, brackets, and curly braces
+        this.addEventHandler(KeyEvent.KEY_PRESSED,
+                event ->
+                {
+                    //check the key combination for a (
+                    if (event.getCode() == KeyCode.DIGIT9 && event.isShiftDown())
+                    {
+                        FxTimer.runLater( //wait for original key to type & appear before auto-closing
+                                Duration.ofMillis(100),
+                                () ->
+                                {
+                                    int caretPosition = this.getCaretPosition();
+                                    this.insertText(caretPosition, ")");
+                                    this.moveTo(caretPosition);
+                                });
+                    }
+                    //check for [] or {}
+                    else if (event.getCode() == KeyCode.OPEN_BRACKET)
+                    {
+                        if (event.isShiftDown()) //handle closing {}
+                        {
+                            FxTimer.runLater( //wait for original key to type & appear before auto-closing
+                                    Duration.ofMillis(100),
+                                    () ->
+                                    {
+                                        int caretPosition = this.getCaretPosition();
+                                        this.insertText(caretPosition, "\n\n}");
+                                        this.moveTo(caretPosition + 1);
+                                    });
+                        }
+                        else //handle closing []
+                        {
+                            FxTimer.runLater( //wait for original key to type & appear before auto-closing
+                                    Duration.ofMillis(100),
+                                    () ->
+                                    {
+                                        int caretPosition = this.getCaretPosition();
+                                        this.insertText(caretPosition, "]");
+                                        this.moveTo(caretPosition);
+                                    });
+                        }
+                    }
+                }
+        );
+
+
     }
     /**
      * a list of key words to be highlighted
@@ -91,69 +149,6 @@ public class JavaCodeArea extends CodeArea
                     + "|(?<COMMENT>" + COMMENT_PATTERN + ")"
                     + "|(?<INTEGER>" + INTEGER_PATTERN + ")"
     );
-
-    /**
-     * Creates a new empty JavaCodeArea
-     */
-    public JavaCodeArea()
-    {
-        //color syntax immediately
-        this.handleTextChange();
-        //update syntax coloring whenever contents update
-        this.setOnKeyPressed(event -> this.handleTextChange());
-        //highlight for syntax
-        this.highlightText();
-        //Enables line numbering
-        this.setParagraphGraphicFactory(LineNumberFactory.get(this));
-
-        //add right click menu
-        this.addRightClickMenu();
-
-        //enables auto-closing parentheses, brackets, and curly braces
-        this.addEventHandler(KeyEvent.KEY_PRESSED,
-                             event ->
-                             {
-                                 //check the key combination for a (
-                                 if (event.getCode() == KeyCode.DIGIT9 && event.isShiftDown())
-                                 {
-                                     FxTimer.runLater( //wait for original key to type & appear before auto-closing
-                                                       Duration.ofMillis(100),
-                                                       () ->
-                                                       {
-                                                           int caretPosition = this.getCaretPosition();
-                                                           this.insertText(caretPosition, ")");
-                                                           this.moveTo(caretPosition);
-                                                       });
-                                 }
-                                 //check for [] or {}
-                                 else if (event.getCode() == KeyCode.OPEN_BRACKET)
-                                 {
-                                     if (event.isShiftDown()) //handle closing {}
-                                     {
-                                         FxTimer.runLater( //wait for original key to type & appear before auto-closing
-                                                           Duration.ofMillis(100),
-                                                           () ->
-                                                           {
-                                                               int caretPosition = this.getCaretPosition();
-                                                               this.insertText(caretPosition, "\n\n}");
-                                                               this.moveTo(caretPosition + 1);
-                                                           });
-                                     }
-                                     else //handle closing []
-                                     {
-                                         FxTimer.runLater( //wait for original key to type & appear before auto-closing
-                                                           Duration.ofMillis(100),
-                                                           () ->
-                                                           {
-                                                               int caretPosition = this.getCaretPosition();
-                                                               this.insertText(caretPosition, "]");
-                                                               this.moveTo(caretPosition);
-                                                           });
-                                     }
-                                 }
-                             }
-        );
-    }
 
     /**
      * Computes the highlighting of substrings of text to return the style of each substring.
@@ -217,9 +212,12 @@ public class JavaCodeArea extends CodeArea
     }
 
     /**
-     * set up the right click menu
+     * Set up the right click menu
      */
-    private void addRightClickMenu(){
+    private void addRightClickMenu(ObservableList<MenuItem> menu){
+
+        this.contextMenu=new ContextMenu();
+        this.contextMenu.getItems().addAll(menu);
 
         this.setOnMousePressed(event ->
         {
