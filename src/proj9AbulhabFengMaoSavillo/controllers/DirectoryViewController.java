@@ -48,6 +48,7 @@ public class DirectoryViewController
      * FileMenuController defined in main controller
      */
     private FileMenuController fileMenuController;
+    private Thread thread;
 
     /**
      * Sets the directory tree from Main.fxml
@@ -74,11 +75,15 @@ public class DirectoryViewController
         // only open file if double clicked
         if (event.getClickCount() == 2 && !event.isConsumed())
         {
+
             event.consume();
             TreeItem selectedItem = treeView.getSelectionModel().getSelectedItem();
-            String fileName = (String) selectedItem.getValue();
+            if (selectedItem != null)
+            {
+                String fileName = (String) selectedItem.getValue();
 
-            this.fileMenuController.openFile(this.treeItemFileMap.get(selectedItem));
+                this.fileMenuController.openFile(this.treeItemFileMap.get(selectedItem));
+            }
         }
     }
 
@@ -145,6 +150,27 @@ public class DirectoryViewController
         // create the directory tree
         if (file != null)
         {
+            // This may or may not solve a hard-to-replicate bug.
+            if (this.thread != null)
+            {
+                if (this.thread.isAlive())
+                {
+                    try
+                    {
+                        this.thread.join(5000);
+                    }
+                    catch (Exception e)
+                    {
+                        System.out.println("threading headaches1");
+                    }
+                    finally
+                    {
+                        if (!this.thread.isInterrupted())
+                            this.thread.interrupt();
+                        this.thread = null;
+                    }
+                }
+            }
 
             Task task = new Task()
             {
@@ -155,15 +181,14 @@ public class DirectoryViewController
                                       {
                                           treeView.setRoot(getNode(file.getParentFile()));
                                           treeView.getRoot().setExpanded(true);
-
                                       });
                     return null;
                 }
             };
 
-            Thread newThread = new Thread(task);
-            newThread.setDaemon(true);
-            newThread.start();
+            this.thread = new Thread(task);
+            this.thread.setDaemon(true);
+            this.thread.start();
         }
 
     }

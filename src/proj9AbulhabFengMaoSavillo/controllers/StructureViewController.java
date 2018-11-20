@@ -40,6 +40,7 @@ public class StructureViewController
     private final ParseTreeWalker walker;
     private Map<TreeItem, Integer> treeItemLineNumMap;
     private TreeView<String> treeView;
+    private Thread thread;
 
 
     /**
@@ -103,6 +104,28 @@ public class StructureViewController
         TreeItem<String> newRoot = new TreeItem<>(fileContents);
         this.setRootNode(newRoot);
 
+        // This may or may not solve a hard-to-replicate bug.
+        if (this.thread != null)
+        {
+            if (this.thread.isAlive())
+            {
+                try
+                {
+                    this.thread.join(5000);
+                }
+                catch (Exception e)
+                {
+                    System.out.println("threading headaches1");
+                }
+                finally
+                {
+                    if (!this.thread.isInterrupted())
+                        this.thread.interrupt();
+                    this.thread = null;
+                }
+            }
+        }
+
         Task task = new Task()
         {
             @Override
@@ -127,9 +150,9 @@ public class StructureViewController
             }
         };
 
-        Thread newThread = new Thread(task);
-        newThread.setDaemon(true);
-        newThread.start();
+        this.thread = new Thread(task);
+        this.thread.setDaemon(true);
+        this.thread.start();
     }
 
 
